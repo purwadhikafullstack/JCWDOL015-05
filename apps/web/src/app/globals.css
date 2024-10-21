@@ -109,7 +109,9 @@ a {
     color-scheme: dark;
   }
 } */
-
+body{
+  background: #FFFAF0;
+}
 @layer base {
   :root {
 
@@ -213,7 +215,7 @@ a {
 
     --chart-5: 340 75% 55%
   }
-}
+} 
 
 @layer base {
   * {
@@ -222,4 +224,4 @@ a {
   body {
     @apply bg-background text-foreground;
   }
-}
+} 
