@@ -7,6 +7,9 @@ import Ourservices from '@/components/LandingPage/ourservices'
 export default function Home() {
   return (
     <main>
+      <Hero />
+      <Section2 />
+      <Ourservices />
     </main>
   )
 }
