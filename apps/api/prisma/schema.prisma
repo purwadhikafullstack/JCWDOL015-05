@@ -10,15 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("samples") // if you want to use snake_case format
-}
 // Enums
 enum Role {
   superAdmin
@@ -77,6 +68,7 @@ model Address {
   customerId Int 
   longitude Float
   latitude Float
+
   // relations
   customer Customer @relation(fields: [customerId], references: [customerId])
 }
@@ -89,40 +81,39 @@ model Employee {
   fullName String 
   avatar String?
   role Role
-  outletId Int?
+  outletId Int
   attendance Attendance[]
+  outletAdmin OutletAdmin?
+  worker Worker?
+  driver Driver?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime? 
+  //relations
+    outlet Outlet @relation(fields: [outletId], references: [outletId])
 }
 
 model OutletAdmin { // data created with employee registration
   outletAdminId Int @id @default(autoincrement())
-  fullName String
   isAvailable Boolean @default(false)
-  outletId Int
-  order Order[]
-  //relations
-  outlet Outlet @relation(fields: [outletId], references: [outletId])
+  employee Employee @relation(fields: [employeeId], references: [employeeId])
+  employeeId Int @unique
+  orders Order[]
 }
 
 model Worker { // data created with employee registration
   workerId Int @id @default(autoincrement())
-  fullName String
   station Station
-  outletId Int
+  employee Employee @relation(fields: [employeeId], references: [employeeId])
+  employeeId Int @unique
   orders WorkersOnOrders[]
-  //relations
-  outlet Outlet @relation(fields: [outletId], references: [outletId])
 }
 
 model Driver { // data created with employee registration
   driverId Int @id @default(autoincrement())
-  fullName String
   isAvailable Boolean @default(true)
-  outletId Int
-  order DriversOnOrders[]
-  //relations
-  outlet Outlet @relation(fields: [outletId], references: [outletId])
+  employee Employee @relation(fields: [employeeId], references: [employeeId])
+  employeeId Int @unique
+  orders DriversOnOrders[]
 }
 
 model Outlet {
@@ -130,10 +121,8 @@ model Outlet {
   name String
   longitude Float 
   latitude Float 
-  outletAdmins OutletAdmin[]
-  workers Worker[]
-  drivers Driver[]
-  order Order[]
+  employee Employee[]
+  oders Order[]
 }
 
 model Order {
@@ -152,6 +141,7 @@ model Order {
   paymentStatus PaymentStatus @default(unpaid)
   complain String?
   status OrderStatus
+
   // relations
   outlet Outlet @relation(fields: [outletId], references: [outletId])
   outletAdmin OutletAdmin @relation(fields: [outletAdminId], references: [outletAdminId])
@@ -163,6 +153,7 @@ model Items {
   orderId Int
   item String
   quantity Int
+
   // relations
   order Order @relation(fields: [orderId], references: [orderId])
 }
@@ -172,6 +163,7 @@ model Attendance {
   employeeId Int 
   clockIn DateTime? 
   clockOut DateTime? 
+
   // relations
   employee Employee @relation(fields: [employeeId], references: [employeeId])
 }
@@ -182,6 +174,7 @@ model WorkersOnOrders {
     worker Worker @relation(fields: [workerId], references: [workerId])
     workerId Int
     createdAt DateTime  @default(now())
+
     @@id([orderId, workerId])
 }
 
