@@ -2,7 +2,6 @@
 import heroImg from "../../../public/img/herobg.png";
 import heroImg2 from "../../../public/img/image.png";
 import heroImg3 from "../../../public/img/herobg3.png";
-
 import React, { HTMLAttributes, useEffect } from "react";
 import { GsapAnimation } from "@/services/gsapAnimation";
 import { Input } from "../ui/input";
@@ -14,9 +13,6 @@ import { Card, CardContent } from "../ui/card";
 import { serviceIcon, ServicesIcon } from "./serviceIcon";
 
 const heroImages = [heroImg, heroImg2, heroImg3]
-
-
-
 export default function Hero() {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: false })
