@@ -28,7 +28,7 @@ type serviceIconProps = {
 export const ServicesIcon = ({ src, title, id }: serviceIconProps) => {
   return (
     <div className="max-w-fit">
-      <Card className="flex flex-col items-center justify-center py-5 space-y-3 shadow-none px-7 " id={id}>
+      <Card className="flex flex-col items-center justify-center py-5 space-y-3 bg-white shadow-none px-7" id={id}>
         <div className="absolute w-full h-full rounded-md opacity-0 bg-steel-blue" id="bg"></div>
         <Image src={src} alt="icon" />
         <p className="font-semibold">{title}</p>
