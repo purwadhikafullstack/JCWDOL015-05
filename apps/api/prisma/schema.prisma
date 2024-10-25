@@ -58,6 +58,7 @@ model Customer {
   address Address[]
   avatar String?
   role Role @default(customer)
+  notification String?
   order Order[] 
   createdAt DateTime  @default(now())
   updatedAt DateTime?
@@ -66,8 +67,11 @@ model Customer {
 model Address {
   addressId Int @id @default(autoincrement())
   customerId Int 
-  longitude Float
-  latitude Float
+  provinsi String?
+  kota String?
+  kecamatan String?
+  longitude Float?
+  latitude Float?
 
   // relations
   customer Customer @relation(fields: [customerId], references: [customerId])
@@ -97,6 +101,7 @@ model OutletAdmin { // data created with employee registration
   isAvailable Boolean @default(false)
   employee Employee @relation(fields: [employeeId], references: [employeeId])
   employeeId Int @unique
+  notification String?
   orders Order[]
 }
 
@@ -105,6 +110,7 @@ model Worker { // data created with employee registration
   station Station
   employee Employee @relation(fields: [employeeId], references: [employeeId])
   employeeId Int @unique
+  notification String?
   orders WorkersOnOrders[]
 }
 
@@ -113,14 +119,18 @@ model Driver { // data created with employee registration
   isAvailable Boolean @default(true)
   employee Employee @relation(fields: [employeeId], references: [employeeId])
   employeeId Int @unique
+  notification String?
   orders DriversOnOrders[]
 }
 
 model Outlet {
   outletId Int @id @default(autoincrement())
   name String
-  longitude Float 
-  latitude Float 
+   provinsi String?
+  kota String?
+  kecamatan String?
+  longitude Float? 
+  latitude Float? 
   employee Employee[]
   oders Order[]
 }
@@ -186,5 +196,5 @@ model DriversOnOrders {
     activity Activity // pickup or delivery
     createdAt DateTime  @default(now())
 
-    @@id([orderId, driverId])
+    @@id([orderId, driverId, activity])
 }
