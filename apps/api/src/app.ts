@@ -13,6 +13,8 @@ import { PORT } from './config';
 import { AuthController } from './controllers/auth.controller';
 import { UserRouter } from './routers/user.router';
 import { LocationRouter } from './routers/location.router';
+import { AddressRouter } from './routers/address.router';
+import { OrderRouter } from './routers/order.router';
 
 export default class App {
   private app: Express;
@@ -57,6 +59,8 @@ export default class App {
     // const sampleRouter = new SampleRouter();
     const authRouter = new UserRouter()
     const locationRouter = new LocationRouter()
+    const addressRouter = new AddressRouter()
+    const orderRouter = new OrderRouter()
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
@@ -64,6 +68,8 @@ export default class App {
     // this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/customers', authRouter.getRouter())
     this.app.use('/api/location', locationRouter.getRouter())
+    this.app.use('/api/addresses', addressRouter.getRouter())
+    this.app.use('/api/orders', orderRouter.getRouter())
   }
 
   public start(): void {

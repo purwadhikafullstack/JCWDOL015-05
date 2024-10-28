@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { customerVerify } from "@/services/customers/customers";
+import { customerVerify } from "@/services/api/customers/customers";
 // import { customerVerify } from "@/services/customers/customers";
 import { ICustomerVerify } from "@/type/customers";
 import { FormikHelpers, useFormik } from "formik";

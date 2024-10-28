@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `samples` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE `samples`;
-
 -- CreateTable
 CREATE TABLE `Customer` (
     `customerId` INTEGER NOT NULL AUTO_INCREMENT,
@@ -16,6 +7,7 @@ CREATE TABLE `Customer` (
     `fullName` VARCHAR(191) NOT NULL,
     `avatar` VARCHAR(191) NULL,
     `role` ENUM('superAdmin', 'outletAdmin', 'worker', 'driver', 'customer') NOT NULL DEFAULT 'customer',
+    `notification` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NULL,
 
@@ -27,8 +19,11 @@ CREATE TABLE `Customer` (
 CREATE TABLE `Address` (
     `addressId` INTEGER NOT NULL AUTO_INCREMENT,
     `customerId` INTEGER NOT NULL,
-    `longitude` DOUBLE NOT NULL,
-    `latitude` DOUBLE NOT NULL,
+    `provinsi` VARCHAR(191) NULL,
+    `kota` VARCHAR(191) NULL,
+    `kecamatan` VARCHAR(191) NULL,
+    `longitude` DOUBLE NULL,
+    `latitude` DOUBLE NULL,
 
     PRIMARY KEY (`addressId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -55,6 +50,7 @@ CREATE TABLE `OutletAdmin` (
     `outletAdminId` INTEGER NOT NULL AUTO_INCREMENT,
     `isAvailable` BOOLEAN NOT NULL DEFAULT false,
     `employeeId` INTEGER NOT NULL,
+    `notification` VARCHAR(191) NULL,
 
     UNIQUE INDEX `OutletAdmin_employeeId_key`(`employeeId`),
     PRIMARY KEY (`outletAdminId`)
@@ -65,6 +61,7 @@ CREATE TABLE `Worker` (
     `workerId` INTEGER NOT NULL AUTO_INCREMENT,
     `station` ENUM('washing', 'ironing', 'packing') NOT NULL,
     `employeeId` INTEGER NOT NULL,
+    `notification` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Worker_employeeId_key`(`employeeId`),
     PRIMARY KEY (`workerId`)
@@ -75,6 +72,7 @@ CREATE TABLE `Driver` (
     `driverId` INTEGER NOT NULL AUTO_INCREMENT,
     `isAvailable` BOOLEAN NOT NULL DEFAULT true,
     `employeeId` INTEGER NOT NULL,
+    `notification` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Driver_employeeId_key`(`employeeId`),
     PRIMARY KEY (`driverId`)
@@ -84,8 +82,11 @@ CREATE TABLE `Driver` (
 CREATE TABLE `Outlet` (
     `outletId` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `longitude` DOUBLE NOT NULL,
-    `latitude` DOUBLE NOT NULL,
+    `provinsi` VARCHAR(191) NULL,
+    `kota` VARCHAR(191) NULL,
+    `kecamatan` VARCHAR(191) NULL,
+    `longitude` DOUBLE NULL,
+    `latitude` DOUBLE NULL,
 
     PRIMARY KEY (`outletId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -144,7 +145,7 @@ CREATE TABLE `DriversOnOrders` (
     `activity` ENUM('pickUp', 'delivery') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
-    PRIMARY KEY (`orderId`, `driverId`)
+    PRIMARY KEY (`orderId`, `driverId`, `activity`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey

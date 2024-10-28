@@ -72,7 +72,7 @@ model Address {
   kecamatan String?
   longitude Float?
   latitude Float?
-
+  detailAddress String
   // relations
   customer Customer @relation(fields: [customerId], references: [customerId])
 }
@@ -126,7 +126,7 @@ model Driver { // data created with employee registration
 model Outlet {
   outletId Int @id @default(autoincrement())
   name String
-   provinsi String?
+  provinsi String?
   kota String?
   kecamatan String?
   longitude Float? 
@@ -197,4 +197,20 @@ model DriversOnOrders {
     createdAt DateTime  @default(now())
 
     @@id([orderId, driverId, activity])
+}
+
+model baseAddress{
+  id Int @id @default(autoincrement())
+  provinceId Int
+  province String
+  city String
+}
+model ListAddress{
+  id Int @id @default(autoincrement()) 
+  provinceId Int 
+  province String
+  cityId Int
+  city String
+  subdistrictId Int
+  subdistrict String
 }

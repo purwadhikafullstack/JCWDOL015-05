@@ -6,7 +6,7 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import * as yup from 'yup'
 import { ICustomerLogin } from "@/type/customers"
-import { customerLogin } from "@/services/customers/customers"
+import { customerLogin } from "@/services/api/customers/customers"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 
