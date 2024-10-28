@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 export class RequestController {
     async createRequest(req: Request, res: Response) {
         const {
-            customerId, address, items
+            customerId, address
         } = req.body
 
         try {
@@ -13,9 +13,7 @@ export class RequestController {
                 data: {
                     customerId,
                     address,
-                    items: {
-                        create: items
-                    }
+                  
                 }
             })
             res.status(201).json(newRequest)

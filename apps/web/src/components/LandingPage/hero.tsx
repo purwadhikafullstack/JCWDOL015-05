@@ -27,7 +27,7 @@ export default function Hero() {
           <CarouselContent>
             {heroImages.map((img, index) => (
               <CarouselItem key={index} className="relative w-full">
-                <div className="w-full h-[737px]">
+                <div className="w-full h-[950px]">
                   <Image
                     src={img}
                     alt="hero"
@@ -63,6 +63,7 @@ export default function Hero() {
           </div>
         </div>
       </div>
+      
     </section>
   )
 }

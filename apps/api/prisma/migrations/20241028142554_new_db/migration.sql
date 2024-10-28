@@ -18,8 +18,12 @@ CREATE TABLE `Customer` (
 CREATE TABLE `Address` (
     `addressId` INTEGER NOT NULL AUTO_INCREMENT,
     `customerId` INTEGER NOT NULL,
-    `longitude` DOUBLE NOT NULL,
-    `latitude` DOUBLE NOT NULL,
+    `provinsi` VARCHAR(191) NULL,
+    `kota` VARCHAR(191) NULL,
+    `kecamatan` VARCHAR(191) NULL,
+    `longitude` DOUBLE NULL,
+    `latitude` DOUBLE NULL,
+    `detailAddress` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`addressId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -75,8 +79,11 @@ CREATE TABLE `Driver` (
 CREATE TABLE `Outlet` (
     `outletId` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `longitude` DOUBLE NOT NULL,
-    `latitude` DOUBLE NOT NULL,
+    `provinsi` VARCHAR(191) NULL,
+    `kota` VARCHAR(191) NULL,
+    `kecamatan` VARCHAR(191) NULL,
+    `longitude` DOUBLE NULL,
+    `latitude` DOUBLE NULL,
 
     PRIMARY KEY (`outletId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -138,6 +145,34 @@ CREATE TABLE `DriversOnOrders` (
     PRIMARY KEY (`orderId`, `driverId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `Request` (
+    `requestId` INTEGER NOT NULL AUTO_INCREMENT,
+    `customerId` INTEGER NOT NULL,
+    `driverId` INTEGER NULL,
+    `addressAddressId` INTEGER NOT NULL,
+    `status` ENUM('menungguPenjemputanDriver', 'laundryMenujuOutlet', 'laundrySampaiOutlet', 'pencucian', 'penyetrikaan', 'packing', 'menungguPembayaran', 'siapDiantar', 'sedangDikirim', 'selesai') NOT NULL DEFAULT 'menungguPenjemputanDriver',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NULL,
+
+    INDEX `Request_customerId_idx`(`customerId`),
+    INDEX `Request_driverId_idx`(`driverId`),
+    PRIMARY KEY (`requestId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ListAddress` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `provinceId` INTEGER NOT NULL,
+    `province` VARCHAR(191) NOT NULL,
+    `cityId` INTEGER NOT NULL,
+    `city` VARCHAR(191) NOT NULL,
+    `subdistrictId` INTEGER NOT NULL,
+    `subdistrict` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Address` ADD CONSTRAINT `Address_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `Customer`(`customerId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -179,3 +214,12 @@ ALTER TABLE `DriversOnOrders` ADD CONSTRAINT `DriversOnOrders_orderId_fkey` FORE
 
 -- AddForeignKey
 ALTER TABLE `DriversOnOrders` ADD CONSTRAINT `DriversOnOrders_driverId_fkey` FOREIGN KEY (`driverId`) REFERENCES `Driver`(`driverId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Request` ADD CONSTRAINT `Request_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `Customer`(`customerId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Request` ADD CONSTRAINT `Request_driverId_fkey` FOREIGN KEY (`driverId`) REFERENCES `Driver`(`driverId`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Request` ADD CONSTRAINT `Request_addressAddressId_fkey` FOREIGN KEY (`addressAddressId`) REFERENCES `Address`(`addressId`) ON DELETE RESTRICT ON UPDATE CASCADE;

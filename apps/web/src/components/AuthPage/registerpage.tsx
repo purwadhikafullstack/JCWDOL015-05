@@ -6,7 +6,7 @@ import { Label } from "../ui/label"
 import * as yup from 'yup'
 import { useRouter } from "next/navigation"
 import { FormikHelpers, useFormik } from "formik"
-import { customerReg } from "@/services/customers/customers"
+import { customerReg } from "@/services/api/customers/customers"
 import { toast } from "react-toastify"
 const registerSchema = yup.object().shape({
   email: yup.string().email().required(),
@@ -29,7 +29,7 @@ export const RegisterPage = () => {
   const handleRegister = async (data: ICustomerReg, action: FormikHelpers<ICustomerReg>) => {
     try {
       const { result, ok } = await customerReg(data)
-      router.push('/login')
+      router.push('/register/success')
       if (!ok) throw result.msg
       action.resetForm()
       toast.success(result.msg)
