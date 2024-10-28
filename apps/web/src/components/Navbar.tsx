@@ -57,7 +57,7 @@ export const Navbar = () => {
         <Link href={'/login'}>
           <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">LOGIN</button>
         </Link>
-        <Link href={'/sign-up'}>
+        <Link href={'/register'}>
           <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">SIGN UP</button>
         </Link>
       </div>
