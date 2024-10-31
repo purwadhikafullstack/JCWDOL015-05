@@ -73,6 +73,7 @@ model Address {
   longitude Float?
   latitude Float?
   detailAddress String
+  isPrimary Boolean @default(false)
   // relations
   customer Customer @relation(fields: [customerId], references: [customerId])
 }
@@ -137,24 +138,28 @@ model Outlet {
 
 model Order {
   orderId Int @id @default(autoincrement())
-  createdAt DateTime  @default(now())
   outletId Int 
-  outletAdminId Int // id of outlet admin who accepted the order
+  outletAdminId Int? // id of outlet admin who accepted the order
   workers WorkersOnOrders[] // setiap orderan berisi 3 workers (3 stations)
   drivers DriversOnOrders[] // setiap orderan berpotensi dihandle oleh 2 driver yg berbeda (pickup/ delivery)
   customerId Int 
-  customerAddress String // from the address input by the customer for pickup
-  items Items[] 
+  // customerAddress String // from the address input by the customer for pickup
+  customerAddressId Int 
+  items Items[]
   pricePerKg Int @default(12000)
   weight Float @default(0)
   bypassMessage String?
   paymentStatus PaymentStatus @default(unpaid)
+  pickupDate DateTime
+  pickupTime String?
   complain String?
   status OrderStatus
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
 
   // relations
   outlet Outlet @relation(fields: [outletId], references: [outletId])
-  outletAdmin OutletAdmin @relation(fields: [outletAdminId], references: [outletAdminId])
+  outletAdmin OutletAdmin? @relation(fields: [outletAdminId], references: [outletAdminId])
   customer Customer @relation(fields: [customerId], references: [customerId])
 }
 

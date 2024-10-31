@@ -14,6 +14,7 @@ export type ICustomerVerify = {
 }
 
 export type ICustomerAddress = {
+  addressId: number,
   longitude: number
   latitude: number
   province: string
