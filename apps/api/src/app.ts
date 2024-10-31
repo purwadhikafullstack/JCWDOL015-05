@@ -13,12 +13,10 @@ import { PORT } from './config';
 import { AuthController } from './controllers/auth.controller';
 import { UserRouter } from './routers/user.router';
 import { LocationRouter } from './routers/location.router';
-<<<<<<< HEAD
-import { RequestRouter } from './routers/request.router';
-=======
+// import { RequestRouter } from './routers/request.router';
 import { AddressRouter } from './routers/address.router';
 import { OrderRouter } from './routers/order.router';
->>>>>>> 4d01a42cf55c8d6ddb5efc1a48c75008d632e3d4
+import { AttendanceRouter } from './routers/attendance.router';
 
 export default class App {
   private app: Express;
@@ -63,12 +61,10 @@ export default class App {
     // const sampleRouter = new SampleRouter();
     const authRouter = new UserRouter()
     const locationRouter = new LocationRouter()
-<<<<<<< HEAD
-    const requestRouter = new RequestRouter()
-=======
+    // const requestRouter = new RequestRouter()
     const addressRouter = new AddressRouter()
     const orderRouter = new OrderRouter()
->>>>>>> 4d01a42cf55c8d6ddb5efc1a48c75008d632e3d4
+    const attendanceRouter = new AttendanceRouter()
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
@@ -76,12 +72,10 @@ export default class App {
     // this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/customers', authRouter.getRouter())
     this.app.use('/api/location', locationRouter.getRouter())
-<<<<<<< HEAD
-    this.app.use('/api/request',  requestRouter.getRouter())
-=======
+    // this.app.use('/api/request',  requestRouter.getRouter())
     this.app.use('/api/addresses', addressRouter.getRouter())
     this.app.use('/api/orders', orderRouter.getRouter())
->>>>>>> 4d01a42cf55c8d6ddb5efc1a48c75008d632e3d4
+    this.app.use('/api/submit', attendanceRouter.getRouter())
   }
 
   public start(): void {

@@ -16,7 +16,7 @@ export class LocationRouter {
   }
   private initializeRoutes(): void {
     this.router.post('/', this.locationController.createLocation);
-    this.router.get('/copy', this.copyLocation.copyLocation)
+    // this.router.get('/copy', this.copyLocation.copyLocation)
     this.router.get('/copyDetail', this.copyLocation.copyDetailLocation)
     this.router.get('/provinces', this.locationController.getProvinsi)
     this.router.get('/city', this.locationController.getKabupaten)

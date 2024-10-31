@@ -205,7 +205,7 @@ model Request {
   customerId       Int
   driverId         Int?
   addressAddressId Int
-  status           OrderStatus @default(menungguPenjemputanDriver) // Initial status
+  status           OrderStatus @default(menungguPenjemputanDriver) 
   createdAt        DateTime    @default(now())
   updatedAt        DateTime?
 

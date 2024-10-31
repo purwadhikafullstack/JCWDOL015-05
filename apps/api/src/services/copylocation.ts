@@ -3,45 +3,45 @@ import { Request, Response } from "express";
 
 export class CopyLocation {
 
-  async copyLocation(req: Request, res: Response) {
-    type ROLocation = {
-      id: number
-      province_id: string
-      province: string
-      type: string
-      city_name: string
-    }
-    try {
-      const API_KEY = process.env.RAJAONGKIR_API_KEY
-      const url = await fetch(`https://api.rajaongkir.com/starter/city?key=${API_KEY}`)
-      const response = await url.json()
-      const result: ROLocation[] = response.rajaongkir.results
-      for (const city of result) {
-        if (result === null || undefined) throw 'No Data'
-        const provinceName = city.province
-        const provinceId = parseInt(city.province_id)
-        const cityName = city.type === 'Kota' ? `Kota ${city.city_name}` : city.city_name
+  // async copyLocation(req: Request, res: Response) {
+  //   type ROLocation = {
+  //     id: number
+  //     province_id: string
+  //     province: string
+  //     type: string
+  //     city_name: string
+  //   }
+  //   try {
+  //     const API_KEY = process.env.RAJAONGKIR_API_KEY
+  //     const url = await fetch(`https://api.rajaongkir.com/starter/city?key=${API_KEY}`)
+  //     const response = await url.json()
+  //     const result: ROLocation[] = response.rajaongkir.results
+  //     for (const city of result) {
+  //       if (result === null || undefined) throw 'No Data'
+  //       const provinceName = city.province
+  //       const provinceId = parseInt(city.province_id)
+  //       const cityName = city.type === 'Kota' ? `Kota ${city.city_name}` : city.city_name
 
-        const newData = await prisma.baseAddress.create({
-          data: {
-            provinceId: provinceId,
-            province: provinceName,
-            city: cityName
-          }
-        })
-        console.log(`Success Add city_Id: ${city.id} , province: ${provinceName} , city: ${cityName} `)
-      }
-      res.status(200).send({
-        status: 'ok',
-      })
-    }
-    catch (err) {
-      res.status(400).send({
-        status: 'failed',
-        error: err
-      })
-    }
-  }
+  //       const newData = await prisma.baseAddress.create({
+  //         data: {
+  //           provinceId: provinceId,
+  //           province: provinceName,
+  //           city: cityName
+  //         }
+  //       })
+  //       console.log(`Success Add city_Id: ${city.id} , province: ${provinceName} , city: ${cityName} `)
+  //     }
+  //     res.status(200).send({
+  //       status: 'ok',
+  //     })
+  //   }
+  //   catch (err) {
+  //     res.status(400).send({
+  //       status: 'failed',
+  //       error: err
+  //     })
+  //   }
+  // }
   async copyDetailLocation(req: Request, res: Response) {
     type ROLocation = {
       id: number
