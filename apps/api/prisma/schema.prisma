@@ -85,7 +85,7 @@ model Employee {
   fullName String 
   avatar String?
   role Role
-  outletId Int
+  outletId Int?
   attendance Attendance[]
   outletAdmin OutletAdmin?
   worker Worker?
@@ -93,13 +93,13 @@ model Employee {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime? 
   //relations
-    outlet Outlet @relation(fields: [outletId], references: [outletId])
+    outlet Outlet? @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
 }
 
 model OutletAdmin { // data created with employee registration
   outletAdminId Int @id @default(autoincrement())
   isAvailable Boolean @default(false)
-  employee Employee @relation(fields: [employeeId], references: [employeeId])
+  employee Employee @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
   employeeId Int @unique
   notification String?
   orders Order[]
@@ -108,7 +108,7 @@ model OutletAdmin { // data created with employee registration
 model Worker { // data created with employee registration
   workerId Int @id @default(autoincrement())
   station Station
-  employee Employee @relation(fields: [employeeId], references: [employeeId])
+  employee Employee @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
   employeeId Int @unique
   notification String?
   orders WorkersOnOrders[]
@@ -117,28 +117,28 @@ model Worker { // data created with employee registration
 model Driver { // data created with employee registration
   driverId Int @id @default(autoincrement())
   isAvailable Boolean @default(true)
-  employee Employee @relation(fields: [employeeId], references: [employeeId])
+  employee Employee @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
   employeeId Int @unique
   notification String?
   orders DriversOnOrders[]
-}
+} 
 
 model Outlet {
   outletId Int @id @default(autoincrement())
   name String
-   provinsi String?
+  provinsi String?
   kota String?
   kecamatan String?
   longitude Float? 
   latitude Float? 
-  employee Employee[]
-  oders Order[]
+  employee Employee[] 
+  orders Order[] 
+  createdAt DateTime @default(now())
 }
 
 model Order {
   orderId Int @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  outletId Int 
+  outletId Int?
   outletAdminId Int // id of outlet admin who accepted the order
   workers WorkersOnOrders[] // setiap orderan berisi 3 workers (3 stations)
   drivers DriversOnOrders[] // setiap orderan berpotensi dihandle oleh 2 driver yg berbeda (pickup/ delivery)
@@ -151,11 +151,13 @@ model Order {
   paymentStatus PaymentStatus @default(unpaid)
   complain String?
   status OrderStatus
+  createdAt DateTime  @default(now())
+  updatedaAt DateTime? @updatedAt
 
   // relations
-  outlet Outlet @relation(fields: [outletId], references: [outletId])
-  outletAdmin OutletAdmin @relation(fields: [outletAdminId], references: [outletAdminId])
-  customer Customer @relation(fields: [customerId], references: [customerId])
+  outlet Outlet? @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
+  outletAdmin OutletAdmin? @relation(fields: [outletAdminId], references: [outletAdminId])
+  customer Customer? @relation(fields: [customerId], references: [customerId])
 }
 
 model Items {
@@ -179,9 +181,9 @@ model Attendance {
 }
 
 model WorkersOnOrders {
-    order Order @relation(fields: [orderId], references: [orderId])
+    order Order @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
     orderId Int
-    worker Worker @relation(fields: [workerId], references: [workerId])
+    worker Worker @relation(fields: [workerId], references: [workerId], onDelete: Cascade)
     workerId Int
     createdAt DateTime  @default(now())
 

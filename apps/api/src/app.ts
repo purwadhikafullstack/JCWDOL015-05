@@ -9,7 +9,10 @@ import express, {
 } from 'express';
 import cors from 'cors';
 import { PORT } from './config';
-import { SampleRouter } from './routers/sample.router';
+import { EmployeeRouter } from './routers/employee.router';
+import { OutletRouter } from './routers/outlet.router';
+import { ItemsRouter } from './routers/items.router';
+import { OrderRouter } from './routers/order.router';
 
 export default class App {
   private app: Express;
@@ -51,13 +54,19 @@ export default class App {
   }
 
   private routes(): void {
-    const sampleRouter = new SampleRouter();
+    const employeeRouter = new EmployeeRouter();
+    const outletRouter = new OutletRouter();
+    const itemsRouter = new ItemsRouter();
+    const orderRouter = new OrderRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
 
-    this.app.use('/api/samples', sampleRouter.getRouter());
+    this.app.use('/api/laundry/employee', employeeRouter.getRouter());
+    this.app.use('/api/laundry/outlet', outletRouter.getRouter());
+    this.app.use('/api/laundry/items', itemsRouter.getRouter());
+    this.app.use('/api/laundry/order', orderRouter.getRouter());
   }
 
   public start(): void {
