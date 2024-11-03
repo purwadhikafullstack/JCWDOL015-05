@@ -3,3 +3,9 @@ export type ICustomerReg = {
   fullName: string
   role: string
 }
+export type ICustomerResetPassword = {
+  id: number
+  email: string
+  password: string
+  role: string
+}

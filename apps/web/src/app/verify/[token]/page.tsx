@@ -27,11 +27,10 @@ export default function Verify() {
   const handleSubmit = async (data: ICustomerVerify, action: FormikHelpers<ICustomerVerify>) => {
     try {
       const { result, ok } = await customerVerify(data, token)
-      console.log(data)
       if (!ok) throw result.msg
       action.resetForm()
       router.push('/login')
-      toast.success(`result.msg`)
+      toast.success(result.msg)
     } catch (err) {
       console.log(err);
       toast.error(err as string)

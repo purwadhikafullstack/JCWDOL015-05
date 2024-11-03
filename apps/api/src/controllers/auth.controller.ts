@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from "path";
 import Handlebars from 'handlebars'
 import { transporter } from "@/services/nodemailer";
-import { ICustomerReg } from "@/interfaces/customers";
+import { ICustomerReg, ICustomerResetPassword } from "@/interfaces/customers";
 import { compare, genSalt, hash } from 'bcrypt'
 export const authUser = () => {
 
@@ -52,6 +52,7 @@ export class AuthController {
     }
 
   }
+
   async verificationUser(req: Request, res: Response) {
     try {
       // check user via token
@@ -87,26 +88,154 @@ export class AuthController {
   }
   async loginUser(req: Request, res: Response) {
     try {
-      const { email, password } = req.body
-      const checkEmail = await prisma.customer.findUnique({
-        where: { email: email }
-      })
-      if (!checkEmail) throw 'Wrong Email'
-      const isValidPass = await compare(password, checkEmail.password!)
+      const { email, password, role } = req.body
+      let token: string = ''
+      let data
+      if (!role) {
+        const checkEmail = await prisma.customer.findUnique({
+          where: { email: email }
+        })
+        if (!checkEmail) throw 'Wrong Email'
 
-      const payload = { id: checkEmail.customerId, role: checkEmail.role }
-      const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' })
+        const isValidPass = await compare(password, checkEmail?.password!)
+        if (!isValidPass) throw 'Wrong Password'
+        const payload = { customerId: checkEmail?.customerId!, role: checkEmail?.role! }
 
+        data = checkEmail
+        token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' })
+      } else {
+        const checkWorker = await prisma.employee.findUnique({
+          where: { email: email, role: role }
+        })
+        if (!checkWorker) throw 'Wrong Email or Wrong Role'
+        const isValidPassEmp = await compare(password, checkWorker?.password!)
+        if (!isValidPassEmp) throw 'Wrong Password'
+        const payload = { id: checkWorker?.employeeId!, role: checkWorker?.role! }
+        data = checkWorker
+        token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' })
+      }
       res.status(200).send({
         status: 'ok',
         msg: 'Login Success',
         user: {
           token: token,
-          data: checkEmail
+          data: data
         }
       })
     } catch (err) {
       res.status(400).send({
+        err: err
+      })
+    }
+  }
+  // async loginWorker(req: Request, res: Response) {
+  //   try {
+  //     const { email, password } = req.body
+  //     const checkEmail = await prisma.employee.findUnique({
+  //       where: { email: email }
+  //     })
+  //     if (!checkEmail) throw 'Wrong Email'
+  //     const payload = { id: checkEmail?.employeeId, role: checkEmail?.role }
+  //     const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' })
+
+  //     res.status(200).send({
+  //       status: 'ok',
+  //       msg: 'Login Success',
+  //       user: {
+  //         token: token,
+  //         data: checkEmail
+  //       }
+  //     })
+  //   } catch (err) {
+  //     res.status(400).send({
+  //       err: err
+  //     })
+  //   }
+  // }
+  async sendResetPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body
+      console.log(email)
+      const checkEmail = await prisma.customer.findUnique({
+        where: { email: email }
+      })
+      if (checkEmail?.password === null) throw 'Email not found'
+      if (!checkEmail) throw 'Email not found'
+      const payload = { id: checkEmail.customerId, email: checkEmail.email, role: checkEmail.role }
+      const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '15m' });
+
+      const templatePath = path.join(__dirname, '../template/resetPassword.hbs')
+      const templateSrc = fs.readFileSync(templatePath, 'utf-8')
+      const compiledTemplate = Handlebars.compile(templateSrc)
+      const html = compiledTemplate({
+        url: `http://localhost:3000/customers/reset-password/${token}`
+      })
+      await transporter.sendMail({
+        from: process.env.MAIL_USER,
+        to: email,
+        subject: 'Reset Password',
+        html: html
+      })
+      res.status(200).send({
+        status: 'ok',
+        msg: 'success send link reset password',
+        token: token
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'fail',
+        err: err
+      })
+    }
+  }
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const { newPassword, confirmNewPassword } = req.body
+      if (confirmNewPassword !== newPassword) throw 'Password not match'
+      const stringPass = newPassword.toString()
+      const payload = req.params.token
+      if (!payload) throw 'invalid token'
+
+      const verifiedToken = verify(payload, process.env.SECRET_JWT!)
+      if (!verifiedToken) throw 'token expired'
+      const customers = verifiedToken as ICustomerResetPassword
+      const salt = await genSalt(10)
+      const hashPassword = await hash(stringPass, salt)
+      console.log(customers)
+      await prisma.customer.update({
+        where: { email: customers.email, customerId: customers.id },
+        data: {
+          password: hashPassword
+        },
+      })
+      res.status(200).send({
+        status: 'ok',
+        msg: 'success change password'
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        err: err
+      })
+      console.log(err)
+    }
+  }
+  async socialLoginCallback(req: Request, res: Response) {
+    try {
+      const user = req.user as any
+      const payload = { id: user.id, role: user.role }
+      const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' });
+      res.status(200).json({
+        status: 'ok',
+        msg: 'Login Success',
+        user: {
+          token,
+          data: user,
+        },
+      });
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
         err: err
       })
     }

@@ -22,3 +22,10 @@ export type ICustomerAddress = {
   subdistrict: string
   detailAddress: string
 }
+export type ICustomersResetPass = {
+  email: string
+}
+export type ICustomerNewPass = {
+  newPassword: string
+  confirmNewPassword: string
+}
