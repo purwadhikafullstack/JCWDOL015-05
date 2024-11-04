@@ -3,23 +3,92 @@ import { Request, Response } from "express";
 import { getDistance } from "geolib";
 
 export class OrderController {
-  async pickupOrder(req: Request, res: Response) {
+  async getNearOutlets(req: Request, res: Response) {
     try {
-      const { outletLng, outletLat, customerLng, customerLat } = req.body
-      console.log("Received Values:", { outletLng, outletLat, customerLng, customerLat });
-
-      const customer = { lat: parseFloat(customerLat), lng: parseFloat(customerLng) }
-
+      const {
+        addressId,
+        customerId
+      } = req.body
+      if (!customerId) throw 'customer location not found'
+      const getCustomerLoc = await prisma.address.findUnique({
+        where: { addressId: +addressId, customerId: +customerId }
+      })
+      const customerLoc = { lat: getCustomerLoc?.latitude!, lng: getCustomerLoc?.longitude! }
+      // const customer = { lat: parseFloat(customerLat), lng: parseFloat(customerLng) }
+      const totalOutlet = await prisma.outlet.count()
       const getOutlets = await prisma.outlet.findMany()
       const maxRadius = 2000
-      const nearOutlet = getOutlets.filter((outlet) => {
-        const outletLoc = { lat: parseFloat(outletLat), lng: parseFloat(outletLng) }
-        const distance = getDistance(customer, outletLoc)
-        return distance <= maxRadius
+      // const nearOutlet = getOutlets.filter((outlet) => {
+      //   const outletLoc = { lat: outlet.latitude!, lng: outlet.longitude! }
+      //   const distance = getDistance(customerLoc, outletLoc)
+      //   console.log(distance)
+      //   const nearOutlet = distance <= maxRadius
+      //   // return distance <= maxRadius
+      //   return { nearOutlet, distance, ...outlet }
+      // })
+      const nearOutlet = getOutlets.map((outlet) => {
+        const outletLoc = { lat: outlet.latitude!, lng: outlet.longitude! }
+        const distance = getDistance(customerLoc, outletLoc)
+        const distanceResult = distance > 1000 ? `${(distance / 1000).toFixed(2)}km` : `${distance}m`
+        const nearOutlet = distance <= maxRadius
+        return { ...outlet, nearOutlet, jarak: `${distanceResult}` }
       })
-      return nearOutlet
+      const filterOutlet = nearOutlet.filter((outlet) => outlet.nearOutlet == true)
+      const totalNearOutlet = nearOutlet.length
       res.status(200).send({
         status: 'ok',
+        // allOutlets: getOutlets,
+        totalFoundOutlet: totalNearOutlet,
+        data: filterOutlet
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err
+      })
+    }
+  }
+  async createPickupOrder(req: Request, res: Response) {
+    try {
+      const {
+        customerId,
+        outletId,
+        addressId,
+        pickupDate,
+        pickupTime, status
+      } = req.body
+
+      const prismaTransaction = await prisma.$transaction(async (pt) => {
+        // check customerid
+        const existCustomer = await pt.customer.findUnique({
+          where: { customerId: customerId }
+        })
+        if (!existCustomer) throw 'customer not found'
+        // check outletid
+        const existOutlet = await pt.outlet.findUnique({
+          where: { outletId: outletId }
+        })
+        if (!existOutlet) throw 'outlet not found'
+        // check addressid
+        const existAddress = await pt.address.findUnique({
+          where: { addressId: addressId }
+        })
+        if (!existAddress) throw 'address user not found'
+        const newOrder = await pt.order.create({
+          data: {
+            customerId,
+            outletId,
+            status: "menungguPenjemputanDriver",
+            customerAddressId: addressId,
+            pickupDate: new Date(pickupDate),
+            pickupTime,
+          }
+        })
+        return { newOrder }
+      })
+      res.status(200).send({
+        status: 'ok',
+        data: prismaTransaction.newOrder
       })
     } catch (err) {
       res.status(400).send({

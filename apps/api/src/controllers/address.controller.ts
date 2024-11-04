@@ -34,4 +34,27 @@ export class AddressController {
       })
     }
   }
+  async getUserAddress(req: Request, res: Response) {
+    try {
+      const {
+        customerId
+      } = req.params
+      const checkUser = await prisma.customer.findUnique({
+        where: { customerId: +customerId }
+      })
+      if (!checkUser) throw 'user not found'
+      const userAddress = await prisma.address.findMany({
+        where: { customerId: +customerId }
+      })
+      res.status(200).send({
+        status: 'ok',
+        data: userAddress
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err
+      })
+    }
+  }
 }

@@ -24,6 +24,7 @@ CREATE TABLE `Address` (
     `longitude` DOUBLE NULL,
     `latitude` DOUBLE NULL,
     `detailAddress` VARCHAR(191) NOT NULL,
+    `isPrimary` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`addressId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -91,17 +92,20 @@ CREATE TABLE `Outlet` (
 -- CreateTable
 CREATE TABLE `Order` (
     `orderId` INTEGER NOT NULL AUTO_INCREMENT,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `outletId` INTEGER NOT NULL,
-    `outletAdminId` INTEGER NOT NULL,
+    `outletAdminId` INTEGER NULL,
     `customerId` INTEGER NOT NULL,
-    `customerAddress` VARCHAR(191) NOT NULL,
+    `customerAddressId` INTEGER NOT NULL,
     `pricePerKg` INTEGER NOT NULL DEFAULT 12000,
     `weight` DOUBLE NOT NULL DEFAULT 0,
     `bypassMessage` VARCHAR(191) NULL,
     `paymentStatus` ENUM('unpaid', 'pending', 'paid') NOT NULL DEFAULT 'unpaid',
+    `pickupDate` DATETIME(3) NOT NULL,
+    `pickupTime` VARCHAR(191) NULL,
     `complain` VARCHAR(191) NULL,
     `status` ENUM('menungguPenjemputanDriver', 'laundryMenujuOutlet', 'laundrySampaiOutlet', 'pencucian', 'penyetrikaan', 'packing', 'menungguPembayaran', 'siapDiantar', 'sedangDikirim', 'selesai') NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`orderId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -192,7 +196,7 @@ ALTER TABLE `Driver` ADD CONSTRAINT `Driver_employeeId_fkey` FOREIGN KEY (`emplo
 ALTER TABLE `Order` ADD CONSTRAINT `Order_outletId_fkey` FOREIGN KEY (`outletId`) REFERENCES `Outlet`(`outletId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Order` ADD CONSTRAINT `Order_outletAdminId_fkey` FOREIGN KEY (`outletAdminId`) REFERENCES `OutletAdmin`(`outletAdminId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Order` ADD CONSTRAINT `Order_outletAdminId_fkey` FOREIGN KEY (`outletAdminId`) REFERENCES `OutletAdmin`(`outletAdminId`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `Customer`(`customerId`) ON DELETE RESTRICT ON UPDATE CASCADE;

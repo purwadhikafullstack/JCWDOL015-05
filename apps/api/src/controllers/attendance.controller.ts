@@ -85,7 +85,6 @@ export class AttendanceController {
     async getAttendanceLog(req: Request, res: Response) {
         const { employeeId } = req.params;
     
-        // Validate employeeId
         if (isNaN(parseInt(employeeId, 10))) {
             return res.status(400).json({ error: 'Invalid employee ID' });
         }

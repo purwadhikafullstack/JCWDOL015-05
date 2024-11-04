@@ -22,7 +22,7 @@ export const customerLogin = async (data: ICustomerLogin) => {
     body: JSON.stringify(data)
   })
   const result = await res.json()
-  return { result, ok: res.ok }
+  return { result, ok: res.ok, user : result.user.data}
 }
 export const customerVerify = async (data: ICustomerVerify, token: any) => {
   const url = `http://localhost:8000/api/customers/verify/${data.token}`

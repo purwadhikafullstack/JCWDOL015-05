@@ -9,6 +9,10 @@ import { ICustomerLogin } from "@/type/customers"
 import { customerLogin } from "@/services/api/customers/customers"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useDispatch } from "react-redux"
+import { loginAction } from "@/redux/slice/customerSlice"
+import { createToken } from "@/lib/server"
 
 const loginSchema = yup.object().shape({
   email: yup.string().email().required(),
@@ -21,25 +25,46 @@ const initialValues: ICustomerLogin = {
 
 export const LoginPage = () => {
   const router = useRouter()
+  const queryClient = useQueryClient()
+  const dispatch = useDispatch()
+  const mutation = useMutation({
+    mutationFn: async (data: ICustomerLogin) => await customerLogin(data),
+    onSuccess: (data) => {
+      const { result, ok, user } = data
+      if (!ok) throw result.msg
+
+      dispatch(loginAction(user))
+      createToken(result.user.token)
+      // queryClient.setQueryData(['customer'], {
+      //   customerId: user.customerId,
+      //   role: user.role,
+      //   email: user.email,
+      //   fullName: user.fullName
+      // })
+      toast.success(result.msg)
+      router.push('/')
+    },
+    onError: (err) => {
+      console.log(err);
+      toast.error(err?.message)
+    }
+  })
   const formik = useFormik({
     validationSchema: loginSchema,
     initialValues: initialValues,
     onSubmit: (values, action) => {
-      handleSubmit(values, action)
+      // handleSubmit(values, action)
+      mutation.mutate(values)
+      action.resetForm()
     }
   })
-  const handleSubmit = async (data: ICustomerLogin, action: FormikHelpers<ICustomerLogin>) => {
-    try {
-      const { result, ok } = await customerLogin(data)
-      router.push('/')
-      if (!ok) throw result.msg
-      action.resetForm()
-      toast.success(result.msg)
-    } catch (err) {
-      console.log(err);
-      toast.error(err as string)
-    }
-  }
+  // const handleSubmit = async (data: ICustomerLogin, action: FormikHelpers<ICustomerLogin>) => {
+  //   try {
+
+  //   } catch (err) {
+
+  //   }
+  // }
   return (
     <section className="flex flex-col items-center justify-center w-full h-screen">
       {/* <div>
@@ -69,7 +94,11 @@ export const LoginPage = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              <button type="submit" className="w-full p-1 bg-blue-500 rounded-2xl">Login</button>
+              <button
+                type="submit"
+                className="w-full p-1 bg-blue-500 rounded-2xl">
+                {mutation.isPending ? 'Logging in...' : 'Login'}
+              </button>
             </div>
           </div>
         </form>

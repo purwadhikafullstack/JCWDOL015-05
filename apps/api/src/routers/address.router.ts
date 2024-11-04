@@ -13,6 +13,7 @@ export class AddressRouter {
 
   private initializeRoutes(): void {
     this.router.post('/', this.addressController.createAddress);
+    this.router.get('/:customerId', this.addressController.getUserAddress);
   }
 
   getRouter(): Router {

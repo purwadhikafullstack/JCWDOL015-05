@@ -12,7 +12,8 @@ export class OrderRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.post('/pickup', this.orderController.pickupOrder);
+    this.router.post('/pickup', this.orderController.getNearOutlets)
+    this.router.post('/pickup/create', this.orderController.createPickupOrder)
   }
 
   public getRouter(): Router {

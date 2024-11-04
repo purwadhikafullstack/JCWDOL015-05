@@ -17,3 +17,12 @@ export type ICity = {
 export type ISubDis = {
   subdistrict: string
 }
+export type ICustomerAddressData = {
+  addressId: number
+  longitude: number
+  latitude: number
+  provinsi: string
+  kota: string
+  kecamatan: string
+  detailAddress: string
+}

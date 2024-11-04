@@ -43,3 +43,9 @@ export const getDetailLocation = async (
   const result = await res.json()
   return { result, ok: res.ok, location: result.data }
 }
+export const getCustomerAddress = async (customerId: number) => {
+  const url = `${BASEURL}/api/addresses/${customerId}`
+  const res = await fetch(url)
+  const result = await res.json()
+  return { result, ok: res.ok, address: result.data }
+}
