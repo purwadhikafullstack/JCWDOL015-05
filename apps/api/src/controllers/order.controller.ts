@@ -166,4 +166,46 @@ export class OrderController {
       })
     }
   }
+async generatePaymentLink (req: Request, res: Response) {
+    try {
+      const {orderId , customerId, outletsId, weight , price} = req.body
+      // const checkUser = await prisma.customer.findUnique({
+      //   where : {customerId : customerId}
+      // })
+      const parameter = {
+        transaction_details : {
+          order_id : orderId,
+          gross_amount : price * weight
+        },
+        // customer_details : {
+        //   email : checkUser?.email!,
+        //   first_name : checkUser?.fullName,
+        // }
+      }
+      const url = `https://api.sandbox.midtrans.com`
+      const secret = process.env.MIDTRANS_SECRET_KEY!
+      const encodedKey = Buffer.from(secret).toString('base64')
+      const paymentLink = await fetch (`${url}/v1/payment-links`,{
+        method : "POST",
+        headers : {
+          "Content-Type" : "application/json",
+          "Authorization" : `Basic ${encodedKey}`,
+          "Accept" : "application/json"
+        },
+        body: JSON.stringify(parameter)
+      })
+      const response = await paymentLink.json()
+      
+      res.status(200).send({
+        status : 'ok',
+        data: response
+      })
+
+    } catch (err) {
+      res.status(400).send({
+        status : 'failed',
+        error : err
+      })
+    }
+  }
 }
