@@ -13,6 +13,7 @@ import { EmployeeRouter } from './routers/employee.router';
 import { OutletRouter } from './routers/outlet.router';
 import { ItemsRouter } from './routers/items.router';
 import { OrderRouter } from './routers/order.router';
+import { ReportRouter } from './routers/report.router';
 
 export default class App {
   private app: Express;
@@ -58,6 +59,7 @@ export default class App {
     const outletRouter = new OutletRouter();
     const itemsRouter = new ItemsRouter();
     const orderRouter = new OrderRouter();
+    const reportRouter = new ReportRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -67,6 +69,7 @@ export default class App {
     this.app.use('/api/laundry/outlet', outletRouter.getRouter());
     this.app.use('/api/laundry/items', itemsRouter.getRouter());
     this.app.use('/api/laundry/order', orderRouter.getRouter());
+    this.app.use('/api/laundry/report', reportRouter.getRouter());
   }
 
   public start(): void {

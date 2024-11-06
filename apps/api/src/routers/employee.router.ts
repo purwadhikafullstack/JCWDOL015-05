@@ -16,7 +16,7 @@ export class EmployeeRouter {
     this.router.get('/:id', this.employeeController.getEmployeeById);
     this.router.post('/', this.employeeController.createEmployee);
     this.router.delete('/:id', this.employeeController.deleteEmployeeById);
-    this.router.patch('/:id', this.employeeController.updateEmployeeyId);
+    this.router.patch('/:id', this.employeeController.updateEmployeeById);
   }
 
   getRouter(): Router {

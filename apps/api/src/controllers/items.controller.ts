@@ -3,9 +3,45 @@ import prisma from '@/prisma';
 
 export class ItemsController {
   async getItems(req: Request, res: Response) {
-    const itemsData = await prisma.items.findMany();
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const sortBy = (req.query.sortBy as string) || 'itemId';
+    const order = (req.query.order as string) === 'desc' ? 'desc' : 'asc';
+    const orderId = req.query.orderId
+      ? parseInt(req.query.orderId as string)
+      : undefined;
+    const itemName = (req.query.item as string) || undefined;
 
-    return res.status(200).send(itemsData);
+    // Build the filter object
+    const filter = {
+      ...(orderId && { orderId }), // Filter by orderId if provided
+      ...(itemName && { item: { contains: itemName.toLowerCase() } }), // Partial match on item name
+    };
+
+    try {
+      const itemsData = await prisma.items.findMany({
+        where: filter,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { [sortBy]: order },
+      });
+
+      const totalItems = await prisma.items.count({ where: filter });
+      const totalPages = Math.ceil(totalItems / limit);
+
+      res.status(200).json({
+        data: itemsData,
+        pagination: {
+          page,
+          limit,
+          totalPages,
+          totalItems,
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching items:', error);
+      res.status(500).json({ error: 'Error fetching items' });
+    }
   }
 
   async getItemById(req: Request, res: Response) {

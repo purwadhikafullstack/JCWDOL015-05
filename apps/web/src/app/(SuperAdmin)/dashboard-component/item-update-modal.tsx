@@ -5,18 +5,18 @@ interface UpdateModalProps {
   onClose: () => void;
   onConfirm: () => void;
   item: string;
-  setItem: (value: string) => void;
   quantity: number;
+  setItem: (value: string) => void;
   setQuantity: (value: number) => void;
 }
 
-const UpdateModal: React.FC<UpdateModalProps> = ({
+const ItemUpdateModal: React.FC<UpdateModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
   item,
-  setItem,
   quantity,
+  setItem,
   setQuantity,
 }) => {
   if (!isOpen) return null;
@@ -28,7 +28,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
 
         <div>
           <label className="block text-left text-sm font-medium mb-1">
-            Item Name
+            Outlet Name
           </label>
           <input
             type="text"
@@ -67,4 +67,4 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   );
 };
 
-export default UpdateModal;
+export default ItemUpdateModal;

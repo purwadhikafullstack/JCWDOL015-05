@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 
-interface CreateModalProps {
+interface ItemCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -12,7 +12,7 @@ interface CreateModalProps {
   setQuantity: (value: number) => void;
 }
 
-const CreateModal: React.FC<CreateModalProps> = ({
+const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
@@ -77,4 +77,4 @@ const CreateModal: React.FC<CreateModalProps> = ({
   );
 };
 
-export default CreateModal;
+export default ItemCreateModal;

@@ -5,11 +5,12 @@ import {
   DeleteButton,
   UpdateButton,
 } from '@/components/ui/action-button';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DeleteModal from '../../dashboard-component/delete-modal';
-import UpdateModal from '../../dashboard-component/update-modal';
-import CreateModal from '../../dashboard-component/create-modal';
 import { createItem, UpdateItem } from '../lib/items-services';
+import ItemCreateModal from '../../dashboard-component/item-create-modal';
+import ItemUpdateModal from '../../dashboard-component/item-update-modal';
+import { Button } from '@/components/ui/button';
 
 type Item = {
   itemId: number;
@@ -27,15 +28,50 @@ export default function ItemManagement() {
   const [itemId, setItemId] = useState<number | null>(null);
   const [itemName, setItemName] = useState<string | null>(null);
   const [itemQuantity, setItemQuantity] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 5;
 
-  const fetchItems = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/api/laundry/items`);
-      const data = await response.json();
-      setItems(data);
-    } catch (error) {
-      console.error('Fetching error:', error);
-    }
+  // Sorting and Filtering
+  const [sortBy, setSortBy] = useState<string>('itemId');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [filterOrderId, setFilterOrderId] = useState<string>('');
+  const [filterItemName, setFilterItemName] = useState<string>('');
+
+  const fetchItems = useCallback(
+    async (page = 1) => {
+      try {
+        const query = new URLSearchParams({
+          page: page.toString(),
+          limit: itemsPerPage.toString(),
+          sortBy,
+          order: sortOrder,
+          ...(filterOrderId && { orderId: filterOrderId }),
+          ...(filterItemName && { item: filterItemName }),
+        });
+
+        const response = await fetch(
+          `http://localhost:8000/api/laundry/items?${query}`,
+        );
+        const data = await response.json();
+        const itemsArray = data.data || data; // Adjust based on actual API structure
+        setTotalItems(data.pagination.totalItems);
+        setItems(itemsArray);
+      } catch (error) {
+        console.error('Fetching error:', error);
+      }
+    },
+    [itemsPerPage, sortBy, sortOrder, filterOrderId, filterItemName],
+  );
+
+  const lastPage = Math.ceil(totalItems / itemsPerPage);
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage((prevPage) => prevPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < lastPage) setCurrentPage((prevPage) => prevPage + 1);
   };
 
   const openDeleteModal = (id: number, item: string) => {
@@ -55,9 +91,8 @@ export default function ItemManagement() {
       await fetch(`http://localhost:8000/api/laundry/items/${itemId}`, {
         method: 'DELETE',
       });
-      // Refresh items list after deletion
-      setItems((previtems) =>
-        previtems.filter((item: Item) => item.itemId !== itemId),
+      setItems((prevItems) =>
+        prevItems.filter((item: Item) => item.itemId !== itemId),
       );
       setIsDeleteModalOpen(false);
     } catch (error) {
@@ -68,7 +103,7 @@ export default function ItemManagement() {
   const openUpdateModal = (id: number, item: string, quantity: number) => {
     setItemId(id);
     setItemName(item);
-    setItemQuantity(itemQuantity);
+    setItemQuantity(quantity);
     setIsUpdateModalOpen(true);
   };
 
@@ -82,8 +117,8 @@ export default function ItemManagement() {
   const handleUpdateItem = async () => {
     try {
       const updatedItem = await UpdateItem(itemId, itemName, itemQuantity);
-      setItems((previtems) =>
-        previtems.map((item: Item) =>
+      setItems((prevItems) =>
+        prevItems.map((item: Item) =>
           item.itemId === itemId
             ? {
                 ...item,
@@ -93,10 +128,10 @@ export default function ItemManagement() {
             : item,
         ),
       );
-      await fetchItems();
+      fetchItems(currentPage);
       closeUpdateModal();
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error('Error updating item:', error);
     }
   };
 
@@ -118,27 +153,83 @@ export default function ItemManagement() {
     try {
       const newItem = await createItem(orderId, itemName, itemQuantity);
       setItems((prevItems) => [...prevItems, newItem]);
-      await fetchItems();
+      fetchItems(currentPage);
       closeCreateModal();
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error('Error creating item:', error);
     }
   };
 
+  // Fetch items when page or relevant filter/sort options change
   useEffect(() => {
-    fetchItems();
-  }, []);
+    fetchItems(currentPage);
+  }, [currentPage, fetchItems]);
+
+  // Filter and sort handlers
+  const handleFilterOrderIdChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setFilterOrderId(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterItemNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setFilterItemName(e.target.value);
+    setCurrentPage(1);
+  };
+
+  // const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const [field, order] = e.target.value.split('-');
+  //   setSortBy(field);
+  //   setSortOrder(order as 'asc' | 'desc');
+  //   setCurrentPage(1);
+  // };
+  const handleSortChange = () => {
+    setSortBy('quantity');
+    setSortOrder((prevSortOrder) =>
+      prevSortOrder === 'desc' ? 'asc' : 'desc',
+    );
+    setCurrentPage(1);
+  };
 
   return (
     <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4">
       <h1>LAUNDRY ITEMS</h1>
-      <CreateButton onClick={() => openCreateModal()} />
+      {/* Filters */}
+      <div className="flex gap-4 mt-4">
+        <CreateButton onClick={openCreateModal} />
+        <input
+          type="text"
+          placeholder="Filter by Order ID"
+          value={filterOrderId}
+          onChange={handleFilterOrderIdChange}
+          className="border p-2 rounded bg-white h-10"
+        />
+        <input
+          type="text"
+          placeholder="Filter by Item Name"
+          value={filterItemName}
+          onChange={handleFilterItemNameChange}
+          className="border p-2 rounded bg-white h-10"
+        />
+      </div>
+      {/* Items Table */}
       <table className="w-4/5 border-slate-700">
         <thead className="text-center border-b bg-blue-300">
           <tr>
             <th className="py-3 px-1 border-slate-700">Order ID</th>
             <th className="py-3 px-1 border-slate-700">Item Name</th>
-            <th className="py-3 px-1 border-slate-700">Qty</th>
+            <th className="py-3 px-1 border-slate-700">
+              Qty{' '}
+              <Button
+                onClick={handleSortChange}
+                className="bg-white mx-2 w-4 h-6 hover:bg-gray-200"
+              >
+                {sortOrder === 'asc' ? '▲' : '▼'}
+              </Button>
+            </th>
             <th className="py-3 px-1 border-slate-700">Actions</th>
           </tr>
         </thead>
@@ -162,7 +253,29 @@ export default function ItemManagement() {
           ))}
         </tbody>
       </table>
-      <CreateModal
+      {/* Pagination Controls */}
+      <div className="flex justify-between gap-10 items-center my-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className={`py-2 px-4 rounded disabled:opacity-50 bg-blue-500 text-white min-w-24`}
+        >
+          Previous
+        </button>
+        <span>
+          Page {currentPage} of {lastPage}
+        </span>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === lastPage}
+          className={`py-2 px-4 rounded disabled:opacity-50 bg-blue-500 text-white min-w-24`}
+        >
+          Next
+        </button>
+      </div>
+
+      {/* Modals */}
+      <ItemCreateModal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
         onConfirm={handleCreateItem}
@@ -173,7 +286,7 @@ export default function ItemManagement() {
         quantity={itemQuantity!}
         setQuantity={setItemQuantity}
       />
-      <UpdateModal
+      <ItemUpdateModal
         isOpen={isUpdateModalOpen}
         onClose={closeUpdateModal}
         onConfirm={handleUpdateItem}

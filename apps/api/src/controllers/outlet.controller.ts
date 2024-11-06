@@ -3,9 +3,63 @@ import prisma from '@/prisma';
 
 export class OutletController {
   async getOutlet(req: Request, res: Response) {
-    const outletData = await prisma.outlet.findMany();
+    try {
+      // Pagination parameters
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
 
-    return res.status(200).send(outletData);
+      // Sorting parameter
+      const sortBy = req.query.sortBy === 'desc' ? 'desc' : 'asc';
+
+      // Filtering parameters
+      const nameFilter = req.query.name ? String(req.query.name) : undefined;
+      const kotaFilter = req.query.kota ? String(req.query.kota) : undefined;
+
+      // Prisma query
+      const outletData = await prisma.outlet.findMany({
+        skip,
+        take: limit,
+        orderBy: {
+          outletId: sortBy,
+        },
+        where: {
+          ...(nameFilter && {
+            name: { contains: nameFilter },
+          }),
+          ...(kotaFilter && {
+            kota: { contains: kotaFilter.toLowerCase() },
+          }),
+        },
+      });
+
+      // Total count for pagination metadata
+      const totalOutlets = await prisma.outlet.count({
+        where: {
+          ...(nameFilter && {
+            name: { contains: nameFilter.toLowerCase() },
+          }),
+          ...(kotaFilter && {
+            kota: { contains: kotaFilter.toLowerCase() },
+          }),
+        },
+      });
+
+      const totalPages = Math.ceil(totalOutlets / limit);
+
+      return res.status(200).json({
+        data: outletData,
+        pagination: {
+          totalItems: totalOutlets,
+          totalPages,
+          currentPage: page,
+          pageSize: limit,
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching outlets:', error);
+      return res.status(500).json({ error: 'Failed to fetch outlets' });
+    }
   }
 
   async getOutletById(req: Request, res: Response) {
