@@ -1,92 +1,94 @@
-'use client';
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
+'use client'
 
-interface Attendance {
-    attendanceId: number;
-    employeeId: number;
-    clockIn: string | null;
-    clockOut: string | null;
-}
+import { useAppSelector } from "@/redux/hooks"
+import { Role } from "@/type/role"
+import { IAttendance } from "@/type/employee"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { useDispatch } from "react-redux"
+import { toast } from "react-toastify"
 
-export default function AttendancePage() {
-    const [employeeId, setEmployeeId] = useState<number>(3);
-    const [attendanceLog, setAttendanceLog] = useState<Attendance[]>([]);
+export default function Attendance() {
+    const dispatch = useDispatch()
+    const employee = useAppSelector((state) => state.employee)
+    const checkRole = (role: Role) => {
+        return employee?.role === role
+    }
+    const [employeeId, setEmployeeId] = useState(employee?.employeeId);
+    const [attendanceLog, setAttendanceLog] = useState<IAttendance[]>([]);
+    const [isClockedIn, setIsClockedIn] = useState<boolean>(false)
+    const [completedAttendance, setCompletedAttendance] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [isClockedIn, setIsClockedIn] = useState<boolean>(false);
-    const [hasCompletedAttendance, setHasCompletedAttendance] = useState<boolean>(false);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-    // Fetch Attendance Log for Employee
-    const fetchAttendanceLog = async () => {
+    const fetchAttendance = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetch
+        setError(null);
+        if (!employeeId) {
+            toast.error("Employee ID is not available.");
+            setLoading(false);
+            return;
+        }
         try {
-            const response = await fetch(`${API_URL}/api/submit/attendance/${employeeId}`);
+            const response = await fetch(`http://localhost:8000/api/submit/attendance/${employeeId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance log');
             }
             const data = await response.json();
             setAttendanceLog(data);
-
-            // Check if the last log entry has a null clockOut to determine if the employee is clocked in
             const lastEntry = data[data.length - 1];
             if (lastEntry) {
                 setIsClockedIn(!lastEntry.clockOut);
-                setHasCompletedAttendance(lastEntry.clockIn && lastEntry.clockOut);
+                setCompletedAttendance(lastEntry.clockIn && lastEntry.clockOut);
             }
         } catch (error) {
             console.error('Failed to fetch attendance log:', error);
-            setError(error instanceof Error ? error.message : 'Unknown error'); // Set error message
+            setError(error instanceof Error ? error.message : 'Unknown error');
         } finally {
             setLoading(false);
         }
-    };
+    }
 
-    // Clock-In Function
     const handleClockIn = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/submit/attendance`, {
+            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ employeeId }),
+                body: JSON.stringify({ employeeId })
             });
             const data = await response.json();
             if (response.ok) {
-                alert('Clocked in successfully!');
-                fetchAttendanceLog(); // Refresh log
+                toast.success(data.msg);
+                fetchAttendance(); // Refresh attendance after clocking in
             } else {
-                alert(data.error || 'Failed to clock in');
+                toast.error(data.error);
             }
         } catch (error) {
-            console.error('Clock-in failed:', error);
+            console.error('Clock-in Failed:', error);
         }
-    };
+    }
 
-    // Clock-Out Function
     const handleClockOut = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/submit/attendance`, {
+            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ employeeId }),
+                body: JSON.stringify({ employeeId })
             });
             const data = await response.json();
             if (response.ok) {
-                alert('Clocked out successfully!');
-                fetchAttendanceLog(); // Refresh log
+                toast.success(data.msg);
+                fetchAttendance(); // Refresh attendance after clocking out
             } else {
-                alert(data.error || 'Failed to clock out');
+                toast.error(data.error);
             }
         } catch (error) {
-            console.error('Clock-out failed:', error);
+            console.error('Clock-out Failed:', error);
         }
-    };
+    }
 
-    // Fetch attendance log on component mount
     useEffect(() => {
-        fetchAttendanceLog();
+        fetchAttendance();
     }, [employeeId]);
 
     return (
@@ -94,8 +96,10 @@ export default function AttendancePage() {
             <div className="p-6 max-w-md mx-auto bg-white shadow-md rounded-md">
                 <h1 className="text-2xl font-semibold mb-4">Attendance</h1>
                 <p>Employee ID: {employeeId}</p>
+                {loading && <p>Loading...</p>}
+                {error && <p className="text-red-500">{error}</p>}
                 <div className="flex gap-4 mb-6">
-                    {!hasCompletedAttendance ? (
+                    {!completedAttendance ? (
                         isClockedIn ? (
                             <button
                                 onClick={handleClockOut}
@@ -115,12 +119,12 @@ export default function AttendancePage() {
                         <p className="text-green-500">Attendance completed for today.</p>
                     )}
                 </div>
-                <Link href={'/worker/attendance/history'}>
+                <Link href={'/employee/attendance/history'}>
                     <button className='bg-blue-500 px-4 py-2 text-white rounded-md'>
                         History
                     </button>
                 </Link>
             </div>
         </div>
-    );
+    )
 }

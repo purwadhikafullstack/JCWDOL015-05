@@ -97,4 +97,73 @@ export class OrderController {
       })
     }
   }
+  async getOrderListbyOutlet(req: Request, res: Response) {
+    try {
+      const {
+        outletId
+      } = req.body
+      const getOrder = await prisma.order.findMany({
+        where: { outletId: +outletId },
+        include: {
+          customer: true,
+          drivers: true,
+          outlet: true,
+          outletAdmin: true,
+          workers: true
+        }
+      })
+      res.status(200).send({
+        status: 'ok',
+        data: getOrder
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err
+      })
+    }
+  }
+  async confirmOrder(req: Request, res: Response) {
+    try {
+      const {
+        orderId,
+        outletAdminId,
+      } = req.body
+      const confirmOrder = await prisma.order.update({
+        where: { orderId: +orderId },
+        data: {
+          outletAdminId: +outletAdminId,
+        }
+      })
+      res.status(200).send({
+        status: 'ok',
+        data: confirmOrder
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err
+      })
+    }
+  }
+  async driverOrderList(req: Request, res: Response) {
+    try {
+      const {
+        outletId } = req.body
+      const listOrder = await prisma.order.findMany({
+        where: { outletId: outletId, status: "menungguPenjemputanDriver" }
+      })
+      const filter = listOrder.filter((order) => order.outletAdminId !== null)
+      res.status(200).send({
+        status: 'ok',
+        // orderOutlet: listOrder,
+        data: filter
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err
+      })
+    }
+  }
 }

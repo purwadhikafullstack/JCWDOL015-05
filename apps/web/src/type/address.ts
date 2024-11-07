@@ -26,3 +26,8 @@ export type ICustomerAddressData = {
   kecamatan: string
   detailAddress: string
 }
+
+export type IAddress = {
+  addressId: number
+  customerId: number
+}

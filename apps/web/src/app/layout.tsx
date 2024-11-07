@@ -2,7 +2,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { usePathname } from 'next/navigation';
 import { SessionProvider } from 'next-auth/react'
@@ -13,6 +12,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import StoreProvider from '@/components/StoreProvider';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
+import { Navbar } from '@/components/Navbar';
 
 // export const metadata: Metadata = {
 //   title: 'Create Next App',
@@ -32,7 +32,7 @@ export default function RootLayout({
         <QueryClientProvider client={queryClient}>
           <StoreProvider>
             <SessionProvider>
-              {!disabledNavbar.includes(pathName) && <Navbar />}
+              {!disabledNavbar.includes(pathName) && <Navbar/>}
               {children}
             </SessionProvider>
           </StoreProvider>

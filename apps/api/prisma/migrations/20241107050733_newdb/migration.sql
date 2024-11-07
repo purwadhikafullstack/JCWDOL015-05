@@ -100,6 +100,7 @@ CREATE TABLE `Order` (
     `weight` DOUBLE NOT NULL DEFAULT 0,
     `bypassMessage` VARCHAR(191) NULL,
     `paymentStatus` ENUM('unpaid', 'pending', 'paid') NOT NULL DEFAULT 'unpaid',
+    `driverId` INTEGER NULL,
     `pickupDate` DATETIME(3) NOT NULL,
     `pickupTime` VARCHAR(191) NULL,
     `complain` VARCHAR(191) NULL,

@@ -6,22 +6,25 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import * as yup from 'yup'
 import { ICustomerLogin } from "@/type/customers"
-import { customerLogin } from "@/services/api/customers/customers"
+import { customerLogin, googleLogin } from "@/services/api/customers/customers"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { loginAction } from "@/redux/slice/customerSlice"
 import { createToken } from "@/lib/server"
+import { BASEURL } from "@/services/api/address/address"
+import Link from "next/link"
 
 const loginSchema = yup.object().shape({
   email: yup.string().email().required(),
-  password: yup.string().required()
+  password: yup.string().required().min(8)
 })
 const initialValues: ICustomerLogin = {
   email: "",
   password: ""
 }
+
 
 export const LoginPage = () => {
   const router = useRouter()
@@ -58,6 +61,9 @@ export const LoginPage = () => {
       action.resetForm()
     }
   })
+  const socialLogin = () => {
+
+  }
   // const handleSubmit = async (data: ICustomerLogin, action: FormikHelpers<ICustomerLogin>) => {
   //   try {
 
@@ -102,6 +108,17 @@ export const LoginPage = () => {
             </div>
           </div>
         </form>
+        <Link href={'/customers/reset-password'}>
+          <span className="text-blue-500">
+            Forgot your password ?
+          </span>
+        </Link>
+        <Button onClick={googleLogin} className="w-full">
+          Sign In With Google
+        </Button>
+        <Button className="w-full bg-blue-500">
+          Sign In With Facebook
+        </Button>
       </Card>
     </section >
   )

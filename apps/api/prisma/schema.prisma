@@ -150,6 +150,7 @@ model Order {
   weight Float @default(0)
   bypassMessage String?
   paymentStatus PaymentStatus @default(unpaid)
+  driverId Int?
   pickupDate DateTime
   pickupTime String?
   complain String?

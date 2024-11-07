@@ -17,7 +17,6 @@ export const Navbar = () => {
   const pathname = usePathname();  // usePathname is safe for server-side rendering
   const customer = useAppSelector((state) => state.customer)
   console.log(customer)
-  console.log(token)
   const getTokenData = async () => {
     const res = await getToken()
     setToken(res as string)
@@ -93,4 +92,3 @@ export const Navbar = () => {
     </div>
   );
 }
-

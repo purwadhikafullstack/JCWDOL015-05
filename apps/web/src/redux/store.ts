@@ -2,6 +2,8 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { PERSIST, Persistor, persistReducer, persistStore, REGISTER, REHYDRATE } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import customerReducer from "./slice/customerSlice";
+import employeeReducer from "./slice/employeeSlice"
+
 
 const createNoopStorage = () => {
   return {
@@ -25,6 +27,7 @@ const persistConfig = {
 }
 const rootReducer = combineReducers({
   customer: customerReducer,
+  employee: employeeReducer,
 })
 const makeConfiguredStore = () => configureStore({
   reducer: rootReducer,

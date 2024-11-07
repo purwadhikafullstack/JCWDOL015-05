@@ -18,6 +18,8 @@ import { AddressRouter } from './routers/address.router';
 import { OrderRouter } from './routers/order.router';
 import { AttendanceRouter } from './routers/attendance.router';
 
+import passport from 'passport';
+import '../src/services/passportConfig'
 export default class App {
   private app: Express;
 
@@ -32,6 +34,8 @@ export default class App {
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
+
+    this.app.use(passport.initialize())
   }
 
   private handleError(): void {
@@ -70,7 +74,7 @@ export default class App {
     });
 
     // this.app.use('/api/samples', sampleRouter.getRouter());
-    this.app.use('/api/customers', authRouter.getRouter())
+    this.app.use('/api/users', authRouter.getRouter())
     this.app.use('/api/location', locationRouter.getRouter())
     // this.app.use('/api/request',  requestRouter.getRouter())
     this.app.use('/api/addresses', addressRouter.getRouter())

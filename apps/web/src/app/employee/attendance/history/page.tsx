@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 interface Attendance {
@@ -73,6 +74,9 @@ export default function History() {
                         )}
                     </ul>
                 )}
+                <Link href={'/employee/attendance'}>
+                <button>Back</button>
+                </Link>
             </div>
         </div>
     );

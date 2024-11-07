@@ -1,4 +1,4 @@
-import { IAddress } from "@/app/customers/pickup/page"
+import { IAddress } from "@/type/address"
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000'
 
