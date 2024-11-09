@@ -32,7 +32,7 @@ const IncomeChartPage = () => {
         `http://localhost:8000/api/laundry/report?${query}`,
       );
       const data = await response.json();
-
+      console.log('Fetched Orders:', data.data);
       setIncomeData(data.data);
     } catch (error) {
       console.error('Error fetching income data:', error);
@@ -59,15 +59,23 @@ const IncomeChartPage = () => {
     xaxis: {
       categories: incomeData.map((item) => item.date),
       labels: {
-        // Formatter for custom date format
         formatter: (value: string) => {
-          const date = new Date(value); // Convert the value to a Date object
-          const options: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'short', // Use 'long' for full month name, 'short' for abbreviation
-            day: '2-digit',
-          };
-          return date.toLocaleDateString('en-GB', options); // Format as dd-mmm-yyyy
+          if (!value) return '';
+          const date = new Date(value);
+
+          // Set formatting options based on rangeType
+          let options: Intl.DateTimeFormatOptions;
+          if (rangeType === 'daily') {
+            options = { year: 'numeric', month: 'short', day: '2-digit' }; // dd-MMM-yyyy
+          } else if (rangeType === 'monthly') {
+            options = { month: 'short' }; // MMM
+          } else if (rangeType === 'annual') {
+            options = { year: 'numeric' }; // yyyy
+          } else {
+            options = {}; // Default empty options if rangeType is not recognized
+          }
+
+          return date.toLocaleDateString('en-GB', options);
         },
       },
     },
@@ -77,7 +85,7 @@ const IncomeChartPage = () => {
       },
     },
     title: {
-      text: `Income for ${rangeType.charAt(0).toUpperCase() + rangeType.slice(1)}`,
+      text: `${rangeType.charAt(0).toUpperCase() + rangeType.slice(1)} Income`,
       align: 'center',
       style: {
         fontSize: '20px',
@@ -104,34 +112,45 @@ const IncomeChartPage = () => {
   return (
     <div className="w-full max-w-3xl mx-auto">
       <h1>Income Chart</h1>
+      <div className="flex space-x-4">
+        <Select
+          value={rangeType}
+          onChange={(e) => setRangeType(e.target.value)}
+          className="mb-4 border p-2 rounded bg-white"
+        >
+          <Option value="daily">Daily</Option>
+          <Option value="monthly">Monthly</Option>
+          <Option value="annual">Annual</Option>
+        </Select>
 
-      <Select value={rangeType} onChange={(e) => setRangeType(e.target.value)}>
-        <Option value="daily">Daily</Option>
-        <Option value="monthly">monthly</Option>
-        <Option value="annual">Annual</Option>
-      </Select>
+        <Select
+          value={outletId}
+          onChange={(e) => setOutletId(e.target.value)}
+          className="mb-4 border p-2 rounded bg-white"
+        >
+          <Option value="">All Outlets</Option>
+          <Option value="1">Outlet 1</Option>
+          <Option value="3">Outlet 3</Option>
+          {/* Add more outlets as needed */}
+        </Select>
 
-      <Select value={outletId} onChange={(e) => setOutletId(e.target.value)}>
-        <Option value="">All Outlets</Option>
-        <Option value="1">Outlet 1</Option>
-        <Option value="3">Outlet 3</Option>
-        {/* Add more outlets as needed */}
-      </Select>
-      {rangeType === 'daily' && (
-        <>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </>
-      )}
-
+        {rangeType === 'daily' && (
+          <>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="mb-4 border p-2 rounded bg-white"
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="mb-4 border p-2 rounded bg-white"
+            />
+          </>
+        )}
+      </div>
       {/* Render ApexCharts dynamically */}
       {ApexCharts && (
         <ApexCharts options={chartOptions} series={chartSeries} type="bar" />

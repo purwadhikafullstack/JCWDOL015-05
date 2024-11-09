@@ -28,3 +28,8 @@ interface Order {
   }[];
   outlet: { name: string } | null;
 }
+
+interface Outlets {
+  outletId: number;
+  name: string;
+}

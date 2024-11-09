@@ -1,96 +1,12 @@
-// import { Request, Response } from 'express';
-// import prisma from '@/prisma';
-// import {
-//   startOfToday,
-//   startOfMonth,
-//   endOfMonth,
-//   startOfYear,
-//   endOfYear,
-// } from 'date-fns';
-
-// export class ReportController {
-//   async getIncomeData(req: Request, res: Response) {
-//     try {
-//       const { outletId, startDate, endDate, rangeType } = req.query;
-
-//       // Parse dates and rangeType for filtering
-//       const parsedStartDate = startDate
-//         ? new Date(startDate as string)
-//         : undefined;
-//       const parsedEndDate = endDate ? new Date(endDate as string) : undefined;
-
-//       // Calculate time range based on rangeType
-//       let fromDate: Date | undefined;
-//       let toDate: Date | undefined;
-
-//       switch (rangeType) {
-//         case 'daily':
-//           fromDate = startOfToday();
-//           toDate = endOfMonth(parsedEndDate || new Date());
-//           break;
-//         case 'monthly':
-//           fromDate = startOfMonth(parsedStartDate || new Date());
-//           toDate = endOfMonth(parsedEndDate || new Date());
-//           break;
-//         case 'annual':
-//           fromDate = startOfYear(new Date());
-//           toDate = endOfYear(new Date());
-//           break;
-//         default:
-//           fromDate = parsedStartDate;
-//           toDate = parsedEndDate;
-//       }
-
-//       // Prisma query for grouping by date without using raw SQL
-//       const orders = await prisma.order.findMany({
-//         where: {
-//           ...(outletId && { outletId: parseInt(outletId as string) }),
-//           createdAt: {
-//             gte: fromDate,
-//             lte: toDate,
-//           },
-//           paymentStatus: 'paid', // Only include orders where paymentStatus is 'paid'
-//         },
-//         select: {
-//           createdAt: true,
-//           totalPrice: true,
-//         },
-//       });
-
-//       // Process and group orders by date (ignoring time)
-//       const incomeData = orders.reduce(
-//         (acc, order) => {
-//           const dateOnly = order.createdAt.toISOString().split('T')[0]; // Extract only the date part (YYYY-MM-DD)
-//           if (!acc[dateOnly]) {
-//             acc[dateOnly] = { date: dateOnly, totalIncome: 0 };
-//           }
-//           acc[dateOnly].totalIncome += order.totalPrice || 0;
-//           return acc;
-//         },
-//         {} as Record<string, { date: string; totalIncome: number }>,
-//       );
-
-//       // Convert the object to an array sorted by date
-//       const formattedIncomeData = Object.values(incomeData).sort(
-//         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-//       );
-
-//       res.status(200).json({ data: formattedIncomeData });
-//     } catch (error) {
-//       console.error('Error fetching income data:', error);
-//       res.status(500).json({ error: 'Failed to fetch income data' });
-//     }
-//   }
-// }
-
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import {
-  startOfToday,
   startOfMonth,
   endOfMonth,
   startOfYear,
   endOfYear,
+  startOfDecade,
+  endOfDecade,
 } from 'date-fns';
 
 export class ReportController {
@@ -98,35 +14,43 @@ export class ReportController {
     try {
       const { outletId, startDate, endDate, rangeType } = req.query;
 
-      // Parse dates and rangeType for filtering
+      // Parse dates safely
       const parsedStartDate = startDate
         ? new Date(startDate as string)
         : undefined;
       const parsedEndDate = endDate ? new Date(endDate as string) : undefined;
 
-      // Calculate time range based on rangeType
+      // Check if parsed dates are valid
+      if (parsedStartDate && isNaN(parsedStartDate.getTime())) {
+        return res.status(400).json({ error: 'Invalid startDate format' });
+      }
+      if (parsedEndDate && isNaN(parsedEndDate.getTime())) {
+        return res.status(400).json({ error: 'Invalid endDate format' });
+      }
+
+      // Define date range based on rangeType
       let fromDate: Date | undefined;
       let toDate: Date | undefined;
 
       switch (rangeType) {
         case 'daily':
-          fromDate = startOfToday();
-          toDate = endOfMonth(parsedEndDate || new Date());
+          fromDate = startOfMonth(parsedStartDate || new Date());
+          toDate = endOfMonth(parsedStartDate || new Date());
           break;
         case 'monthly':
-          fromDate = startOfMonth(parsedStartDate || new Date());
-          toDate = endOfMonth(parsedEndDate || new Date());
+          fromDate = startOfYear(parsedStartDate || new Date());
+          toDate = endOfYear(parsedEndDate || new Date());
           break;
         case 'annual':
-          fromDate = startOfYear(new Date());
-          toDate = endOfYear(new Date());
+          fromDate = startOfDecade(parsedStartDate || new Date());
+          toDate = endOfDecade(parsedEndDate || new Date());
           break;
         default:
           fromDate = parsedStartDate;
           toDate = parsedEndDate;
       }
 
-      // Prisma query for finding orders with filters applied
+      // Prisma query to fetch orders with filters
       const orders = await prisma.order.findMany({
         where: {
           ...(outletId && { outletId: parseInt(outletId as string) }),
@@ -134,7 +58,7 @@ export class ReportController {
             gte: fromDate,
             lte: toDate,
           },
-          paymentStatus: 'paid', // Only include orders where paymentStatus is 'paid'
+          paymentStatus: 'paid',
         },
         select: {
           createdAt: true,
@@ -147,7 +71,6 @@ export class ReportController {
         (acc, order) => {
           let dateKey: string;
 
-          // Set dateKey based on rangeType
           if (rangeType === 'daily') {
             dateKey = order.createdAt.toISOString().split('T')[0]; // YYYY-MM-DD
           } else if (rangeType === 'monthly') {

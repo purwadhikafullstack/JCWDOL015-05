@@ -8,6 +8,7 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [outlets, setOutlets] = useState<Outlets[]>([]);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -24,6 +25,16 @@ const OrdersPage = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const limit = 5;
+
+  const fetchOulets = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/laundry/outlet`);
+      const data = await response.json();
+      setOutlets(data.data);
+    } catch (error) {
+      console.error('Outlets fetching error:', error);
+    }
+  };
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -44,7 +55,7 @@ const OrdersPage = () => {
       setOrders(data.data);
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
-      console.error('Fetching error:', error);
+      console.error('Orders fetching error:', error);
     }
   }, [
     page,
@@ -88,6 +99,7 @@ const OrdersPage = () => {
 
   useEffect(() => {
     fetchOrders();
+    fetchOulets();
   }, [fetchOrders]);
 
   return (
@@ -103,13 +115,17 @@ const OrdersPage = () => {
           onChange={(e) => setOrderIdFilter(e.target.value)}
           className="border p-2 rounded bg-white h-10 w-24"
         />
-        <input
-          type="text"
-          placeholder="Outlet ID"
-          value={outletFilter}
+        <select
           onChange={(e) => setOutletFilter(e.target.value)}
-          className="border p-2 rounded bg-white h-10 w-24"
-        />
+          className="mb-4 border p-2 rounded bg-white"
+        >
+          <option value="">All Outlets</option>
+          {outlets.map((outlet: Outlets) => (
+            <option key={outlet.outletId} value={outlet.outletId}>
+              {outlet.name}
+            </option>
+          ))}
+        </select>
         <select
           onChange={(e) => setStatusFilter(e.target.value)}
           className="mb-4 border p-2 rounded bg-white"
