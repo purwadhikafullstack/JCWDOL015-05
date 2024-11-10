@@ -107,7 +107,7 @@ model OutletAdmin { // data created with employee registration
   orders Order[]
 }
 
-model Worker { // data created with employee registration
+model Worker { 
   workerId Int @id @default(autoincrement())
   station Station
   employee Employee @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)

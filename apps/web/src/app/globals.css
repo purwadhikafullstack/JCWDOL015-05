@@ -3,5 +3,12 @@
 @tailwind utilities;
 
 body {
-    background: #FFFAF0;
+  background: #fffaf0;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  background-color: #0390fc; /* Tailwind's indigo-600 color */
+  color: white; /* Icon color */
+  border-radius: 20%; /* Optional: makes the button circular */
+  padding: 0.25rem; /* Optional: adjusts spacing inside button */
 }

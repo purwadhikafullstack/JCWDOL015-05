@@ -60,7 +60,7 @@ const IncomeChartPage = () => {
       categories: incomeData.map((item) => item.date),
       labels: {
         formatter: (value: string) => {
-          if (!value) return '';
+          if (incomeData.length === 0) return 'No Income';
           const date = new Date(value);
 
           // Set formatting options based on rangeType
@@ -81,7 +81,7 @@ const IncomeChartPage = () => {
     },
     yaxis: {
       title: {
-        text: 'Income',
+        text: 'Total Income',
       },
     },
     title: {
@@ -111,18 +111,10 @@ const IncomeChartPage = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <h1>Income Chart</h1>
+      <h1 className="text-center text-2xl font-bold mb-4 text-blue-400">
+        Income Report
+      </h1>
       <div className="flex space-x-4">
-        <Select
-          value={rangeType}
-          onChange={(e) => setRangeType(e.target.value)}
-          className="mb-4 border p-2 rounded bg-white"
-        >
-          <Option value="daily">Daily</Option>
-          <Option value="monthly">Monthly</Option>
-          <Option value="annual">Annual</Option>
-        </Select>
-
         <Select
           value={outletId}
           onChange={(e) => setOutletId(e.target.value)}
@@ -131,7 +123,18 @@ const IncomeChartPage = () => {
           <Option value="">All Outlets</Option>
           <Option value="1">Outlet 1</Option>
           <Option value="3">Outlet 3</Option>
+          <Option value="14">Outlet 14</Option>
           {/* Add more outlets as needed */}
+        </Select>
+
+        <Select
+          value={rangeType}
+          onChange={(e) => setRangeType(e.target.value)}
+          className="mb-4 border p-2 rounded bg-white"
+        >
+          <Option value="daily">Daily</Option>
+          <Option value="monthly">Monthly</Option>
+          <Option value="annual">Annual</Option>
         </Select>
 
         {rangeType === 'daily' && (
@@ -151,10 +154,12 @@ const IncomeChartPage = () => {
           </>
         )}
       </div>
-      {/* Render ApexCharts dynamically */}
-      {ApexCharts && (
-        <ApexCharts options={chartOptions} series={chartSeries} type="bar" />
-      )}
+      <div className="bg-white p-4 rounded shadow">
+        {/* Render ApexCharts dynamically */}
+        {ApexCharts && (
+          <ApexCharts options={chartOptions} series={chartSeries} type="bar" />
+        )}
+      </div>
     </div>
   );
 };
