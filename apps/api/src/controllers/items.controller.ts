@@ -61,13 +61,18 @@ export class ItemsController {
   async createitem(req: Request, res: Response) {
     const { orderId, item, quantity } = req.body;
 
-    const newItemData = await prisma.items.create({
-      data: { orderId, item, quantity },
-    });
+    try {
+      const newItemData = await prisma.items.create({
+        data: { orderId, item, quantity },
+      });
 
-    return res
-      .status(201)
-      .send({ message: 'New item has been added', newItemData });
+      return res
+        .status(201)
+        .send({ message: 'New item has been added', newItemData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to create item' });
+    }
   }
 
   async updateItemById(req: Request, res: Response) {

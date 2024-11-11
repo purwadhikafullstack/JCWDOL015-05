@@ -18,6 +18,17 @@ const IncomeChartPage = () => {
   const [outletId, setOutletId] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [outlets, setOutlets] = useState<Outlets[]>([]);
+
+  const fetchOulets = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/laundry/outlet`);
+      const data = await response.json();
+      setOutlets(data.data);
+    } catch (error) {
+      console.error('Outlets fetching error:', error);
+    }
+  };
 
   const fetchIncomeData = useCallback(async () => {
     try {
@@ -41,6 +52,7 @@ const IncomeChartPage = () => {
 
   useEffect(() => {
     fetchIncomeData();
+    fetchOulets();
   }, [fetchIncomeData]);
 
   const chartOptions: ApexOptions = {
@@ -60,7 +72,7 @@ const IncomeChartPage = () => {
       categories: incomeData.map((item) => item.date),
       labels: {
         formatter: (value: string) => {
-          if (incomeData.length === 0) return 'No Income';
+          if (incomeData.length === 0) return 'N/A';
           const date = new Date(value);
 
           // Set formatting options based on rangeType
@@ -110,21 +122,22 @@ const IncomeChartPage = () => {
   ];
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <h1 className="text-center text-2xl font-bold mb-4 text-blue-400">
+    <div className="w-full max-w-3xl mx-auto text-slate-700">
+      <h1 className="text-center text-2xl font-bold mb-4 text-white">
         Income Report
       </h1>
       <div className="flex space-x-4">
         <Select
           value={outletId}
           onChange={(e) => setOutletId(e.target.value)}
-          className="mb-4 border p-2 rounded bg-white"
+          className="border p-2 rounded bg-white h-11"
         >
           <Option value="">All Outlets</Option>
-          <Option value="1">Outlet 1</Option>
-          <Option value="3">Outlet 3</Option>
-          <Option value="14">Outlet 14</Option>
-          {/* Add more outlets as needed */}
+          {outlets.map((outlet) => (
+            <option key={outlet.outletId} value={outlet.outletId}>
+              {outlet.name}
+            </option>
+          ))}
         </Select>
 
         <Select

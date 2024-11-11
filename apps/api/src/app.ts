@@ -14,6 +14,7 @@ import { OutletRouter } from './routers/outlet.router';
 import { ItemsRouter } from './routers/items.router';
 import { OrderRouter } from './routers/order.router';
 import { ReportRouter } from './routers/report.router';
+import { AssignmentRouter } from './routers/assignment.router';
 
 export default class App {
   private app: Express;
@@ -60,6 +61,7 @@ export default class App {
     const itemsRouter = new ItemsRouter();
     const orderRouter = new OrderRouter();
     const reportRouter = new ReportRouter();
+    const assignmentRouter = new AssignmentRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -70,6 +72,7 @@ export default class App {
     this.app.use('/api/laundry/items', itemsRouter.getRouter());
     this.app.use('/api/laundry/order', orderRouter.getRouter());
     this.app.use('/api/laundry/report', reportRouter.getRouter());
+    this.app.use('/api/laundry/assignment', assignmentRouter.getRouter());
   }
 
   public start(): void {

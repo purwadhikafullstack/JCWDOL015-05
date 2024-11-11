@@ -24,19 +24,17 @@ const EmployeePerformanceReport = () => {
   const [endDate, setEndDate] = useState<string>('');
   const [rangeType, setRangeType] = useState<string>('daily');
   const [outletId, setOutletId] = useState<string>('');
-  const [outlets, setOutlets] = useState<{ outletId: number; name: string }[]>(
-    [],
-  ); // Assuming we fetch outlets
+  const [outlets, setOutlets] = useState<Outlets[]>([]);
 
-  // Fetch list of outlets on mount
-  useEffect(() => {
-    const fetchOutlets = async () => {
-      const response = await fetch(`http://localhost:8000/api/outlets`);
+  const fetchOulets = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/laundry/outlet`);
       const data = await response.json();
-      setOutlets(data);
-    };
-    fetchOutlets();
-  }, []);
+      setOutlets(data.data);
+    } catch (error) {
+      console.error('Outlets fetching error:', error);
+    }
+  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -68,6 +66,7 @@ const EmployeePerformanceReport = () => {
 
   useEffect(() => {
     fetchData();
+    fetchOulets();
   }, [fetchData]);
 
   const chartOptions: ApexOptions = {
@@ -109,8 +108,8 @@ const EmployeePerformanceReport = () => {
   }));
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <h1 className="text-center text-2xl font-bold mb-4 text-blue-400">
+    <div className="w-full max-w-3xl mx-auto text-slate-700">
+      <h1 className="text-center text-2xl font-bold mb-4 text-white">
         Employee Performance
       </h1>
 

@@ -26,6 +26,7 @@ enum Station {
 }
 
 enum OrderStatus { 
+  menungguKonfirmasi
   menungguPenjemputanDriver
   laundryMenujuOutlet
   laundrySampaiOutlet
@@ -194,7 +195,6 @@ model WorkersOnOrders {
 }
 
 model DriversOnOrders {
-    // id Int @id @default(autoincrement())
     order Order @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
     orderId Int
     driver Driver @relation(fields: [driverId], references: [driverId], onDelete: Cascade)

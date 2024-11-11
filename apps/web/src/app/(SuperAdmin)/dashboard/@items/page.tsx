@@ -180,12 +180,6 @@ export default function ItemManagement() {
     setCurrentPage(1);
   };
 
-  // const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const [field, order] = e.target.value.split('-');
-  //   setSortBy(field);
-  //   setSortOrder(order as 'asc' | 'desc');
-  //   setCurrentPage(1);
-  // };
   const handleSortChange = () => {
     setSortBy('quantity');
     setSortOrder((prevSortOrder) =>

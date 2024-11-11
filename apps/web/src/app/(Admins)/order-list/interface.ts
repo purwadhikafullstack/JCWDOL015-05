@@ -8,6 +8,7 @@ interface Order {
   weight: number;
   paymentStatus: string;
   status: string;
+  bypassMessage: string | null;
   createdAt: string;
   updatedaAt: string | null;
   workers: {
