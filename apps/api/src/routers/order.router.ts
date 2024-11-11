@@ -17,6 +17,8 @@ export class OrderRouter {
     this.router.post('/', this.orderController.getOrderListbyOutlet)
     this.router.post('/driver', this.orderController.driverOrderList)
     this.router.post('/payment-links', this.orderController.generatePaymentLink)
+    this.router.post('/order', this.orderController.updatePaymentOrder)
+    this.router.get('/completed-order', this.orderController.updatePaymentOrder)
   }
 
   public getRouter(): Router {

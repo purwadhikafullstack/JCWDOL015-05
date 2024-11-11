@@ -6,14 +6,14 @@ import { Input } from '../ui/input';
 import * as yup from 'yup'
 import { FormikHelpers, useFormik } from 'formik';
 import { ICustomerAddress } from '@/type/customers';
-import { createAddress, getCity, getDetailLocation, getProvience, getSubDistrict } from '@/services/api/address/address';
+import { createAddress, getCity, getDetailLocation, getLngLat, getProvience, getSubDistrict } from '@/services/api/address/address';
 import maplibregl, { LngLat, LngLatBounds } from 'maplibre-gl';
 import { MapInitialize } from '@/services/map';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { set } from 'cypress/types/lodash';
 import { ICity, ILocation, IProvince, ISubDis } from '@/type/address';
 import { Label } from '../ui/label';
+import { useAppSelector } from '@/redux/hooks';
 
 const mapSchema = yup.object().shape({
   province: yup.string().required(),
@@ -22,10 +22,12 @@ const mapSchema = yup.object().shape({
   detailAddress: yup.string().required(),
   longitude: yup.string().required(),
   latitude: yup.string().required(),
+  customerId : yup.string().required(),
 })
 
 export default function Map() {
   const mapContainerRef = useRef<any | null>(null)
+  const mapRef = useRef<any | null>(null)
   const [map, setMap] = useState<maplibregl.Map | null>(null)
   const [marker, setMarker] = useState<maplibregl.Marker | null>(null)
   const [coordinates, setCoordinates] = useState<{ lng: number; lat: number } | null>(null)
@@ -44,15 +46,19 @@ export default function Map() {
   const [selectedSubdistrict, setSelectedSubdistrict] = useState('');
   const [addresses, setAddresses] = useState<ILocation[]>([])
   const MAP_API = process.env.NEXT_PUBLIC_MAPTILER_API_KEY
+  const customers = useAppSelector((state)=> state.customer)
   const initMap = () => {
-    const mapModel = new maplibregl.Map({
+     mapRef.current = new maplibregl.Map({
       container: mapContainerRef.current!,
       style: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_API}`,
-      center: [mapState.lng, mapState.lat],
+      center: [
+        mapState.lng,
+        mapState.lat 
+        ],
       zoom: mapState.zoom
     })
-    setMap(mapModel)
-    mapModel.addControl(new maplibregl.NavigationControl(), 'top-right')
+    setMap(mapRef.current)
+    mapRef.current.addControl(new maplibregl.NavigationControl(), 'top-right')
 
     const mapClick = (e: maplibregl.MapMouseEvent) => {
       const { lng, lat } = e.lngLat
@@ -63,14 +69,22 @@ export default function Map() {
     }
 
     if (marker?._lngLat === undefined) {
-      mapModel.on('click', mapClick)
+      mapRef.current.on('click', mapClick)
     } else {
-      mapModel.off('click', mapClick)
+      mapRef.current.off('click', mapClick)
     }
-    // const outletMarker = new maplibregl.Marker()
-    //   .setLngLat([114.30458613942182, -8.40892188532409])
-    //   .addTo(mapModel)
-
+   
+  }
+  const setLngLat = async () => {
+    let address = selectedSubdistrict
+    console.log(address)
+    const {result , ok , resLng , resLat} = await getLngLat(address)
+    console.log(result)
+    if(!ok) throw result.msg
+    setCoordinates({
+      lat : parseFloat(resLat),
+      lng : parseFloat(resLng),
+    })
   }
   // MapInitialize(mapState.lng, mapState.lat, mapContainerRef, mapState.zoo)
   const handleConfirm = () => {
@@ -97,7 +111,8 @@ export default function Map() {
       province: '',
       city: '',
       subdistrict: '',
-      detailAddress: ''
+      detailAddress: '',
+      customerId: customers.customerId,
     },
     validationSchema: mapSchema,
     onSubmit: (values, action) => {
@@ -130,7 +145,6 @@ export default function Map() {
   }
   const handleShowMap = () => {
     if (!showMap) setShowMap(true)
-
   }
   const getData = async () => {
     try {
@@ -163,11 +177,10 @@ export default function Map() {
   }
   const handleSelectSubdistric = (value: string) => {
     setSelectedSubdistrict(value)
+    setLngLat()
     formik.setFieldValue('subdistrict', value)
   }
 
-  // console.log(selectedProvince)
-  // console.log(selectedCity)
   useEffect(() => {
     getData()
 
@@ -198,10 +211,20 @@ export default function Map() {
   useEffect(() => {
     if (!map) initMap()
   }, [map, marker, mapState])
+  useEffect(()=>{
+    if(mapRef.current && coordinates) {
+      mapRef.current.flyTo({
+        center: [coordinates.lng, coordinates.lat],
+        zoom: 12,
+        speed: 1.2, // Adjust speed (higher is slower, lower is faster)
+        curve: 1.42, // Controls the curvature of the animation (default is 1.42)
+        easing: (t : any) => t, // Linear easing for consistent speed
+      })
+    }
+  },[coordinates,mapState])
   return (
     <section className="flex flex-col items-center justify-center w-full ">
       <div className='w-1/2 p-5 border rounded-md'>
-
         {
           (
             <div className="mt-5 ">
@@ -273,6 +296,12 @@ export default function Map() {
                   </SelectContent>
                 </Select>
                 <Label>Address</Label>
+                <Input 
+                name = 'customerId'
+                value= {formik.values.customerId}
+                onChange={formik.handleChange}
+                type = 'hidden'
+                />
                 <Input
                   name='detailAddress'
                   value={formik.values.detailAddress}
@@ -280,9 +309,9 @@ export default function Map() {
                   onChange={formik.handleChange}
                 />
                 <Label>Longitude</Label>
-                <Input name='longitude' value={formik.values.longitude} onChange={formik.handleChange} />
+                <Input name='longitude' type='hidden' value={formik.values.longitude} onChange={formik.handleChange} />
                 <Label>Latitude</Label>
-                <Input name='latitude' value={formik.values.latitude} onChange={formik.handleChange} />
+                <Input name='latitude' type='hidden' value={formik.values.latitude} onChange={formik.handleChange} />
                 <button
                   type='submit'
                   className='px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600'>

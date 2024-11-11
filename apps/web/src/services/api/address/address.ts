@@ -1,5 +1,5 @@
 import { ICustomerAddress } from "@/type/customers"
-import { BadgeEuro } from "lucide-react"
+
 
 export const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000'
 
@@ -48,4 +48,19 @@ export const getCustomerAddress = async (customerId: number) => {
   const res = await fetch(url)
   const result = await res.json()
   return { result, ok: res.ok, address: result.data }
+}
+type IGetLocation = {
+  address: string
+}
+export const getLngLat = async (address: string) => {
+  const url = `${BASEURL}/api/location`
+  const res = await fetch (url, {
+    method : "POST",
+    headers : {
+      "Content-Type": "application/json",
+    },
+    body : JSON.stringify({address})
+  })
+  const result = await res.json()
+  return { result , ok: res.ok , resLng : result.lng , resLat : result.lat }
 }

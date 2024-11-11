@@ -13,7 +13,7 @@ export const authUser = () => {
 export class AuthController {
   async registerUser(req: Request, res: Response) {
     const {
-      email, fullName, avatar, role,
+      email, fullName,  role,
     } = req.body
     // check email 
     try {
@@ -25,14 +25,12 @@ export class AuthController {
       }
       const payload = { email: email, fullName: fullName, role: role }
       const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1h' })
-
       const templatePath = path.join(__dirname, '../template/verification.hbs')
       const templateSrc = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = Handlebars.compile(templateSrc)
       const html = compiledTemplate({
         url: `http://localhost:3000/verify/${token}`
       })
-
       await transporter.sendMail({
         from: process.env.MAIL_USER,
         to: email,

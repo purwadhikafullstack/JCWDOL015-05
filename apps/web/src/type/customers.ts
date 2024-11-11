@@ -14,13 +14,14 @@ export type ICustomerVerify = {
 }
 
 export type ICustomerAddress = {
-  addressId: number,
+  addressId: number
   longitude: number
   latitude: number
   province: string
   city: string
   subdistrict: string
   detailAddress: string
+  customerId : string
 }
 export type ICustomersResetPass = {
   email: string

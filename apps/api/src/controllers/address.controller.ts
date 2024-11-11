@@ -10,11 +10,12 @@ export class AddressController {
         province,
         city,
         subdistrict,
-        detailAddress
+        detailAddress,
+        customerId
       } = req.body
       const newAddress = await prisma.address.create({
         data: {
-          customerId: 1,
+          customerId: customerId,
           latitude: parseFloat(latitude),
           longitude: parseFloat(longitude),
           provinsi: province,

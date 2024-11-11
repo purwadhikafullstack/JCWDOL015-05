@@ -4,15 +4,23 @@ import { Prisma } from '@prisma/client'
 import { Request, Response } from 'express'
 import { } from 'opencage-api-client'
 export class LocationController {
-  async createLocation(req: Request, res: Response) {
-    const { address } = req.body
+  async getLngLat(req: Request, res: Response) {
     try {
-      const { latitude, longitude }: any = await geocodeAddress(address)
-
+      const {address} = req.body
+      console.log(address)
+      const key = process.env.OPENCAGE_API_KEY
+      const openCageUrl = `https://api.opencagedata.com/geocode/v1/json?q=${address}&key=${`45999cc234fb4f63b5c81cf8684b84ea`}`
+      console.log(openCageUrl)
+      const location = await fetch (`${openCageUrl}`,{
+        method : "GET",
+      })
+      const result = await location.json()
+      const lng = result.results[0].geometry.lng
+      const lat = result.results[0].geometry.lat
       res.status(200).send({
         status: 'ok',
-        latitude: latitude,
-        longitude: longitude
+        lng: lng,
+        lat: lat
       })
     } catch (error) {
       res.status(400).send({
