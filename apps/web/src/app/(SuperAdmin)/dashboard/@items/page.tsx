@@ -12,6 +12,8 @@ import ItemCreateModal from '../../dashboard-component/item-create-modal';
 import ItemUpdateModal from '../../dashboard-component/item-update-modal';
 import { Button } from '@/components/ui/button';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 type Item = {
   itemId: number;
   orderId: number;
@@ -50,9 +52,7 @@ export default function ItemManagement() {
           ...(filterItemName && { item: filterItemName }),
         });
 
-        const response = await fetch(
-          `http://localhost:8000/api/laundry/items?${query}`,
-        );
+        const response = await fetch(`${BASEURL}/api/items?${query}`);
         const data = await response.json();
         const itemsArray = data.data || data; // Adjust based on actual API structure
         setTotalItems(data.pagination.totalItems);
@@ -88,7 +88,7 @@ export default function ItemManagement() {
 
   const deleteItem = async () => {
     try {
-      await fetch(`http://localhost:8000/api/laundry/items/${itemId}`, {
+      await fetch(`${BASEURL}/api/items/${itemId}`, {
         method: 'DELETE',
       });
       setItems((prevItems) =>

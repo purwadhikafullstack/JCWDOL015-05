@@ -26,15 +26,17 @@ const EmployeePerformanceReport = () => {
   const [outletId, setOutletId] = useState<string>('');
   const [outlets, setOutlets] = useState<Outlets[]>([]);
 
-  const fetchOulets = async () => {
+  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
+  const fetchOutlets = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/laundry/outlet`);
+      const response = await fetch(`${BASEURL}/api/outlet`);
       const data = await response.json();
       setOutlets(data.data);
     } catch (error) {
       console.error('Outlets fetching error:', error);
     }
-  };
+  }, [BASEURL]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -45,9 +47,7 @@ const EmployeePerformanceReport = () => {
         ...(outletId && { outletId }),
       });
 
-      const response = await fetch(
-        `http://localhost:8000/api/laundry/report/workers?${query}`,
-      );
+      const response = await fetch(`${BASEURL}/api/report/workers?${query}`);
       if (!response.ok) throw new Error('Failed to fetch data');
 
       const data: OrderCountData[] = await response.json();
@@ -62,12 +62,12 @@ const EmployeePerformanceReport = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  }, [startDate, endDate, rangeType, outletId]);
+  }, [startDate, endDate, rangeType, outletId, BASEURL]);
 
   useEffect(() => {
     fetchData();
-    fetchOulets();
-  }, [fetchData]);
+    fetchOutlets();
+  }, [fetchData, fetchOutlets]);
 
   const chartOptions: ApexOptions = {
     chart: {

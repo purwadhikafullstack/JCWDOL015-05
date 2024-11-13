@@ -2,6 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { useCallback, useEffect, useState } from 'react';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 export default function BypassRequestPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [outletAdminId, setOutletAdminId] = useState<number>(0); // Replace with actual outletAdminId
@@ -10,7 +12,7 @@ export default function BypassRequestPage() {
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/bypass-request/${outletId}`,
+        `${BASEURL}/api/assignment/bypass-request/${outletId}`,
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
@@ -31,7 +33,7 @@ export default function BypassRequestPage() {
   ) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/confirm-bypass/${orderId}`,
+        `${BASEURL}/api/assignment/confirm-bypass/${orderId}`,
         {
           method: 'PATCH',
           headers: {

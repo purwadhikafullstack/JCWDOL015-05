@@ -153,6 +153,8 @@ model Order {
   totalPrice Int @default(0)
   bypassMessage String?
   paymentStatus PaymentStatus @default(unpaid)
+  pickupDate DateTime?
+  pickupTime String?
   complain String?
   status OrderStatus
   createdAt DateTime  @default(now())

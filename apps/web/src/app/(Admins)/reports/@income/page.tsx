@@ -4,6 +4,8 @@ import dynamic from 'next/dynamic';
 import { Select, Option } from '@/components/ui/select-report';
 import { ApexOptions } from 'apexcharts';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 // Dynamically import ApexCharts with SSR disabled
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -22,7 +24,7 @@ const IncomeChartPage = () => {
 
   const fetchOulets = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/laundry/outlet`);
+      const response = await fetch(`${BASEURL}/api/outlet`);
       const data = await response.json();
       setOutlets(data.data);
     } catch (error) {
@@ -39,9 +41,7 @@ const IncomeChartPage = () => {
         endDate,
       });
 
-      const response = await fetch(
-        `http://localhost:8000/api/laundry/report?${query}`,
-      );
+      const response = await fetch(`${BASEURL}/api/report?${query}`);
       const data = await response.json();
       console.log('Fetched Orders:', data.data);
       setIncomeData(data.data);

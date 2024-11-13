@@ -1,3 +1,5 @@
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 export async function createEmployee(
   email: string,
   password: string,
@@ -7,7 +9,7 @@ export async function createEmployee(
   station: string,
 ) {
   try {
-    const response = await fetch('http://localhost:8000/api/laundry/employee', {
+    const response = await fetch(`${BASEURL}/api/employee`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,23 +48,20 @@ export async function UpdateEmployee(
   if (employeeId === null) return;
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/laundry/employee/${employeeId}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          fullName,
-          role,
-          outletId,
-          station,
-        }),
+    const response = await fetch(`${BASEURL}/api/employee/${employeeId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        email,
+        password,
+        fullName,
+        role,
+        outletId,
+        station,
+      }),
+    });
     if (!response.ok) {
       throw new Error('Failed to create outlet');
     }

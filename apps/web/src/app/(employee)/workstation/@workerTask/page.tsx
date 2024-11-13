@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@radix-ui/react-label';
 import { useCallback, useEffect, useState } from 'react';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 type Item = {
   itemId: number;
   item: string;
@@ -28,7 +30,7 @@ export default function WorkerTaskPage() {
   const fetchTask = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/get-task/${station}/${outletId}`,
+        `${BASEURL}/api/assignment/get-task/${station}/${outletId}`,
       );
       const data = await response.json();
       console.log(data);
@@ -65,7 +67,7 @@ export default function WorkerTaskPage() {
   const handleBypass = async (orderId: number, message: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/submit-bypass/${orderId}`,
+        `${BASEURL}/api/assignment/submit-bypass/${orderId}`,
         {
           method: 'PATCH',
           headers: {
@@ -96,7 +98,7 @@ export default function WorkerTaskPage() {
   ) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/submit-task/${orderId}`,
+        `${BASEURL}/api/assignment/submit-task/${orderId}`,
         {
           method: 'PATCH',
           headers: {

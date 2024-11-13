@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import OrderTrackingModal from './order-list-component/tracking-modal';
 import { displayOrderStatus } from '../lib/formatter';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 const OrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
@@ -28,7 +30,7 @@ const OrdersPage = () => {
 
   const fetchOulets = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/laundry/outlet`);
+      const response = await fetch(`${BASEURL}/api/outlet`);
       const data = await response.json();
       setOutlets(data.data);
     } catch (error) {
@@ -48,9 +50,7 @@ const OrdersPage = () => {
         customerId: customerIdFilter,
         sortBy: sortOrder,
       });
-      const response = await fetch(
-        `http://localhost:8000/api/laundry/order?${query}`,
-      );
+      const response = await fetch(`${BASEURL}/api/order?${query}`);
       const data = await response.json();
       setOrders(data.data);
       setTotalPages(data.pagination.totalPages);

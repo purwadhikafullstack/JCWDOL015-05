@@ -27,12 +27,6 @@ const OrderTrackingModal: React.FC<TrackingModalProps> = ({
           <div>Last Update</div>
         </div>
         <div className="flex justify-between mt-6">
-          {/* <button
-            onClick={onConfirm}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-          >
-            Create
-          </button> */}
           <button
             onClick={onClose}
             className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded-md"

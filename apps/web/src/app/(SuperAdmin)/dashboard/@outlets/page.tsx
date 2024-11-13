@@ -11,6 +11,8 @@ import { UpdateOutlet, createOutlet } from '../lib/outlet-services';
 import OutletUpdateModal from '../../dashboard-component/outlet-update-modal';
 import OutletCreateModal from '../../dashboard-component/outlet-create-modal';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 type Outlet = {
   outletId: number;
   name: string | null;
@@ -51,9 +53,7 @@ export default function OutletManagement() {
         kota: kotaFilter,
       });
 
-      const response = await fetch(
-        `http://localhost:8000/api/laundry/outlet?${query}`,
-      );
+      const response = await fetch(`${BASEURL}/api/outlet?${query}`);
       const data = await response.json();
       setOutlets(data.data);
       setTotalPages(data.pagination.totalPages);
@@ -82,7 +82,7 @@ export default function OutletManagement() {
   // Function to delete an outlet by ID
   const deleteOutlet = async () => {
     try {
-      await fetch(`http://localhost:8000/api/laundry/outlet/${outletId}`, {
+      await fetch(`${BASEURL}/api/outlet/${outletId}`, {
         method: 'DELETE',
       });
       // Refresh outlets list after deletion

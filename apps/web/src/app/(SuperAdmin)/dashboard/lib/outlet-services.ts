@@ -1,3 +1,5 @@
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 export async function createOutlet(
   name: string,
   provinsi: string,
@@ -7,7 +9,7 @@ export async function createOutlet(
   latitude: number,
 ) {
   try {
-    const response = await fetch('http://localhost:8000/api/laundry/outlet', {
+    const response = await fetch(`${BASEURL}/api/outlet`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,23 +48,20 @@ export async function UpdateOutlet(
   if (outletId === null) return;
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/laundry/outlet/${outletId}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          outlet: name,
-          provinsi,
-          kota,
-          kecamatan,
-          longitude,
-          latitude,
-        }),
+    const response = await fetch(`${BASEURL}/api/outlet/${outletId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        outlet: name,
+        provinsi,
+        kota,
+        kecamatan,
+        longitude,
+        latitude,
+      }),
+    });
     if (!response.ok) {
       throw new Error('Failed to create outlet');
     }

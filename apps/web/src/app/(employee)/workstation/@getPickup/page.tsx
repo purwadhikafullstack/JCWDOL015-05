@@ -9,10 +9,12 @@ export default function GetPickupPage() {
   const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletAdminId
   const [isAvailable, setIsAvailable] = useState<boolean>(true); // Replace with actual outletAdminId
 
+  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/get-pickup/${outletId}`,
+        `${BASEURL}/api/assignment/get-pickup/${outletId}`,
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
@@ -20,7 +22,7 @@ export default function GetPickupPage() {
     } catch (error) {
       console.error('Orders fetching error:', error);
     }
-  }, [outletId]);
+  }, [outletId, BASEURL]);
 
   useEffect(() => {
     fetchOrders();
@@ -28,16 +30,13 @@ export default function GetPickupPage() {
 
   const handleConfirm = async (orderId: number, driverId: number) => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/confirm-pickup`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ orderId, driverId }),
+      const response = await fetch(`${BASEURL}/api/assignment/confirm-pickup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ orderId, driverId }),
+      });
 
       if (response.ok) {
         setIsAvailable(!isAvailable);

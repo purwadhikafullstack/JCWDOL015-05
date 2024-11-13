@@ -11,6 +11,8 @@ import EmployeeUpdateModal from '../../dashboard-component/employee-update-modal
 import DeleteModal from '../../dashboard-component/delete-modal';
 import EmployeeCreateModal from '../../dashboard-component/employee-create-modal';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 type Employee = {
   employeeId: number;
   email: string;
@@ -52,9 +54,7 @@ export default function EmployeeManagement() {
         role: roleFilter,
         outletId: outletFilter,
       });
-      const response = await fetch(
-        `http://localhost:8000/api/laundry/employee?${query}`,
-      );
+      const response = await fetch(`${BASEURL}/api/employee?${query}`);
       const data = await response.json();
       setEmployees(data.data);
       setTotalPages(data.pagination.totalPages);
@@ -110,7 +110,7 @@ export default function EmployeeManagement() {
 
   const deleteEmployee = async () => {
     try {
-      await fetch(`http://localhost:8000/api/laundry/employee/${employeeId}`, {
+      await fetch(`${BASEURL}/api/employee/${employeeId}`, {
         method: 'DELETE',
       });
       setEmployees((prevEmployees) =>

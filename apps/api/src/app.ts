@@ -67,12 +67,12 @@ export default class App {
       res.send(`Hello, Purwadhika Student API!`);
     });
 
-    this.app.use('/api/laundry/employee', employeeRouter.getRouter());
-    this.app.use('/api/laundry/outlet', outletRouter.getRouter());
-    this.app.use('/api/laundry/items', itemsRouter.getRouter());
-    this.app.use('/api/laundry/order', orderRouter.getRouter());
-    this.app.use('/api/laundry/report', reportRouter.getRouter());
-    this.app.use('/api/laundry/assignment', assignmentRouter.getRouter());
+    this.app.use('/api/employee', employeeRouter.getRouter());
+    this.app.use('/api/outlet', outletRouter.getRouter());
+    this.app.use('/api/items', itemsRouter.getRouter());
+    this.app.use('/api/order', orderRouter.getRouter());
+    this.app.use('/api/report', reportRouter.getRouter());
+    this.app.use('/api/assignment', assignmentRouter.getRouter());
   }
 
   public start(): void {

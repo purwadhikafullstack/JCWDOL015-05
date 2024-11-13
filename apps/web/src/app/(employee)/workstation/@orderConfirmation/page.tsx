@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { useCallback, useEffect, useState } from 'react';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [outletAdminId, setOutletAdminId] = useState<number>(3); // Replace with actual outletAdminId
@@ -10,7 +12,7 @@ export default function OrderConfirmationPage() {
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/order-confirmation/${outletAdminId}`,
+        `${BASEURL}/api/assignment/order-confirmation/${outletAdminId}`,
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
@@ -27,7 +29,7 @@ export default function OrderConfirmationPage() {
   const handleConfirm = async (orderId: number) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/confirm-order/${orderId}`,
+        `${BASEURL}/api/assignment/confirm-order/${orderId}`,
         {
           method: 'PATCH',
           headers: {

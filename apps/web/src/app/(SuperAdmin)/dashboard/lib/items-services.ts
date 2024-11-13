@@ -1,10 +1,12 @@
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 export async function createItem(
   orderId: number | null,
   item: string | null,
   quantity: number | null,
 ) {
   try {
-    const response = await fetch('http://localhost:8000/api/laundry/items', {
+    const response = await fetch(`${BASEURL}/api/items`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -32,16 +34,13 @@ export async function UpdateItem(
   if (itemId === null) return;
 
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/laundry/items/${itemId}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ item, quantity }),
+    const response = await fetch(`${BASEURL}/api/items/${itemId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({ item, quantity }),
+    });
     if (!response.ok) {
       throw new Error('Failed to create post');
     }

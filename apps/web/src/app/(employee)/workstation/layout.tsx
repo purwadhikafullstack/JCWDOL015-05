@@ -18,7 +18,7 @@ export default function WorkstationLayout({
   workerTask: React.ReactNode;
 }) {
   type Role = 'outletAdmin' | 'worker' | 'driver';
-  const role: Role = 'driver' as Role;
+  const role: Role = 'outletAdmin' as Role;
 
   if (role === 'outletAdmin') {
     return (

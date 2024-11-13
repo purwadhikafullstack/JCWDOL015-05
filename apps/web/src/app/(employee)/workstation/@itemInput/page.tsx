@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import React, { useCallback, useEffect, useState } from 'react';
 
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
 type Item = {
   orderId: number | null;
   item: string;
@@ -23,7 +25,7 @@ export default function ItemInputPage() {
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/item-input/${outletAdminId}`,
+        `${BASEURL}/api/assignment/item-input/${outletAdminId}`,
       );
       const data = await response.json();
       setOrders(data);
@@ -104,16 +106,13 @@ export default function ItemInputPage() {
     const items = itemsByOrder[orderId];
     const weight = weightsByOrder[orderId];
     try {
-      const response = await fetch(
-        'http://localhost:8000/api/laundry/assignment/item-submit',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ items, weight, orderId, pricePerKg }),
+      const response = await fetch(`${BASEURL}/api/assignment/item-submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ items, weight, orderId, pricePerKg }),
+      });
 
       if (response.ok) {
         const data = await response.json();

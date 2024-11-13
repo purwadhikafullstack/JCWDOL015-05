@@ -9,10 +9,12 @@ export default function OnPickupPage() {
   const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletId
   const [isAvailable, setIsAvailable] = useState<boolean>(false); // Replace with actual isAvailable
 
+  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/on-the-way/${driverId}`,
+        `${BASEURL}/api/assignment/on-the-way/${driverId}`,
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
@@ -20,7 +22,7 @@ export default function OnPickupPage() {
     } catch (error) {
       console.error('Orders fetching error:', error);
     }
-  }, [driverId]);
+  }, [driverId, BASEURL]);
 
   useEffect(() => {
     fetchOrders();
@@ -28,16 +30,13 @@ export default function OnPickupPage() {
 
   const handleReceive = async (orderId: number) => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/receive-item`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ orderId }),
+      const response = await fetch(`${BASEURL}/api/assignment/receive-item`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ orderId }),
+      });
 
       if (response.ok) {
         alert(
@@ -58,7 +57,7 @@ export default function OnPickupPage() {
   const handleCompletePickup = async (orderId: number, driverId: number) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/complete-pickup`,
+        `${BASEURL}/api/assignment/complete-pickup`,
         {
           method: 'PATCH',
           headers: {
@@ -85,7 +84,7 @@ export default function OnPickupPage() {
   const handleCompleteDelivery = async (driverId: number) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/complete-delivery`,
+        `${BASEURL}/api/assignment/complete-delivery`,
         {
           method: 'PATCH',
           headers: {

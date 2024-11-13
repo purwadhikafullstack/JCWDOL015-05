@@ -9,10 +9,12 @@ export default function GetDeliveryPage() {
   const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletId
   const [isAvailable, setIsAvailable] = useState<boolean>(true); // Replace with actual isAvailable
 
+  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/get-delivery/${outletId}`,
+        `${BASEURL}/api/assignment/get-delivery/${outletId}`,
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
@@ -20,7 +22,7 @@ export default function GetDeliveryPage() {
     } catch (error) {
       console.error('Orders fetching error:', error);
     }
-  }, [outletId]);
+  }, [outletId, BASEURL]);
 
   useEffect(() => {
     fetchOrders();
@@ -29,7 +31,7 @@ export default function GetDeliveryPage() {
   const handleConfirm = async (orderId: number, driverId: number) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/laundry/assignment/confirm-delivery`,
+        `${BASEURL}/api/assignment/confirm-delivery`,
         {
           method: 'POST',
           headers: {
