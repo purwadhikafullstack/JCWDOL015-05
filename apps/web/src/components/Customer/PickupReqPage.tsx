@@ -175,49 +175,56 @@ export const CustomerPickupPage = () => {
 
       </Card>
       {
-        foundOutlet && (
+      foundOutlet.length > 0 ?
+         (
           <Card className="w-1/2">
-            {
-              foundOutlet.map((data: IOutletData, index) => (
-                <div key={index} className="w-full p-5 border rounded-md ">
-                  <form onSubmit={pickupFormik.handleSubmit} className="flex flex-row items-end justify-between">
-                    <div>
-                      <p>{data.outletId}</p>
-                      <p>{`Nama Outlet : ${data.name}`}</p>
-                      <p>{`Kecamatan : ${data.kecamatan}`}</p>
-                      <p>{`Kota : ${data.kota}`}</p>
-                      <p>{`Provinsi : ${data.provinsi}`}</p>
-                      <p>{`Jarak dari lokasi anda : ${data.jarak}`}</p>
-                    </div>
-                    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                      <DialogTrigger asChild>
-                        <Button type="button" onClick={handleId} value={data.outletId} >Pilih Outlet</Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogTitle hidden></DialogTitle>
-                        <DialogHeader>
-                          <h1 className="text-2xl font-semibold">Apakah Data anda sudah sesuai ?</h1>
-                        </DialogHeader>
-                        <div className="flex flex-col gap-3">
-                          <Label>Nama Outlet</Label>
-                          <p>{data.name}</p>
-                          <Label>Alamat Lengkap</Label>
-                          <p>{address?.detailAddress}</p>
-                          <Label>Tanggal Pickup</Label>
-                          {/* <p>{pickupFormik.values.customerId}</p> */}
-                          <p>{`${pickupFormik.values.pickupDate}`}</p>
-                          <Label>Waktu Pickup</Label>
-                          <p>{pickupFormik.values.pickupTime}</p>
-                        </div>
-                        <DialogFooter>
-                          <Button type="submit" onClick={() => pickupFormik.handleSubmit()} className="w-full">Order</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </form>
-                </div>
-              ))
-            }
+          {
+            foundOutlet.map((data: IOutletData, index) => (
+              <div key={index} className="w-full p-5 border rounded-md ">
+                <form onSubmit={pickupFormik.handleSubmit} className="flex flex-row items-end justify-between">
+                  <div>
+                    <p>{data.outletId}</p>
+                    <p>{`Nama Outlet : ${data.name}`}</p>
+                    <p>{`Kecamatan : ${data.kecamatan}`}</p>
+                    <p>{`Kota : ${data.kota}`}</p>
+                    <p>{`Provinsi : ${data.provinsi}`}</p>
+                    <p>{`Jarak dari lokasi anda : ${data.jarak}`}</p>
+                  </div>
+                  <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+                    <DialogTrigger asChild>
+                      <Button type="button" onClick={handleId} value={data.outletId} >Pilih Outlet</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogTitle hidden></DialogTitle>
+                      <DialogHeader>
+                        <h1 className="text-2xl font-semibold">Apakah Data anda sudah sesuai ?</h1>
+                      </DialogHeader>
+                      <div className="flex flex-col gap-3">
+                        <Label>Nama Outlet</Label>
+                        <p>{data.name}</p>
+                        <Label>Alamat Lengkap</Label>
+                        <p>{address?.detailAddress}</p>
+                        <Label>Tanggal Pickup</Label>
+                        {/* <p>{pickupFormik.values.customerId}</p> */}
+                        <p>{`${pickupFormik.values.pickupDate}`}</p>
+                        <Label>Waktu Pickup</Label>
+                        <p>{pickupFormik.values.pickupTime}</p>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit" onClick={() => pickupFormik.handleSubmit()} className="w-full">Order</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </form>
+              </div>
+            ))
+          }
+        </Card>
+        )
+      :
+         (
+          <Card className="w-1/2">
+            <p>Outlet Tidak Tersedia</p>
           </Card>
         )
       }

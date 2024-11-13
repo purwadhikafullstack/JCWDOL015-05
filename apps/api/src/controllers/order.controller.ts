@@ -1,7 +1,8 @@
 import prisma from "@/prisma";
 import { Request, Response } from "express";
 import { getDistance } from "geolib";
-
+import crypto from 'crypto'
+import { Prisma } from "@prisma/client";
 export class OrderController {
   async getNearOutlets(req: Request, res: Response) {
     try {
@@ -51,11 +52,7 @@ export class OrderController {
   async createPickupOrder(req: Request, res: Response) {
     try {
       const {
-        customerId,
-        outletId,
-        addressId,
-        pickupDate,
-        pickupTime, status
+        customerId, outletId, addressId, pickupDate, pickupTime, status
       } = req.body
 
       const prismaTransaction = await prisma.$transaction(async (pt) => {
@@ -166,45 +163,127 @@ export class OrderController {
       })
     }
   }
-async generatePaymentLink (req: Request, res: Response) {
+  async generatePaymentLink(req: Request, res: Response) {
     try {
-      const {orderId , customerId, outletsId, weight , price} = req.body
-      // const checkUser = await prisma.customer.findUnique({
-      //   where : {customerId : customerId}
-      // })
+      const { orderId, customerId, outletsId, weight, price } = req.body
+      const checkUser = await prisma.customer.findUnique({
+        where: { customerId: customerId }
+      })
+      const checkOrder = await prisma.order.findUnique({
+        where: { orderId: +orderId }
+      })
+      if (!checkOrder) throw "Order Not Found"
+      const uniqueOrder = `${orderId} ${Date.now()}`
       const parameter = {
-        transaction_details : {
-          order_id : orderId,
-          gross_amount : price * weight
+        transaction_details: {
+          order_id: orderId,
+          gross_amount: price * weight
         },
-        // customer_details : {
-        //   email : checkUser?.email!,
-        //   first_name : checkUser?.fullName,
-        // }
+        customer_details: {
+          email: `${checkUser?.email!}`,
+          first_name: checkUser?.fullName!,
+        },
+        expiry: {
+          duration: 15,
+          unit: "minutes"
+        }
       }
-      const url = `https://api.sandbox.midtrans.com`
+      const url = `https://app.sandbox.midtrans.com`
       const secret = process.env.MIDTRANS_SECRET_KEY!
       const encodedKey = Buffer.from(secret).toString('base64')
-      const paymentLink = await fetch (`${url}/v1/payment-links`,{
-        method : "POST",
-        headers : {
-          "Content-Type" : "application/json",
-          "Authorization" : `Basic ${encodedKey}`,
-          "Accept" : "application/json"
+      const paymentLink = await fetch(`${url}/snap/v1/transactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${encodedKey}`,
+          "Accept": "application/json"
         },
         body: JSON.stringify(parameter)
       })
+      console.log(paymentLink)
       const response = await paymentLink.json()
-      
       res.status(200).send({
-        status : 'ok',
-        data: response
+        status: 'ok',
+        data: response,
       })
 
     } catch (err) {
       res.status(400).send({
-        status : 'failed',
-        error : err
+        status: 'failed',
+        error: err
+      })
+    }
+  }
+  async updatePaymentOrder(req: Request, res: Response) {
+    try {
+      const { order_id, transaction_status, status_code } = req.query
+
+      if (!order_id || !transaction_status || !status_code) throw "invalid query"
+      const checkOrder = await prisma.order.findUnique({
+        where: { orderId: +order_id, paymentStatus: "unpaid" }
+      })
+
+      if (checkOrder && transaction_status === "settlement" && status_code === "200") {
+        await prisma.order.update({
+          where: { orderId: +order_id },
+          data: { paymentStatus: 'paid' }
+        })
+      }
+
+      res.status(200).send({
+        status: 'ok',
+        msg: "payment status updated to paid",
+      })
+
+    } catch (err) {
+      res.status(400).send({
+        status: 'ok',
+        err: err
+      })
+    }
+  }
+  async getOrderListCustomer(req: Request, res: Response) {
+    try {
+      const { customerId } = req.body
+      const { search } = req.query
+      let filter: Prisma.OrderWhereInput = {}
+      if (search) {
+        filter.orderId = { equals: filter as number }
+      }
+      const sortBy = req.query.sortBy as string || 'orderId'
+      const sortOrder = req.query.sortOrder as string || 'desc'
+      const page = parseInt(req.query.page as string) || 1
+      const limit = parseInt(req.query.limit as string) || 10
+      const skip = (page - 1) * limit
+      const listOrder = await prisma.order.findMany({
+        where: { customerId: customerId, ...filter },
+        skip: skip,
+        take: limit,
+        orderBy: {
+          [sortBy]: sortOrder
+        },
+        include: {
+          drivers: true,
+          items: true,
+          outlet: true,
+          outletAdmin: true
+        }
+      })
+      const totalOrder = await prisma.order.count({
+        where: { customerId: customerId, ...filter }
+      })
+
+      res.status(200).send({
+        status: 'ok',
+        data: listOrder,
+        total: totalOrder,
+        page: page,
+        totalPages: Math.ceil(totalOrder / limit)
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'ok',
+        err: err
       })
     }
   }

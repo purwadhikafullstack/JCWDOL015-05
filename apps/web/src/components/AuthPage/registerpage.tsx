@@ -29,8 +29,9 @@ export const RegisterPage = () => {
   const handleRegister = async (data: ICustomerReg, action: FormikHelpers<ICustomerReg>) => {
     try {
       const { result, ok } = await customerReg(data)
-      router.push('/register/success')
+      console.log(result)
       if (!ok) throw result.msg
+      router.push('/register/success')
       action.resetForm()
       toast.success(result.msg)
     } catch (err) {

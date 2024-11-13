@@ -63,6 +63,7 @@ export class CopyLocation {
       const resProvinsi = await fetch(urlProvinsi)
       const response = await resProvinsi.json()
       const result = response.value
+      console.log(result)
       for (const province of result) {
         if (result === null || undefined) throw 'No Data'
         const provinceId = province.id
