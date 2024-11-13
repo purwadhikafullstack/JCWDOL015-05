@@ -1,7 +1,7 @@
 'use client'
-import heroImg from "../../../public/img/herobg.png";
-import heroImg2 from "../../../public/img/image.png";
-import heroImg3 from "../../../public/img/herobg3.png";
+import heroImg from "../../../public/img/herobg1.webp";
+import heroImg2 from "../../../public/img/herobg2.webp";
+import heroImg3 from "../../../public/img/herobg3.webp";
 import React, { HTMLAttributes, useEffect } from "react";
 import { GsapAnimation } from "@/services/gsapAnimation";
 import { Input } from "../ui/input";
@@ -12,7 +12,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { Card, CardContent } from "../ui/card";
 import { serviceIcon, ServicesIcon } from "./serviceIcon";
 
-const heroImages = [heroImg, heroImg2, heroImg3]
+const heroImages = [heroImg,heroImg2,heroImg3]
 export default function Hero() {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: false })
@@ -27,7 +27,7 @@ export default function Hero() {
           <CarouselContent>
             {heroImages.map((img, index) => (
               <CarouselItem key={index} className="relative w-full">
-                <div className="w-full h-[950px]">
+                <div className="w-full h-screen">
                   <Image
                     src={img}
                     alt="hero"
@@ -51,16 +51,8 @@ export default function Hero() {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center w-full h-20 opacity-0" id="card">
-        <div className="w-1/2 -translate-y-32 rounded-lg h-72 bg-steel-blue text-floral-white ">
-          <div className="flex flex-col items-center justify-center gap-3 py-3">
-            <h1 className="text-2xl font-semibold">Laundry Reservation</h1>
-            <div className="w-1/3 space-y-5">
-              <Input type="text" placeholder="Enter your name" className="border-2 placeholder:text-floral-white focus-visible:border-white" />
-              <Input type="text" placeholder="Enter your name" className="border-2 placeholder:text-floral-white" />
-              <Input type="text" placeholder="Enter your name" className="border-2 placeholder:text-floral-white" />
-            </div>
-            <Button className="rounded-full " size={'lg'}>Reservation</Button>
-          </div>
+        <div className="w-48 -translate-y-32 rounded-lg h-60 bg-white border-2 border-steel-blue border-solid text-steel-blue flex flex-col items-center duration-300 justify-center cursor-pointer  hover:bg-steel-blue hover:text-white">
+          <p className="text-2xl font-semibold">Order Now</p>
         </div>
       </div>
       

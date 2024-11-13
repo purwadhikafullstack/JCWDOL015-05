@@ -9,3 +9,10 @@ export const successOrder = async () => {
         body : JSON.stringify({})
     })
 }
+
+export const customerOrderData = async (customerId : number) => {
+    const url = `${BASEURL}/api/orders/:${customerId}`
+    const res = await fetch (url)
+    const result = await res.json()
+    return {ok: res.ok, result, orderData: result.data} 
+}

@@ -12,3 +12,12 @@ export const orderDataSchema = yup.object().shape({
   pickupDate: yup.date().required(),
   pickupTime: yup.string().required(),
 })
+export const mapSchema = yup.object().shape({
+  province: yup.string().required(),
+  city: yup.string().required(),
+  subdistrict: yup.string().required(),
+  detailAddress: yup.string().required(),
+  longitude: yup.string().required(),
+  latitude: yup.string().required(),
+  customerId: yup.string().required(),
+});
