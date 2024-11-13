@@ -3,6 +3,9 @@ import { PERSIST, Persistor, persistReducer, persistStore, REGISTER, REHYDRATE }
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import customerReducer from "./slice/customerSlice";
 import employeeReducer from "./slice/employeeSlice"
+import workerReducer from "./slice/workerSlice"
+import driverReducer from "./slice/driverSlice"
+import outletAdminReducer from "./slice/outletAdminSlice"
 
 
 const createNoopStorage = () => {
@@ -28,6 +31,9 @@ const persistConfig = {
 const rootReducer = combineReducers({
   customer: customerReducer,
   employee: employeeReducer,
+  worker : workerReducer,
+  driver : driverReducer,
+  outletAdmin : outletAdminReducer
 })
 const makeConfiguredStore = () => configureStore({
   reducer: rootReducer,

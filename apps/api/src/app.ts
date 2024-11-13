@@ -20,6 +20,9 @@ import { AttendanceRouter } from './routers/attendance.router';
 
 import passport from 'passport';
 import '../src/services/passportConfig'
+import { WorkerRouter } from './routers/worker.router';
+import { NotificationRouter } from './routers/notification.router';
+import { DriverRouter } from './routers/driver.router';
 export default class App {
   private app: Express;
 
@@ -69,6 +72,9 @@ export default class App {
     const addressRouter = new AddressRouter()
     const orderRouter = new OrderRouter()
     const attendanceRouter = new AttendanceRouter()
+    const workerRouter = new WorkerRouter()
+    const notificationRouter =  new NotificationRouter()
+    const driverRouter = new DriverRouter()
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
@@ -80,6 +86,9 @@ export default class App {
     this.app.use('/api/addresses', addressRouter.getRouter())
     this.app.use('/api/orders', orderRouter.getRouter())
     this.app.use('/api/submit', attendanceRouter.getRouter())
+    this.app.use('/api/worker', workerRouter.getRouter())
+    this.app.use('/api/notifications', notificationRouter.getROuter())
+    this.app.use('/api/driver', driverRouter.getRouter())
   }
 
   public start(): void {

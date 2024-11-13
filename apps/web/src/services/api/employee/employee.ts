@@ -13,5 +13,6 @@ export const employeeLogin = async (data: IEmployeeLogin) => {
     body: JSON.stringify(data)
   })
   const result = await res.json()
-  return { result, ok: res.ok, employee: result.user.data }
+  console.log(result)
+  return { result, ok: res.ok, employee: result.user.data, worker: result.worker, driver: result.driver, outletadmin: result.outletAdmin }
 }

@@ -91,6 +91,9 @@ export class AuthController {
       const { email, password, role } = req.body
       let token: string = ''
       let data
+      let worker
+      let driver
+      let outletAdmin
       if (!role) {
         const checkEmail = await prisma.customer.findUnique({
           where: { email: email }
@@ -104,14 +107,43 @@ export class AuthController {
         data = checkEmail
         token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' })
       } else {
-        const checkWorker = await prisma.employee.findUnique({
+        const checkEmployee = await prisma.employee.findUnique({
           where: { email: email, role: role }
+
         })
-        if (!checkWorker) throw 'Wrong Email or Wrong Role'
-        const isValidPassEmp = await compare(password, checkWorker?.password!)
+        if (!checkEmployee) throw 'Wrong Email or Wrong Role'
+
+        let employeeRole = checkEmployee.role
+
+        if(employeeRole === "outletAdmin") {
+          outletAdmin = await prisma.outletAdmin.findUnique({
+            where: { employeeId: checkEmployee?.employeeId! },
+            include: {
+              employee: true
+            }
+          })
+        } else if (employeeRole === "worker") {
+          worker = await prisma.worker.findUnique({
+            where: { employeeId: checkEmployee?.employeeId! },
+            include: {
+              employee: true
+            }
+          })
+        } else if (employeeRole === "driver") {
+          driver = await prisma.driver.findUnique({
+            where: { employeeId: checkEmployee?.employeeId! },
+            include: {
+              employee: true
+            }
+          })
+        }
+
+        const isValidPassEmp = await compare(password, checkEmployee?.password!)
+        console.log("worker", worker)
+        console.log("driver", driver)
         if (!isValidPassEmp) throw 'Wrong Password'
-        const payload = { id: checkWorker?.employeeId!, role: checkWorker?.role! }
-        data = checkWorker
+        const payload = { employeeId: checkEmployee?.employeeId!, role: checkEmployee?.role! }
+        data = checkEmployee
         token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' })
       }
       res.status(200).send({
@@ -120,7 +152,10 @@ export class AuthController {
         user: {
           token: token,
           data: data
-        }
+        },
+        worker : worker,
+        driver: driver,
+        outletAdmin: outletAdmin
       })
     } catch (err) {
       res.status(400).send({

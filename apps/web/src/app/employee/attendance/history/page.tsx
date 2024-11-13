@@ -1,6 +1,9 @@
 'use client';
+import { useAppSelector } from '@/redux/hooks';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { record } from 'zod';
 
 interface Attendance {
     attendanceId: number;
@@ -10,6 +13,10 @@ interface Attendance {
 }
 
 export default function History() {
+    const dispatch = useDispatch()
+    const employee = useAppSelector((state) => state.employee)
+
+    const [employeeId, setEmployeeId] = useState(employee?.employeeId);
     const [attendanceHistory, setAttendanceHistory] = useState<Attendance[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -29,7 +36,7 @@ export default function History() {
         setLoading(true);
         setError(null); // Reset error before fetch
         try {
-            const response = await fetch(`${API_URL}/api/submit/attendance/2`);
+            const response = await fetch(`${API_URL}/api/submit/attendance/${employee.employeeId}`);
             console.log('Response:', response); // Log response
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance history');

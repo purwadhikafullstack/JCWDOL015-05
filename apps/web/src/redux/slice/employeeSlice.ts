@@ -9,7 +9,9 @@ export type IEmployeeData = {
     avatar: string
 }
 
-const initialState = {
+
+
+const initialState: IEmployeeData = {
     employeeId: 0,
     email: '',
     fullName: '',
@@ -17,7 +19,8 @@ const initialState = {
     avatar: '',
 }
 
-export const workerSlice = createSlice({
+
+export const employeeSlice = createSlice({
     name: 'employee',
     initialState,
     reducers: {
@@ -39,5 +42,5 @@ export const workerSlice = createSlice({
     }
 })
 
-export const { employeeLoginAction, employeeLogoutAction } = workerSlice.actions
-export default workerSlice.reducer
+export const { employeeLoginAction, employeeLogoutAction } = employeeSlice.actions
+export default employeeSlice.reducer

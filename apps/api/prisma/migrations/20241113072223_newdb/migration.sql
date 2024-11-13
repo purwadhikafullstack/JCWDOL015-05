@@ -67,16 +67,6 @@ CREATE TABLE `Worker` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Driver` (
-    `driverId` INTEGER NOT NULL AUTO_INCREMENT,
-    `isAvailable` BOOLEAN NOT NULL DEFAULT true,
-    `employeeId` INTEGER NOT NULL,
-
-    UNIQUE INDEX `Driver_employeeId_key`(`employeeId`),
-    PRIMARY KEY (`driverId`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Outlet` (
     `outletId` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -141,28 +131,25 @@ CREATE TABLE `WorkersOnOrders` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `DriversOnOrders` (
-    `orderId` INTEGER NOT NULL,
-    `driverId` INTEGER NOT NULL,
-    `activity` ENUM('pickUp', 'delivery') NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+CREATE TABLE `Driver` (
+    `driverId` INTEGER NOT NULL AUTO_INCREMENT,
+    `isAvailable` BOOLEAN NOT NULL DEFAULT true,
+    `employeeId` INTEGER NOT NULL,
 
-    PRIMARY KEY (`orderId`, `driverId`)
+    UNIQUE INDEX `Driver_employeeId_key`(`employeeId`),
+    PRIMARY KEY (`driverId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Request` (
-    `requestId` INTEGER NOT NULL AUTO_INCREMENT,
-    `customerId` INTEGER NOT NULL,
-    `driverId` INTEGER NULL,
-    `addressAddressId` INTEGER NOT NULL,
-    `status` ENUM('menungguPenjemputanDriver', 'laundryMenujuOutlet', 'laundrySampaiOutlet', 'pencucian', 'penyetrikaan', 'packing', 'menungguPembayaran', 'siapDiantar', 'sedangDikirim', 'selesai') NOT NULL DEFAULT 'menungguPenjemputanDriver',
+CREATE TABLE `DriversOnOrders` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `orderId` INTEGER NOT NULL,
+    `driverId` INTEGER NOT NULL,
+    `activity` ENUM('pickUp', 'delivery') NOT NULL,
+    `status` VARCHAR(191) NOT NULL DEFAULT 'Pending',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NULL,
 
-    INDEX `Request_customerId_idx`(`customerId`),
-    INDEX `Request_driverId_idx`(`driverId`),
-    PRIMARY KEY (`requestId`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -178,6 +165,18 @@ CREATE TABLE `ListAddress` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `Notification` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `workerId` INTEGER NOT NULL,
+    `orderId` INTEGER NOT NULL,
+    `message` VARCHAR(191) NOT NULL,
+    `isRead` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Address` ADD CONSTRAINT `Address_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `Customer`(`customerId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -189,9 +188,6 @@ ALTER TABLE `OutletAdmin` ADD CONSTRAINT `OutletAdmin_employeeId_fkey` FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE `Worker` ADD CONSTRAINT `Worker_employeeId_fkey` FOREIGN KEY (`employeeId`) REFERENCES `Employee`(`employeeId`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Driver` ADD CONSTRAINT `Driver_employeeId_fkey` FOREIGN KEY (`employeeId`) REFERENCES `Employee`(`employeeId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_outletId_fkey` FOREIGN KEY (`outletId`) REFERENCES `Outlet`(`outletId`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -215,16 +211,16 @@ ALTER TABLE `WorkersOnOrders` ADD CONSTRAINT `WorkersOnOrders_orderId_fkey` FORE
 ALTER TABLE `WorkersOnOrders` ADD CONSTRAINT `WorkersOnOrders_workerId_fkey` FOREIGN KEY (`workerId`) REFERENCES `Worker`(`workerId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Driver` ADD CONSTRAINT `Driver_employeeId_fkey` FOREIGN KEY (`employeeId`) REFERENCES `Employee`(`employeeId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `DriversOnOrders` ADD CONSTRAINT `DriversOnOrders_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`orderId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `DriversOnOrders` ADD CONSTRAINT `DriversOnOrders_driverId_fkey` FOREIGN KEY (`driverId`) REFERENCES `Driver`(`driverId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Request` ADD CONSTRAINT `Request_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `Customer`(`customerId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Notification` ADD CONSTRAINT `Notification_workerId_fkey` FOREIGN KEY (`workerId`) REFERENCES `Worker`(`workerId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Request` ADD CONSTRAINT `Request_driverId_fkey` FOREIGN KEY (`driverId`) REFERENCES `Driver`(`driverId`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Request` ADD CONSTRAINT `Request_addressAddressId_fkey` FOREIGN KEY (`addressAddressId`) REFERENCES `Address`(`addressId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Notification` ADD CONSTRAINT `Notification_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`orderId`) ON DELETE RESTRICT ON UPDATE CASCADE;

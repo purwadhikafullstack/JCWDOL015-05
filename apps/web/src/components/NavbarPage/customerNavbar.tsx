@@ -16,7 +16,6 @@ export const CustomerNavbar = () => {
 
   const pathname = usePathname();  // usePathname is safe for server-side rendering
   const customer = useAppSelector((state) => state.customer)
-  
   console.log(customer)
   const getTokenData = async () => {
     const res = await getToken()
@@ -31,7 +30,6 @@ export const CustomerNavbar = () => {
   // const storedData = queryClient.getQueryData(['customer'])
   // console.log("Stored customer data:", storedData)
   return (
-    
     <div className="relative flex items-center h-[60px] px-[45px] bg-[#fffaf0]">
       {/* Logo */}
       <div className="absolute left-[45px]">
@@ -94,4 +92,3 @@ export const CustomerNavbar = () => {
     </div>
   );
 }
-

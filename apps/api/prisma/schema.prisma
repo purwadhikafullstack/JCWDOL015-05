@@ -61,8 +61,6 @@ model Customer {
   order      Order[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime?
-
-  Request Request[]
 }
 
 model Address {
@@ -74,10 +72,9 @@ model Address {
   longitude     Float?
   latitude      Float?
   detailAddress String
-  isPrimary Boolean @default(false)
+  isPrimary     Boolean   @default(false)
   // relations
   customer      Customer  @relation(fields: [customerId], references: [customerId])
-  Request       Request[]
 }
 
 model Employee {
@@ -108,22 +105,14 @@ model OutletAdmin {
 }
 
 model Worker {
-  workerId   Int               @id @default(autoincrement())
-  station    Station
-  employee   Employee          @relation(fields: [employeeId], references: [employeeId])
-  employeeId Int               @unique
-  orders     WorkersOnOrders[]
+  workerId     Int               @id @default(autoincrement())
+  station      Station
+  employee     Employee          @relation(fields: [employeeId], references: [employeeId])
+  employeeId   Int               @unique
+  orders       WorkersOnOrders[]
+  Notification Notification[]
 }
 
-model Driver {
-  driverId    Int               @id @default(autoincrement())
-  isAvailable Boolean           @default(true)
-  employee    Employee          @relation(fields: [employeeId], references: [employeeId])
-  employeeId  Int               @unique
-  orders      DriversOnOrders[]
-
-  Request Request[]
-}
 
 model Outlet {
   outletId  Int        @id @default(autoincrement())
@@ -138,29 +127,31 @@ model Outlet {
 }
 
 model Order {
-  orderId Int @id @default(autoincrement())
-  outletId Int 
-  outletAdminId Int? // id of outlet admin who accepted the order
-  workers WorkersOnOrders[] // setiap orderan berisi 3 workers (3 stations)
-  drivers DriversOnOrders[] // setiap orderan berpotensi dihandle oleh 2 driver yg berbeda (pickup/ delivery)
-  customerId Int 
-  customerAddressId Int 
-  items Items[]
-  pricePerKg Int @default(12000)
-  weight Float @default(0)
-  bypassMessage String?
-  paymentStatus PaymentStatus @default(unpaid)
-  driverId Int?
-  pickupDate DateTime
-  pickupTime String?
-  complain String?
-  status OrderStatus
-  createdAt DateTime  @default(now())
-  updatedAt DateTime @updatedAt
+  orderId           Int               @id @default(autoincrement())
+  outletId          Int
+  outletAdminId     Int? // id of outlet admin who accepted the order
+  workers           WorkersOnOrders[] // setiap orderan berisi 3 workers (3 stations)
+  drivers           DriversOnOrders[] // setiap orderan berpotensi dihandle oleh 2 driver yg berbeda (pickup/ delivery)
+  customerId        Int
+  customerAddressId Int
+  items             Items[]
+  pricePerKg        Int               @default(12000)
+  weight            Float             @default(0)
+  bypassMessage     String?
+  paymentStatus     PaymentStatus     @default(unpaid)
+  driverId          Int?
+  pickupDate        DateTime
+  pickupTime        String?
+  complain          String?
+  status            OrderStatus
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
-  outlet Outlet @relation(fields: [outletId], references: [outletId])
+  outlet      Outlet       @relation(fields: [outletId], references: [outletId])
   outletAdmin OutletAdmin? @relation(fields: [outletAdminId], references: [outletAdminId])
-  customer Customer @relation(fields: [customerId], references: [customerId])
+  customer    Customer     @relation(fields: [customerId], references: [customerId])
+
+  Notification Notification[]
 }
 
 model Items {
@@ -193,34 +184,25 @@ model WorkersOnOrders {
   @@id([orderId, workerId])
 }
 
+model Driver {
+  driverId    Int               @id @default(autoincrement())
+  isAvailable Boolean           @default(true)
+  employee    Employee          @relation(fields: [employeeId], references: [employeeId])
+  employeeId  Int               @unique
+  orders      DriversOnOrders[]
+}
+
 model DriversOnOrders {
-  order     Order    @relation(fields: [orderId], references: [orderId])
-  orderId   Int
-  driver    Driver   @relation(fields: [driverId], references: [driverId])
-  driverId  Int
-  activity  Activity // pickup or delivery
-  createdAt DateTime @default(now())
-
-  @@id([orderId, driverId])
+    id        Int      @id @default(autoincrement())
+    order     Order    @relation(fields: [orderId], references: [orderId])
+    orderId   Int
+    driver    Driver   @relation(fields: [driverId], references: [driverId])
+    driverId  Int
+    activity  Activity
+    status    String   @default("Pending") // add status if needed
+    createdAt DateTime @default(now())
 }
 
-model Request {
-  requestId        Int         @id @default(autoincrement())
-  customerId       Int
-  driverId         Int?
-  addressAddressId Int
-  status           OrderStatus @default(menungguPenjemputanDriver) 
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime?
-
-  // relations
-  customer Customer @relation(fields: [customerId], references: [customerId])
-  driver   Driver?  @relation(fields: [driverId], references: [driverId])
-  address  Address  @relation(fields: [addressAddressId], references: [addressId])
-
-  @@index([customerId])
-  @@index([driverId])
-}
 
 model ListAddress {
   id            Int    @id @default(autoincrement())
@@ -230,4 +212,16 @@ model ListAddress {
   city          String
   subdistrictId Int
   subdistrict   String
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  workerId  Int
+  orderId   Int
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  worker    Worker   @relation(fields: [workerId], references: [workerId])
+  order     Order    @relation(fields: [orderId], references: [orderId])
 }

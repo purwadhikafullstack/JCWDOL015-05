@@ -11,22 +11,32 @@ import { Label } from "../ui/label"
 import { Input } from "../ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import * as yup from 'yup'
+import { useDispatch } from "react-redux"
+import { workerLoginAction } from "@/redux/slice/workerSlice"
+import { driverLoginAction, outletAdminLoginAction } from "@/redux/slice/driverSlice"
 const EmployeeLoginSchema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().required().min(8)
 })
 export default function EmployeeLoginPage() {
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const mutation = useMutation({
     mutationFn: async (data: IEmployeeLogin) => await employeeLogin(data),
     onSuccess: (data) => {
-      const { result, ok, employee } = data
+      const { result, ok, employee, worker, driver, outletadmin } = data
       if (!ok) throw result.msg
       createToken(result.user.token)
       toast.success(result.msg)
-      console.log(employee)
-      // router push
+     
+      if(worker) dispatch(workerLoginAction(worker))
+        if(driver) dispatch(driverLoginAction(driver))
+          if(outletadmin) dispatch(outletAdminLoginAction(outletadmin))
+          
+
+      console.log(worker)
+      router.push('/employee')
     },
     onError: (err) => {
       console.log(err)
