@@ -52,6 +52,31 @@ export class AssignmentRouter {
       '/confirm-delivery',
       this.assignmentController.confirmDelivery,
     );
+    this.router.get(
+      '/on-the-way/:driverId',
+      this.assignmentController.getOnPickup,
+    );
+    this.router.patch('/receive-item', this.assignmentController.receiveItem);
+    this.router.patch(
+      '/complete-pickup',
+      this.assignmentController.completePickup,
+    );
+    this.router.patch(
+      'complete-delivery',
+      this.assignmentController.completeDelivery,
+    );
+    this.router.get(
+      '/get-task/:status/:outletId',
+      this.assignmentController.getTask,
+    );
+    this.router.patch(
+      '/submit-bypass/:orderId',
+      this.assignmentController.submitBypass,
+    );
+    this.router.patch(
+      '/submit-task/:orderId',
+      this.assignmentController.submitTask,
+    );
   }
 
   getRouter(): Router {

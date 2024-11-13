@@ -91,6 +91,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
                 className="w-full border rounded p-2 mb-4 bg-gray-200"
                 value={station || undefined}
                 onChange={(e) => setStation(e.target.value)}
+                defaultValue="washing"
               >
                 <option value="washing">Washing</option>
                 <option value="ironing">Ironing</option>

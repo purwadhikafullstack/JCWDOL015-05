@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useCallback, useEffect, useState } from 'react';
 
-export default function OrderConfirmationPage() {
+export default function GetPickupPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [driverId, setDriverId] = useState<number>(17); // Replace with actual outletAdminId
   const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletAdminId
@@ -40,8 +40,8 @@ export default function OrderConfirmationPage() {
       );
 
       if (response.ok) {
-        alert(`Order #${orderId} is now yours, lets go!`);
         setIsAvailable(!isAvailable);
+        alert(`Order #${orderId} is now yours, lets go!`);
         fetchOrders();
       } else {
         const errorData = await response.json();

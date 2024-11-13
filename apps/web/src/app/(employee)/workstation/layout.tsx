@@ -6,12 +6,16 @@ export default function WorkstationLayout({
   bypassRequest,
   getPickup,
   getDelivery,
+  onPickup,
+  workerTask,
 }: {
   orderConfirmation: React.ReactNode;
   itemInput: React.ReactNode;
   bypassRequest: React.ReactNode;
   getPickup: React.ReactNode;
   getDelivery: React.ReactNode;
+  onPickup: React.ReactNode;
+  workerTask: React.ReactNode;
 }) {
   type Role = 'outletAdmin' | 'worker' | 'driver';
   const role: Role = 'driver' as Role;
@@ -53,7 +57,8 @@ export default function WorkstationLayout({
           {getDelivery}
         </div>
         <div className="border-y-2 border-gray-400 p-4">
-          <h1 className="text-center font-bold text-xl mb-8">On Going</h1>
+          <h1 className="text-center font-bold text-xl mb-8">On The Way</h1>
+          {onPickup}
         </div>
       </div>
     );
@@ -61,11 +66,9 @@ export default function WorkstationLayout({
     return (
       <div className="flex flex-col gap-4 p-5 bg-white min-h-screen text-gray-800">
         <h1 className="text-center font-bold text-2xl mb-12">Workstation</h1>
-        <div className="border-y-2 border-gray-400 p-4">
-          <h1 className="text-center font-bold text-xl mb-8">Incoming</h1>
-        </div>
-        <div className="border-y-2 border-gray-400 p-4">
-          <h1 className="text-center font-bold text-xl mb-8">Request Bypass</h1>
+        <div className="border-y-2 border-gray-400 p-4 flex flex-col items-center">
+          <h1 className="text-center font-bold text-xl mb-8">Worker Task</h1>
+          {workerTask}
         </div>
       </div>
     );
