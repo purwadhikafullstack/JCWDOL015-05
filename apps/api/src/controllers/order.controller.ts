@@ -48,14 +48,18 @@ export class OrderController {
           workers: {
             include: {
               worker: {
-                select: { employeeId: true },
+                include: {
+                  employee: { select: { fullName: true } },
+                },
               },
             },
           },
           drivers: {
             include: {
               driver: {
-                select: { employeeId: true },
+                include: {
+                  employee: { select: { fullName: true } },
+                },
               },
             },
           },

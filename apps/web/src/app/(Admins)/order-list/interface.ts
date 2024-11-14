@@ -34,3 +34,21 @@ interface Outlets {
   outletId: number;
   name: string;
 }
+
+interface Driver {
+  driverId: number;
+  employeeId: number;
+}
+
+interface Drivers {
+  drivers: { driver: Driver }[];
+}
+
+interface Worker {
+  workerId: number;
+  employeeId: number;
+}
+
+interface Workers {
+  workers: { worker: Worker }[];
+}

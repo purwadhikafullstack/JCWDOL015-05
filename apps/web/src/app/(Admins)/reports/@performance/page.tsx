@@ -11,6 +11,7 @@ const ApexCharts = dynamic(() => import('react-apexcharts'), {
 
 interface OrderCountData {
   employeeId: number;
+  employeeName: string;
   counts: {
     date: string;
     count: number;
@@ -25,6 +26,7 @@ const EmployeePerformanceReport = () => {
   const [rangeType, setRangeType] = useState<string>('daily');
   const [outletId, setOutletId] = useState<string>('');
   const [outlets, setOutlets] = useState<Outlets[]>([]);
+  const [employeeType, setEmployeeType] = useState<string>('worker');
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -47,10 +49,14 @@ const EmployeePerformanceReport = () => {
         ...(outletId && { outletId }),
       });
 
-      const response = await fetch(`${BASEURL}/api/report/workers?${query}`);
+      const response = await fetch(
+        `${BASEURL}/api/report/${employeeType === 'worker' ? 'workers' : 'drivers'}?${query}`,
+      );
       if (!response.ok) throw new Error('Failed to fetch data');
 
       const data: OrderCountData[] = await response.json();
+      console.log(data);
+
       setChartData(data);
 
       // Collect unique dates across all employee data
@@ -62,7 +68,7 @@ const EmployeePerformanceReport = () => {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  }, [startDate, endDate, rangeType, outletId, BASEURL]);
+  }, [startDate, endDate, rangeType, outletId, BASEURL, employeeType]);
 
   useEffect(() => {
     fetchData();
@@ -100,7 +106,7 @@ const EmployeePerformanceReport = () => {
   };
 
   const chartSeries = chartData.map((data) => ({
-    name: `Employee ${data.employeeId}`,
+    name: `${data.employeeName}`,
     data: uniqueDates.map((date) => {
       const countEntry = data.counts.find((count) => count.date === date);
       return countEntry ? countEntry.count : 0;
@@ -127,7 +133,11 @@ const EmployeePerformanceReport = () => {
           ))}
         </select>
 
-        <select className="border p-2 rounded bg-white">
+        <select
+          className="border p-2 rounded bg-white"
+          value={employeeType}
+          onChange={(e) => setEmployeeType(e.target.value)}
+        >
           <option value="worker">Worker</option>
           <option value="driver">Driver</option>
         </select>

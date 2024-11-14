@@ -11,6 +11,10 @@ const OrdersPage = () => {
   const [isTrackingModalOpen, setIsTrackingModalOpen] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
   const [outlets, setOutlets] = useState<Outlets[]>([]);
+  const [updatedAt, setUpdatedAt] = useState<string>('');
+  const [status, setStatus] = useState<string>('');
+  const [drivers, setDrivers] = useState<Drivers[]>([]);
+  const [workers, setWorkers] = useState<Workers[]>([]);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -53,6 +57,8 @@ const OrdersPage = () => {
       const response = await fetch(`${BASEURL}/api/order?${query}`);
       const data = await response.json();
       setOrders(data.data);
+      console.log(data.data);
+
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
       console.error('Orders fetching error:', error);
@@ -68,8 +74,18 @@ const OrdersPage = () => {
     sortOrder,
   ]);
 
-  const openTrackingModal = (orderId: number) => {
+  const openTrackingModal = async (
+    orderId: number,
+    updatedAt: string,
+    status: string,
+    drivers: any,
+    workers: any,
+  ) => {
+    setUpdatedAt(updatedAt);
     setOrderId(orderId);
+    setStatus(status);
+    setDrivers(drivers);
+    setWorkers(workers);
     setIsTrackingModalOpen(true);
   };
 
@@ -196,7 +212,15 @@ const OrdersPage = () => {
               <td>{new Date(order.createdAt).toLocaleString()}</td>
               <td>
                 <Button
-                  onClick={() => openTrackingModal(order.orderId)}
+                  onClick={() =>
+                    openTrackingModal(
+                      order.orderId,
+                      new Date(order.updatedaAt!).toDateString(),
+                      order.status,
+                      order.drivers,
+                      order.workers,
+                    )
+                  }
                   className="hover:bg-orange-300"
                 >
                   Track
@@ -230,6 +254,10 @@ const OrdersPage = () => {
           isOpen={isTrackingModalOpen}
           onClose={closeTrackingModal}
           orderId={orderId!}
+          updatedAt={updatedAt}
+          status={status}
+          drivers={drivers}
+          workers={workers}
         />
       </div>
     </div>

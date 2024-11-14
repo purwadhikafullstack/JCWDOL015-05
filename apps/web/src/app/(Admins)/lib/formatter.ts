@@ -21,6 +21,6 @@ export const displayOrderStatus = (status: string) => {
     case 'selesai':
       return 'selesai';
     default:
-      return status;
+      return 'menunggu konfirmasi';
   }
 };

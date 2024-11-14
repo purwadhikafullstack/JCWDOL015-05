@@ -14,6 +14,7 @@ export class ReportRouter {
   private initializeRoutes(): void {
     this.router.get('/', this.reportController.getIncomeData);
     this.router.get('/workers', this.reportController.getWorkersPerformance);
+    this.router.get('/drivers', this.reportController.getDriversPerformance);
   }
 
   getRouter(): Router {
