@@ -115,6 +115,7 @@ model Worker {
   employeeId Int @unique
   notification String?
   orders WorkersOnOrders[]
+  Notification Notification[]
 }
 
 model Driver { // data created with employee registration
@@ -153,7 +154,7 @@ model Order {
   totalPrice Int @default(0)
   bypassMessage String?
   paymentStatus PaymentStatus @default(unpaid)
-  pickupDate DateTime?
+  pickupDate DateTime
   pickupTime String?
   complain String?
   status OrderStatus
@@ -164,6 +165,8 @@ model Order {
   outlet Outlet? @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
   outletAdmin OutletAdmin? @relation(fields: [outletAdminId], references: [outletAdminId], onDelete: SetNull)
   customer Customer? @relation(fields: [customerId], references: [customerId])
+
+  Notification Notification[]
 }
 
 model Items {
@@ -221,4 +224,16 @@ model ListAddress{
   city String
   subdistrictId Int
   subdistrict String
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  workerId  Int
+  orderId   Int
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  worker    Worker   @relation(fields: [workerId], references: [workerId], onDelete: Cascade)
+  order     Order    @relation(fields: [orderId], references: [orderId])
 }
