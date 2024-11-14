@@ -157,7 +157,7 @@ model Order {
   status OrderStatus
   createdAt DateTime  @default(now())
   updatedAt DateTime @updatedAt
-
+  deliverDate DateTime?
   // relations
   outlet Outlet @relation(fields: [outletId], references: [outletId])
   outletAdmin OutletAdmin? @relation(fields: [outletAdminId], references: [outletAdminId])

@@ -17,6 +17,8 @@ import { AddressRouter } from './routers/address.router';
 import { OrderRouter } from './routers/order.router';
 import passport from 'passport';
 import '../src/services/passportConfig'
+import cron from 'node-cron'
+import prisma from './prisma';
 export default class App {
   private app: Express;
 
@@ -25,6 +27,7 @@ export default class App {
     this.configure();
     this.routes();
     this.handleError();
+    this.privateSetupCron()
   }
 
   private configure(): void {
@@ -74,7 +77,28 @@ export default class App {
     this.app.use('/api/addresses', addressRouter.getRouter())
     this.app.use('/api/orders', orderRouter.getRouter())
   }
-
+  privateSetupCron ():void{
+    cron.schedule('0 0 * * *', async()=> {
+      console.log("Running Cron Job auto confirmation")
+      try {
+        const thresholdDate = new Date()
+        thresholdDate.setHours(thresholdDate.getHours() - 48);
+        
+        await prisma.order.updateMany({
+          where : {
+            status: "sedangDikirim",
+            deliverDate : thresholdDate
+          },
+          data: {
+            status: "selesai"
+          }
+        })
+        console.log("Auto-confirmation job completed successfully.");
+      } catch (error) {
+        console.error("Error in auto-confirmation job:", error)
+      }
+    })
+  }
   public start(): void {
     this.app.listen(PORT, () => {
       console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);

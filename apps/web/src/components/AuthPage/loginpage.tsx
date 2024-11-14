@@ -80,7 +80,11 @@ export const LoginPage = () => {
       <Card className="p-5 space-y-4 shadow-none px-7">
         <form onSubmit={formik.handleSubmit}>
           <h1 className="text-5xl font-light">Get Started</h1>
-          <h1 className="text-3xl font-light">Don't Have Account ? <span className="text-blue-500">Sign Up</span></h1>
+          <h1 className="text-3xl font-light">Don't Have Account ? 
+            <Link href={'/register'}>
+              <span className="text-blue-500 hover:underline">Sign Up</span>
+            </Link>
+            </h1>
           <div className="shadow-none ">
             <div className="flex flex-col w-full gap-5">
               <Label>Email</Label>

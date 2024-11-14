@@ -5,7 +5,14 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { FormikHelpers, useFormik } from 'formik';
 import { ICustomerAddress } from '@/type/customers';
-import {createAddress,getCity,getDetailLocation,getLngLat,getProvience,getSubDistrict, } from '@/services/api/address/address';
+import {
+  createAddress,
+  getCity,
+  getDetailLocation,
+  getLngLat,
+  getProvience,
+  getSubDistrict,
+} from '@/services/api/address/address';
 import maplibregl, { LngLat, LngLatBounds } from 'maplibre-gl';
 import { MapInitialize } from '@/services/map';
 import { Button } from '@/components/ui/button';
@@ -15,14 +22,23 @@ import { useAppSelector } from '@/redux/hooks';
 import LocationSelect from './Component/SelectLocation';
 import { sub } from 'date-fns';
 import { mapSchema } from '@/schemaData/schemaData';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 export default function Map() {
   const mapContainerRef = useRef<any | null>(null);
   const mapRef = useRef<any | null>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
   const [marker, setMarker] = useState<maplibregl.Marker | null>(null);
-  const [coordinates, setCoordinates] = useState<{ lng: number; lat: number;} | null>(null);
-  const [mapState, setMapState] = useState<{lng: number; lat: number; zoom: number;}>({
+  const [coordinates, setCoordinates] = useState<{
+    lng: number;
+    lat: number;
+  } | null>(null);
+  const [mapState, setMapState] = useState<{
+    lng: number;
+    lat: number;
+    zoom: number;
+  }>({
     lng: coordinates?.lng ? coordinates.lng : 114.30458613942182,
     lat: coordinates?.lat ? coordinates.lat : -8.432867457446378,
     zoom: 13,
@@ -80,7 +96,7 @@ export default function Map() {
   };
   const formik = useFormik({
     initialValues: {
-      addressId : 0,
+      addressId: 0,
       longitude: 0,
       latitude: 0,
       province: '',
@@ -91,28 +107,47 @@ export default function Map() {
     },
     validationSchema: mapSchema,
     onSubmit: (values, action) => {
-      handleSubmit(values, action);
+      // handleSubmit(values, action);
+      mutation.mutate(values);
+      action.resetForm();
       console.log(`values : ${values}`);
     },
   });
-  const handleSubmit = async (
-    data: ICustomerAddress,
-    action: FormikHelpers<ICustomerAddress>,
-  ) => {
-    try {
-      // console.log('clicked')
-      const { result, ok } = await createAddress(data);
-      action.resetForm();
+  const mutation = useMutation({
+    mutationFn: async (data: ICustomerAddress) => await createAddress(data),
+    onSuccess: (data) => {
+      const { result, ok } = data;
       if (!ok) throw result.msg;
+      console.log('clicked');
+      marker?.remove()
+      setMarker(null)
+      setSelectedProvince('')
+      setSelectedCity('')
+      setSelectedSubdistrict('')
+      toast.success(result.msg);
       console.log(result.data);
-    } catch (err) {
+    },
+    onError: (err) => {
+      toast.error(err?.message);
       console.log(err);
-    }
-  };
+    },
+  });
+  // const handleSubmit = async (
+  //   data: ICustomerAddress,
+  //   action: FormikHelpers<ICustomerAddress>,
+  // ) => {
+
+  //   try {
+  //     console.log('clicked')
+  //   console.log(data)
+  //     const { result, ok } = await createAddress(data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
   const handleCancel = () => {
     formik.setFieldValue('longitude', null);
     formik.setFieldValue('latitude', null);
-    console.log(marker);
     if (marker !== null) {
       marker?.remove();
       setMarker(null);
@@ -153,6 +188,7 @@ export default function Map() {
     formik.setFieldValue('city', value);
   };
   const handleSelectSubdistric = async (value: string) => {
+    console.log(selectedCity, selectedProvince);
     setSelectedSubdistrict(value);
     let city = selectedCity.replace(/^(KAB\.|KOTA)\s*/, '');
     console.log(city);
@@ -207,9 +243,9 @@ export default function Map() {
       mapRef.current.flyTo({
         center: [coordinates.lng, coordinates.lat],
         zoom: 12,
-        speed: 1.2, 
-        curve: 1.42, 
-        easing: (t: any) => t, 
+        speed: 1.2,
+        curve: 1.42,
+        easing: (t: any) => t,
       });
     }
   }, [coordinates, mapState]);
@@ -278,16 +314,10 @@ export default function Map() {
               />
               <div>
                 <button
-                  className={`px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${selectedSubdistrict != '' ? '' : 'hidden'}`}
-                  onClick={handleShowMap}
-                >
-                  Atur Coordinate
-                </button>
-                <button
                   type="submit"
                   className={`px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${marker != null ? '' : 'hidden'}`}
                 >
-                  Send Data
+                  {mutation.isPending ? 'loading...' : 'Send Data'}
                 </button>
               </div>
             </form>
@@ -319,7 +349,12 @@ export default function Map() {
             </div>
           </div>
         )}
-
+        <button
+          className={`px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${selectedSubdistrict != '' ? '' : 'hidden'}`}
+          onClick={handleShowMap}
+        >
+          Atur Coordinate
+        </button>
         <div
           ref={mapContainerRef}
           className={`w-3/4 h-[300px] border-2 border-black rounded-md shadow-md p-3 ${showMap ? 'flex relative overflow-hidden' : 'hidden'}`}

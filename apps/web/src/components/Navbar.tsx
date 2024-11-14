@@ -12,15 +12,19 @@ import { logoutAction } from "@/redux/slice/customerSlice";
 
 export const Navbar = () => {
   const [token, setToken] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
   const dispatch = useDispatch()
 
   const pathname = usePathname();  // usePathname is safe for server-side rendering
   const customer = useAppSelector((state) => state.customer)
   const getTokenData = async () => {
     const res = await getToken()
+    console.log(res)
     setToken(res as string)
   }
-
+  const handleIsOpen = () => {
+    setIsOpen(!isOpen)
+  }
   useEffect(() => {
 
 
@@ -74,9 +78,37 @@ export const Navbar = () => {
       {/* Login / Signup buttons */}
       <div className="absolute right-[45px] flex font-bold text-[16px] text-white gap-[24px]">
         {token ? (
-          <Link href={'/login'}>
+          <>
+          {/* <Link href={'/login'}>
             <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">Profile</button>
-          </Link>
+          </Link> */}
+          <div  className="rounded-full cursor-pointer h-11 w-11">
+          <img className="object-cover overflow-hidden rounded-full cursor-pointer h-11 w-11" onClick={handleIsOpen} src={customer.avatar} alt="" />
+        </div>
+        <div className={`absolute overflow-x-hidden p-3 space-y-3 bg-blue-500 rounded-md top-20 right-5 z-30 ${isOpen ? 'block' : 'hidden'}`}>
+                <div className="flex flex-row items-center gap-3">
+                  <div className="">
+                    <img className="object-cover overflow-hidden rounded-full cursor-pointer h-11 w-11" src={customer.avatar} alt="" />
+                  </div>
+                  <div>
+                    <p className="text-xl">{customer.fullName}</p>
+                    <p>{customer.role}</p>
+                    <p>{customer.email}</p>
+                  </div>
+                </div>
+                <div className="border border-gray-200 border-b-1"></div>
+                <p className="p-2 hover:bg-white hover:text-black hover:rounded-md">
+                  <Link href={'/dashboard'}>Dashboard</Link>
+                </p>
+                <p className="p-2 hover:bg-white hover:text-black hover:rounded-md">
+                  <Link href={'/profile'}>Profile</Link>
+                </p>
+                <div className="border border-gray-200 border-b-1"></div>
+                <p className="p-2 hover:bg-white hover:text-black hover:rounded-md" >
+                  <Link href={'/login'}>Logout</Link>
+                </p>
+              </div>
+          </>
         ) : (
           <>
             <Link href={'/login'}>
@@ -87,7 +119,10 @@ export const Navbar = () => {
             </Link>
           </>
         )}
+        
+        
       </div>
+      
     </div>
   );
 }

@@ -12,8 +12,9 @@ export const createAddress = async (data: ICustomerAddress) => {
     },
     body: JSON.stringify(data)
   })
-  console.log(res)
+  
   const result = await res.json()
+  console.log(result)
   return { result, ok: res.ok }
 }
 export const getProvience = async () => {
