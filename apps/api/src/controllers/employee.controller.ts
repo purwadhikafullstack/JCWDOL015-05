@@ -96,15 +96,12 @@ export class EmployeeController {
     const { email, password, fullName, role, outletId, station } = req.body;
 
     try {
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(password, salt);
       const newEmployeeData = await prisma.employee.create({
-        data: { email, password, fullName, role, outletId },
+        data: { email, password: hashedPassword, fullName, role, outletId },
       });
       if (role === 'worker') {
-        if (!station) {
-          return res
-            .status(400)
-            .json({ message: 'Station is required for workers' });
-        }
         await prisma.worker.create({
           data: {
             station,

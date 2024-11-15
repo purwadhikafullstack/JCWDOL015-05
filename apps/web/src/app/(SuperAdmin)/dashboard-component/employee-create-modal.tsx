@@ -89,7 +89,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
               </label>
               <select
                 className="w-full border rounded p-2 mb-4 bg-gray-200"
-                value={station || undefined}
+                value={station ? station : 'washing'}
                 onChange={(e) => setStation(e.target.value)}
                 defaultValue="washing"
               >

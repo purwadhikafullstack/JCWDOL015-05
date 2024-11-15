@@ -142,7 +142,7 @@ export default function EmployeeManagement() {
     fullName: string,
     role: string,
     outletId: number,
-    station: string | null,
+    station: string,
   ) => {
     setEmployeeId(employeeId);
     setEmail(email);
@@ -269,7 +269,9 @@ export default function EmployeeManagement() {
                         employee.fullName,
                         employee.role,
                         employee.outletId,
-                        employee.worker?.station || null,
+                        employee.worker?.station
+                          ? employee.worker?.station
+                          : 'washing',
                       )
                     }
                   />
