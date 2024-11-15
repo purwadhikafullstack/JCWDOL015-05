@@ -12,10 +12,22 @@ import { PORT } from './config';
 import { EmployeeRouter } from './routers/employee.router';
 import { OutletRouter } from './routers/outlet.router';
 import { ItemsRouter } from './routers/items.router';
-import { OrderRouter } from './routers/order.router';
 import { ReportRouter } from './routers/report.router';
 import { AssignmentRouter } from './routers/assignment.router';
+// import { SampleRouter } from './routers/sample.router';
+import { AuthController } from './controllers/auth.controller';
+import { UserRouter } from './routers/user.router';
+import { LocationRouter } from './routers/location.router';
+// import { RequestRouter } from './routers/request.router';
+import { AddressRouter } from './routers/address.router';
+import { OrderRouter } from './routers/order.router';
+import { AttendanceRouter } from './routers/attendance.router';
 
+import passport from 'passport';
+import '../src/services/passportConfig';
+import { WorkerRouter } from './routers/worker.router';
+import { NotificationRouter } from './routers/notification.router';
+// import { DriverRouter } from './routers/driver.router';
 export default class App {
   private app: Express;
 
@@ -30,6 +42,8 @@ export default class App {
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
+
+    this.app.use(passport.initialize());
   }
 
   private handleError(): void {
@@ -59,10 +73,19 @@ export default class App {
     const employeeRouter = new EmployeeRouter();
     const outletRouter = new OutletRouter();
     const itemsRouter = new ItemsRouter();
-    const orderRouter = new OrderRouter();
     const reportRouter = new ReportRouter();
     const assignmentRouter = new AssignmentRouter();
 
+    // const sampleRouter = new SampleRouter();
+    const authRouter = new UserRouter();
+    const locationRouter = new LocationRouter();
+    // const requestRouter = new RequestRouter()
+    const addressRouter = new AddressRouter();
+    const orderRouter = new OrderRouter();
+    const attendanceRouter = new AttendanceRouter();
+    const workerRouter = new WorkerRouter();
+    const notificationRouter = new NotificationRouter();
+    // const driverRouter = new DriverRouter();
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
@@ -73,6 +96,16 @@ export default class App {
     this.app.use('/api/order', orderRouter.getRouter());
     this.app.use('/api/report', reportRouter.getRouter());
     this.app.use('/api/assignment', assignmentRouter.getRouter());
+    // this.app.use('/api/samples', sampleRouter.getRouter());
+    this.app.use('/api/users', authRouter.getRouter());
+    this.app.use('/api/location', locationRouter.getRouter());
+    // this.app.use('/api/request',  requestRouter.getRouter())
+    this.app.use('/api/addresses', addressRouter.getRouter());
+    this.app.use('/api/orders', orderRouter.getRouter());
+    this.app.use('/api/submit', attendanceRouter.getRouter());
+    this.app.use('/api/worker', workerRouter.getRouter());
+    this.app.use('/api/notifications', notificationRouter.getROuter());
+    // this.app.use('/api/driver', driverRouter.getRouter());
   }
 
   public start(): void {

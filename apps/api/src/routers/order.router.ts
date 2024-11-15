@@ -13,10 +13,20 @@ export class OrderRouter {
 
   private initializeRoutes(): void {
     this.router.get('/', this.orderController.getOrders);
-    //  this.router.get('/:id', this.employeeController.getEmployeeById);
-    //  this.router.post('/', this.employeeController.createEmployee);
-    //  this.router.delete('/:id', this.employeeController.deleteEmployeeById);
-    //  this.router.patch('/:id', this.employeeController.updateEmployeeyId);
+    this.router.post('/pickup', this.orderController.getNearOutlets);
+    this.router.post('/pickup/create', this.orderController.createPickupOrder);
+    this.router.post('/', this.orderController.getOrderListbyOutlet);
+    this.router.post('/driver', this.orderController.driverOrderList);
+    this.router.post(
+      '/payment-links',
+      this.orderController.generatePaymentLink,
+    );
+    this.router.post('/order', this.orderController.updatePaymentOrder);
+    this.router.get(
+      '/completed-order',
+      this.orderController.updatePaymentOrder,
+    );
+    this.router.get('/:customerId', this.orderController.getOrderListCustomer);
   }
 
   getRouter(): Router {

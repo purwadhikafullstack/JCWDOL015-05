@@ -192,7 +192,7 @@ const OrdersPage = () => {
               Created Date
               <Button
                 onClick={handleSortChange}
-                className="bg-white mx-2 w-4 h-6 hover:bg-gray-200"
+                className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
               >
                 {sortOrder === 'asc' ? '▲' : '▼'}
               </Button>

@@ -33,6 +33,7 @@ export default function EmployeeManagement() {
   const [fullName, setFullName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [outletId, setOutletId] = useState<number | null>(null);
+  const [outlets, setOutlets] = useState<Outlets[]>([]);
   const [station, setStation] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -44,6 +45,16 @@ export default function EmployeeManagement() {
   const [outletFilter, setOutletFilter] = useState<string>('');
 
   const limit = 5;
+
+  const fetchOulets = async () => {
+    try {
+      const response = await fetch(`${BASEURL}/api/outlet`);
+      const data = await response.json();
+      setOutlets(data.data);
+    } catch (error) {
+      console.error('Outlets fetching error:', error);
+    }
+  };
 
   // Fetch employees
   const fetchEmployees = useCallback(async () => {
@@ -193,6 +204,7 @@ export default function EmployeeManagement() {
 
   useEffect(() => {
     fetchEmployees();
+    fetchOulets();
   }, [fetchEmployees]);
 
   return (
@@ -209,13 +221,17 @@ export default function EmployeeManagement() {
           <option value="worker">Worker</option>
           <option value="driver">Driver</option>
         </select>
-        <input
-          type="text"
-          placeholder="Filter by outlet"
-          value={outletFilter}
+        <select
           onChange={(e) => setOutletFilter(e.target.value)}
-          className="border border-gray-300 rounded p-1 bg-white h-10"
-        />
+          className="mb-4 border p-2 rounded bg-white"
+        >
+          <option value="">All Outlets</option>
+          {outlets.map((outlet: Outlets) => (
+            <option key={outlet.outletId} value={outlet.outletId}>
+              {outlet.name}
+            </option>
+          ))}
+        </select>
       </div>
       <table className="w-4/5 border-slate-700">
         <thead className="bg-blue-300 border-b">
@@ -243,24 +259,26 @@ export default function EmployeeManagement() {
                 {employee.outlet?.name || 'Not Assigned'}
               </td>
               <td>
-                <UpdateButton
-                  onClick={() =>
-                    openUpdateModal(
-                      employee.employeeId,
-                      employee.email,
-                      employee.password,
-                      employee.fullName,
-                      employee.role,
-                      employee.outletId,
-                      employee.worker?.station || null,
-                    )
-                  }
-                />
-                <DeleteButton
-                  onClick={() =>
-                    openDeleteModal(employee.employeeId, employee.fullName)
-                  }
-                />
+                <div className="flex gap-1 justify-center">
+                  <UpdateButton
+                    onClick={() =>
+                      openUpdateModal(
+                        employee.employeeId,
+                        employee.email,
+                        employee.password,
+                        employee.fullName,
+                        employee.role,
+                        employee.outletId,
+                        employee.worker?.station || null,
+                      )
+                    }
+                  />
+                  <DeleteButton
+                    onClick={() =>
+                      openDeleteModal(employee.employeeId, employee.fullName)
+                    }
+                  />
+                </div>
               </td>
             </tr>
           ))}

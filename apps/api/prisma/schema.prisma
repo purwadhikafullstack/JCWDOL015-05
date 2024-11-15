@@ -51,18 +51,17 @@ enum Activity {
 }
 
 model Customer {
-  customerId Int  @id @default(autoincrement())
-  email String @unique
-  password String?
-  isVerified Boolean @default(false)
-  fullName String 
-  address Address[]
-  avatar String?
-  role Role @default(customer)
-  notification String?
-  order Order[] 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
+  customerId Int       @id @default(autoincrement())
+  email      String    @unique
+  password   String?
+  isVerified Boolean   @default(false)
+  fullName   String
+  address    Address[]
+  avatar     String?
+  role       Role      @default(customer)
+  order      Order[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
 }
 
 model Address {
@@ -77,7 +76,7 @@ model Address {
   isPrimary Boolean @default(false)
 
   // relations
-  customer Customer @relation(fields: [customerId], references: [customerId])
+  customer      Customer  @relation(fields: [customerId], references: [customerId])
 }
 
 model Employee {
@@ -91,10 +90,10 @@ model Employee {
   outletId Int?
   attendance Attendance[]
   outletAdmin OutletAdmin?
-  worker Worker?
-  driver Driver?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime? 
+  worker      Worker?
+  driver      Driver?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?
   //relations
     outlet Outlet? @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
 }
@@ -170,9 +169,9 @@ model Order {
 }
 
 model Items {
-  itemId Int @id @default(autoincrement())
-  orderId Int
-  item String
+  itemId   Int    @id @default(autoincrement())
+  orderId  Int
+  item     String
   quantity Int
 
   // relations
@@ -180,10 +179,10 @@ model Items {
 }
 
 model Attendance {
-  attendanceId Int @id @default(autoincrement())
-  employeeId Int 
-  clockIn DateTime? 
-  clockOut DateTime? 
+  attendanceId Int       @id @default(autoincrement())
+  employeeId   Int
+  clockIn      DateTime?
+  clockOut     DateTime?
 
   // relations
   employee Employee @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
@@ -196,7 +195,7 @@ model WorkersOnOrders {
     workerId Int
     createdAt DateTime  @default(now())
 
-    @@id([orderId, workerId])
+  @@id([orderId, workerId])
 }
 
 model DriversOnOrders {

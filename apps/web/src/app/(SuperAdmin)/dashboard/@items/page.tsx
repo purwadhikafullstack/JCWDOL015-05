@@ -219,7 +219,7 @@ export default function ItemManagement() {
               Qty{' '}
               <Button
                 onClick={handleSortChange}
-                className="bg-white mx-2 w-4 h-6 hover:bg-gray-200"
+                className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
               >
                 {sortOrder === 'asc' ? '▲' : '▼'}
               </Button>
@@ -234,14 +234,16 @@ export default function ItemManagement() {
               <td className="py-3 px-1 border-slate-700">{item.item}</td>
               <td className="py-3 px-1 border-slate-700">{item.quantity}</td>
               <td>
-                <UpdateButton
-                  onClick={() =>
-                    openUpdateModal(item.itemId, item.item!, item.quantity!)
-                  }
-                />
-                <DeleteButton
-                  onClick={() => openDeleteModal(item.itemId, item.item!)}
-                />
+                <div className="flex gap-1 justify-center">
+                  <UpdateButton
+                    onClick={() =>
+                      openUpdateModal(item.itemId, item.item!, item.quantity!)
+                    }
+                  />
+                  <DeleteButton
+                    onClick={() => openDeleteModal(item.itemId, item.item!)}
+                  />
+                </div>
               </td>
             </tr>
           ))}

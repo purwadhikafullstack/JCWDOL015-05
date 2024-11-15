@@ -223,8 +223,8 @@ export default function OutletManagement() {
           <tr>
             <th className="py-3 px-1 border-slate-700">ID</th>
             <th className="py-3 px-1 border-slate-700">Outlet Name</th>
-            <th className="py-3 px-1 border-slate-700">Longitude</th>
-            <th className="py-3 px-1 border-slate-700">Latitude</th>
+            {/* <th className="py-3 px-1 border-slate-700">Longitude</th>
+            <th className="py-3 px-1 border-slate-700">Latitude</th> */}
             <th className="py-3 px-1 border-slate-700">Kota</th>
             <th className="py-3 px-1 border-slate-700">Actions</th>
           </tr>
@@ -237,32 +237,34 @@ export default function OutletManagement() {
                   {outlet.outletId}
                 </td>
                 <td className="py-3 px-1 border-slate-700">{outlet.name}</td>
-                <td className="py-3 px-1 border-slate-700">
+                {/* <td className="py-3 px-1 border-slate-700">
                   {outlet.longitude}
                 </td>
                 <td className="py-3 px-1 border-slate-700">
                   {outlet.latitude}
-                </td>
+                </td> */}
                 <td className="py-3 px-1 border-slate-700">{outlet.kota}</td>
                 <td>
-                  <UpdateButton
-                    onClick={() =>
-                      openUpdateModal(
-                        outlet.outletId,
-                        outlet.name!,
-                        outlet.provinsi!,
-                        outlet.kota!,
-                        outlet.kecamatan!,
-                        outlet.longitude!,
-                        outlet.latitude!,
-                      )
-                    }
-                  />
-                  <DeleteButton
-                    onClick={() =>
-                      openDeleteModal(outlet.outletId, outlet.name!)
-                    }
-                  />
+                  <div className="flex gap-1 justify-center">
+                    <UpdateButton
+                      onClick={() =>
+                        openUpdateModal(
+                          outlet.outletId,
+                          outlet.name!,
+                          outlet.provinsi!,
+                          outlet.kota!,
+                          outlet.kecamatan!,
+                          outlet.longitude!,
+                          outlet.latitude!,
+                        )
+                      }
+                    />
+                    <DeleteButton
+                      onClick={() =>
+                        openDeleteModal(outlet.outletId, outlet.name!)
+                      }
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
