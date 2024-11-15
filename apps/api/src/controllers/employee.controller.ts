@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
+import { compare, genSalt, hash } from 'bcrypt';
 
 enum Role {
   superAdmin = 'superAdmin',

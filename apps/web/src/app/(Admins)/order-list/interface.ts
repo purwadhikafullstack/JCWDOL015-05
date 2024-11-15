@@ -7,6 +7,8 @@ interface Order {
   pricePerKg: number;
   weight: number;
   paymentStatus: string;
+  pickupDate: string;
+  pickupTime: string;
   status: string;
   bypassMessage: string | null;
   createdAt: string;

@@ -5,8 +5,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 export default function GetPickupPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [driverId, setDriverId] = useState<number>(3); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
+  const [driverId, setDriverId] = useState<number>(1); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletAdminId
   const [isAvailable, setIsAvailable] = useState<boolean>(true); // Replace with actual outletAdminId
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
@@ -65,6 +65,11 @@ export default function GetPickupPage() {
               <h1 className="text-lg font-bold mb-4">Order #{order.orderId}</h1>
               <h1 className="text-md font-semibold">Customer Address:</h1>
               <p>{order.customerAddress?.detailAddress}</p>
+              <h1 className="text-md font-semibold">Pickup Date:</h1>
+              <p>
+                {new Date(order.pickupDate).toLocaleDateString()} |{' '}
+                {order.pickupTime}
+              </p>
               <Button
                 className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
                 onClick={() => handleConfirm(order.orderId, driverId)}
