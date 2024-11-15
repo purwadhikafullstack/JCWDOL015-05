@@ -4,21 +4,11 @@ import { Card } from '@/components/ui/card';
 import { useAppSelector } from '@/redux/hooks';
 import { customerOrderData } from '@/services/api/order/order';
 import RoleProtection from '@/services/Unauthorized';
+import { ICustomerOrderData } from '@/type/customers';
 import { useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
-export type ICustomerOrderData = {
-  orderId: string;
-  outlet: {
-    name: string;
-  };
-  status: string;
-  paymentStatus: string;
-  weight: number;
-  pricePerKg: number;
-  total: number;
-  createdAt : Date
-};
+
 const  Profile = () =>{
   const [orderList, setOrderList] = useState<ICustomerOrderData[]>([]);
   const customer = useAppSelector((state) => state.customer);
@@ -28,6 +18,7 @@ const  Profile = () =>{
         customer.customerId,
       );
       if (!ok) throw result.msg;
+      console.log(orderData)
       return orderData;
     },
     onSuccess: (orderData) => {
@@ -96,4 +87,5 @@ const  Profile = () =>{
   );
 }
 export default RoleProtection(Profile,['customer'])
+// export default  Profile
 // export default RoleProtection(Profile,['customer,driver,outletAdmin,superAdmin,worker'])

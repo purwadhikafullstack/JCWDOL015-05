@@ -1,7 +1,7 @@
 import prisma from "@/prisma";
 import { Request, Response } from "express";
 import { sign as jwtSign, verify } from 'jsonwebtoken'
-import fs from 'fs'
+import fs, { stat } from 'fs'
 import path from "path";
 import Handlebars from 'handlebars'
 import { transporter } from "@/services/nodemailer";
@@ -29,7 +29,7 @@ export class AuthController {
       const templateSrc = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = Handlebars.compile(templateSrc)
       const html = compiledTemplate({
-        url: `http://localhost:3000/verify/${token}`
+        url: `${process.env.BASE_URL}/verify/${token}`
       })
       await transporter.sendMail({
         from: process.env.MAIL_USER,
@@ -166,7 +166,7 @@ export class AuthController {
       const templateSrc = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = Handlebars.compile(templateSrc)
       const html = compiledTemplate({
-        url: `http://localhost:3000/customers/reset-password/${token}`
+        url: `${process.env.BASE_URL}/customers/reset-password/${token}`
       })
       await transporter.sendMail({
         from: process.env.MAIL_USER,
@@ -216,6 +216,54 @@ export class AuthController {
         err: err
       })
       console.log(err)
+    }
+  }
+  async editProfile (req: Request, res: Response){
+    try {
+      const {customerId, fullName, email } = req.body
+      console.log(customerId)
+      let link
+      if(req.file){
+        link = `${process.env.API_BASE_URL}/api/public/avatar/${req.file?.filename}`
+      }
+      const checkUsers = await prisma.customer.findUnique({
+        where: {customerId: +customerId}
+      })
+      if(!checkUsers) throw 'User Not Found'
+      const newData = await prisma.customer.update({
+        where: {customerId: +customerId},
+        data: {
+          fullName: fullName,
+          email : email,
+          avatar: link || checkUsers.avatar,
+        }
+      })
+      res.status(200).send({
+        status: 'ok',
+        data: newData
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        err: err
+      })
+    }
+  }
+  async getUserById (req: Request, res: Response) {
+    try {
+      const {customerId} = req.params
+      const customer = await prisma.customer.findUnique({
+        where: {customerId : +customerId}
+      })
+      res.status(200).send({
+        status : 'ok',
+        data : customer
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        err : err
+      })
     }
   }
   async socialLoginCallback(req: Request, res: Response) {

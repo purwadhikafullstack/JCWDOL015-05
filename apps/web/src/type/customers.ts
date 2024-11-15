@@ -30,3 +30,20 @@ export type ICustomerNewPass = {
   newPassword: string
   confirmNewPassword: string
 }
+export type IUserEdit = {
+  customerId: number,
+  avatar? : File | null,
+  fullName: string,
+}
+export type ICustomerOrderData = {
+  orderId: string;
+  outlet: {
+    name: string;
+  };
+  status: string;
+  paymentStatus: string;
+  weight: number;
+  pricePerKg: number;
+  total: number;
+  createdAt : Date
+};

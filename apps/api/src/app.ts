@@ -19,6 +19,7 @@ import passport from 'passport';
 import '../src/services/passportConfig'
 import cron from 'node-cron'
 import prisma from './prisma';
+import path from 'path'
 export default class App {
   private app: Express;
 
@@ -36,6 +37,10 @@ export default class App {
     this.app.use(urlencoded({ extended: true }));
 
     this.app.use(passport.initialize())
+    this.app.use('/api/public',
+      express.static(path.join(__dirname, "../public/"))
+    )
+    console.log('Serving static files from:', path.join(__dirname, "../public"));
   }
 
   private handleError(): void {
