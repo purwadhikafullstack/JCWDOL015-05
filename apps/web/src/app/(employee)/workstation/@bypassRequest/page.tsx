@@ -6,8 +6,8 @@ const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function BypassRequestPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number>(0); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletAdminId
+  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
 
   const fetchOrders = useCallback(async () => {
     try {

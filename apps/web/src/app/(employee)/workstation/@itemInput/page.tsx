@@ -20,7 +20,7 @@ export default function ItemInputPage() {
     [orderId: number]: number;
   }>({});
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number>(3); // Replace with actual outletAdminId
+  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -132,7 +132,7 @@ export default function ItemInputPage() {
 
   return (
     <div className="flex flex-col text-gray-800 items-center p-4 gap-4">
-      {orders.length > 0 &&
+      {orders.length > 0 ? (
         orders.map((order) => (
           <form
             key={order.orderId}
@@ -211,7 +211,10 @@ export default function ItemInputPage() {
               </Button>
             </div>
           </form>
-        ))}
+        ))
+      ) : (
+        <p>No orders available to be input</p>
+      )}
     </div>
   );
 }

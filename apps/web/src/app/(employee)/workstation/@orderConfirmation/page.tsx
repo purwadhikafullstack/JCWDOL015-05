@@ -7,12 +7,13 @@ const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number>(3); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletId
+  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
 
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `${BASEURL}/api/assignment/order-confirmation/${outletAdminId}`,
+        `${BASEURL}/api/assignment/order-confirmation/${outletId}`,
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
@@ -20,7 +21,7 @@ export default function OrderConfirmationPage() {
     } catch (error) {
       console.error('Orders fetching error:', error);
     }
-  }, [outletAdminId]);
+  }, [outletId]);
 
   useEffect(() => {
     fetchOrders();
@@ -35,6 +36,7 @@ export default function OrderConfirmationPage() {
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({ outletAdminId }),
         },
       );
 
@@ -61,7 +63,9 @@ export default function OrderConfirmationPage() {
               key={order.orderId}
               className="rounded-xl min-w-80 text-center py-2 bg-white border-2 border-blue-400 shadow-md"
             >
-              <h1 className="text-lg font-bold">Order #{order.orderId}</h1>
+              <h1 className="text-lg font-bold mb-4">Order #{order.orderId}</h1>
+              <h1 className="text-md font-semibold">Customer Address:</h1>
+              <p>{order.customerAddress?.detailAddress}</p>
               <Button
                 className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
                 onClick={() => handleConfirm(order.orderId)}

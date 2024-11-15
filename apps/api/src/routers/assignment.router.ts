@@ -13,7 +13,7 @@ export class AssignmentRouter {
 
   private initializeRoutes(): void {
     this.router.get(
-      '/order-confirmation/:outletAdminId',
+      '/order-confirmation/:outletId',
       this.assignmentController.orderConfirmation,
     );
     this.router.get(

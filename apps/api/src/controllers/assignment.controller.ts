@@ -4,16 +4,17 @@ import { OrderStatus } from '@prisma/client';
 
 export class AssignmentController {
   async orderConfirmation(req: Request, res: Response) {
-    const { outletAdminId } = req.params;
+    const { outletId } = req.params;
     try {
       const orders = await prisma.order.findMany({
         where: {
-          outletAdminId: parseInt(outletAdminId),
+          outletId: parseInt(outletId),
           status: 'menungguKonfirmasi',
         },
         include: {
           customer: true,
           items: true,
+          customerAddress: { select: { detailAddress: true } },
         },
       });
 
@@ -26,10 +27,14 @@ export class AssignmentController {
 
   async confirmOrder(req: Request, res: Response) {
     const { orderId } = req.params;
+    const { outletAdminId } = req.body;
     try {
       await prisma.order.update({
         where: { orderId: parseInt(orderId) },
-        data: { status: 'menungguPenjemputanDriver' },
+        data: {
+          outletAdminId: outletAdminId,
+          status: 'menungguPenjemputanDriver',
+        },
       });
       return res.status(200).json({ message: 'Order confirmed' });
     } catch (error) {
@@ -41,11 +46,12 @@ export class AssignmentController {
   async pickupRequest(req: Request, res: Response) {
     const { outletId } = req.params;
     try {
-      const orders = await prisma.order.findMany({
+      await prisma.order.findMany({
         where: {
           outletId: parseInt(outletId),
           status: 'menungguPenjemputanDriver',
         },
+        include: { customerAddress: { select: { detailAddress: true } } },
       });
     } catch (error) {
       console.error(error);
@@ -182,6 +188,7 @@ export class AssignmentController {
           drivers: { none: {} },
         },
         include: {
+          customerAddress: { select: { detailAddress: true } },
           customer: true,
           items: true,
         },
@@ -226,6 +233,7 @@ export class AssignmentController {
         include: {
           customer: true,
           items: true,
+          customerAddress: { select: { detailAddress: true } },
         },
       });
 
@@ -279,6 +287,7 @@ export class AssignmentController {
           },
         },
         include: {
+          customerAddress: { select: { detailAddress: true } },
           drivers: true,
         },
       });
@@ -377,12 +386,17 @@ export class AssignmentController {
 
   async submitBypass(req: Request, res: Response) {
     const { orderId } = req.params;
-    const { bypassMessage } = req.body;
+    const { bypassMessage, workerId } = req.body;
     try {
-      await prisma.order.update({
-        where: { orderId: parseInt(orderId) },
-        data: { bypassMessage },
-      });
+      await prisma.$transaction([
+        prisma.order.update({
+          where: { orderId: parseInt(orderId) },
+          data: { bypassMessage },
+        }),
+        prisma.workersOnOrders.create({
+          data: { workerId: workerId, orderId: parseInt(orderId) },
+        }),
+      ]);
 
       return res.status(200).json({ message: 'Bypass message updated' });
     } catch (error) {

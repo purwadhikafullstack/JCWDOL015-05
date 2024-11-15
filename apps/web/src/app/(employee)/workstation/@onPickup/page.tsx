@@ -5,8 +5,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 export default function OnPickupPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [driverId, setDriverId] = useState<number>(17); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletId
+  const [driverId, setDriverId] = useState<number>(3); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletId
   const [isAvailable, setIsAvailable] = useState<boolean>(false); // Replace with actual isAvailable
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
@@ -117,7 +117,9 @@ export default function OnPickupPage() {
               key={order.orderId}
               className="rounded-xl min-w-80 text-center py-2 bg-white border-2 border-blue-400 shadow-md"
             >
-              <h1 className="text-lg font-bold">Order #{order.orderId}</h1>
+              <h1 className="text-lg font-bold mb-4">Order #{order.orderId}</h1>
+              <h1 className="text-md font-semibold">Customer Address:</h1>
+              <p>{order.customerAddress?.detailAddress}</p>
               {order.status === 'menungguPenjemputanDriver' && (
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"

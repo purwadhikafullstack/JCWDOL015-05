@@ -28,6 +28,19 @@ interface Order {
     };
   }[];
   outlet: { name: string } | null;
+  customer: {
+    customerId: number;
+    fullName: string;
+    email: string;
+  };
+  items: {
+    itemId: number;
+    item: string;
+    quantity: number;
+  }[];
+  customerAddress: {
+    detailAddress: string | null;
+  } | null;
 }
 
 interface Outlets {

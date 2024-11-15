@@ -19,10 +19,10 @@ type Order = {
 };
 
 export default function WorkerTaskPage() {
-  const [workerId, setWorkerId] = useState<number>(25);
+  const [workerId, setWorkerId] = useState<number>(6);
   const [order, setOrder] = useState<Order | null>(null);
-  const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletAdminId
-  const [station, setStation] = useState<string | null>('washing');
+  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
+  const [station, setStation] = useState<string | null>('packing');
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [message, setMessage] = useState('');
@@ -73,7 +73,7 @@ export default function WorkerTaskPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ bypassMessage: message }),
+          body: JSON.stringify({ bypassMessage: message, workerId }),
         },
       );
 

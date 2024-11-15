@@ -31,21 +31,29 @@ const OrderTrackingModal: React.FC<TrackingModalProps> = ({
           <div className="flex gap-2">
             <p className="font-semibold">Workers:</p>
             <ul className="flex flex-col items-start">
-              {workers.map((workerOnOrder: any, index: number) => (
-                <li key={index}>
-                  {index + 1}. {workerOnOrder.worker.employee.fullName}
-                </li>
-              ))}
+              {workers.length === 0 ? (
+                <p>not assigned</p>
+              ) : (
+                workers.map((workerOnOrder: any, index: number) => (
+                  <li key={index}>
+                    {index + 1}. {workerOnOrder.worker.employee.fullName}
+                  </li>
+                ))
+              )}
             </ul>
           </div>
           <div className="flex gap-2">
             <p className="font-semibold">Drivers:</p>
             <ul className="flex flex-col items-start">
-              {drivers.map((driverOnOrder: any, index: number) => (
-                <li key={index}>
-                  {index + 1}. {driverOnOrder.driver.employee.fullName}
-                </li>
-              ))}
+              {drivers.length === 0 ? (
+                <p>not assigned</p>
+              ) : (
+                drivers.map((driverOnOrder: any, index: number) => (
+                  <li key={index}>
+                    {index + 1}. {driverOnOrder.driver.employee.fullName}
+                  </li>
+                ))
+              )}
             </ul>
           </div>
           <div className="flex gap-2">

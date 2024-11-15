@@ -77,6 +77,7 @@ model Address {
 
   // relations
   customer      Customer  @relation(fields: [customerId], references: [customerId])
+  orders         Order[]  
 }
 
 model Employee {
@@ -164,6 +165,7 @@ model Order {
   outlet Outlet? @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
   outletAdmin OutletAdmin? @relation(fields: [outletAdminId], references: [outletAdminId], onDelete: SetNull)
   customer Customer? @relation(fields: [customerId], references: [customerId])
+  customerAddress   Address?         @relation(fields: [customerAddressId], references: [addressId], onDelete: SetNull)
 
   Notification Notification[]
 }
@@ -199,14 +201,15 @@ model WorkersOnOrders {
 }
 
 model DriversOnOrders {
+    id        Int      @id @default(autoincrement())
     order Order @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
     orderId Int
     driver Driver @relation(fields: [driverId], references: [driverId], onDelete: Cascade)
     driverId Int
     activity Activity // pickup or delivery
+    status    String   @default("Pending") // add status if needed
     createdAt DateTime  @default(now())
 
-    @@id([orderId, driverId, activity])
 }
 
 model baseAddress{
