@@ -24,6 +24,7 @@ import { sub } from 'date-fns';
 import { mapSchema } from '@/schemaData/schemaData';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { Card } from '../ui/card';
 
 export default function Map() {
   const mapContainerRef = useRef<any | null>(null);
@@ -250,8 +251,9 @@ export default function Map() {
     }
   }, [coordinates, mapState]);
   return (
-    <section className="flex flex-col items-center justify-center w-full h-screen">
-      <div className="w-1/2 p-5 border rounded-md">
+    <section className="flex flex-col items-center mt-24 w-full h-screen">
+      <Card className='w-3/4 p-5'>
+      <div className="">
         {
           <div className="mt-5 ">
             <form onSubmit={formik.handleSubmit}>
@@ -355,11 +357,13 @@ export default function Map() {
         >
           Atur Coordinate
         </button>
-        <div
+        
+      </div>
+      </Card>
+      <div
           ref={mapContainerRef}
           className={`w-3/4 h-[300px] border-2 border-black rounded-md shadow-md p-3 ${showMap ? 'flex relative overflow-hidden' : 'hidden'}`}
         />
-      </div>
     </section>
   );
 }

@@ -26,6 +26,7 @@ enum Station {
 }
 
 enum OrderStatus { 
+  menungguKonfirmasi
   menungguPenjemputanDriver
   laundryMenujuOutlet
   laundrySampaiOutlet

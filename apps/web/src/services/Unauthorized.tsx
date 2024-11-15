@@ -28,7 +28,7 @@ const RoleProtection = (WrappedComponent: React.ComponentType<any>, allowedRoles
       checkUser()
     }, [currentRole])
 
-    return <WrappedComponent {...props}/>
+    return <WrappedComponent {...props} />
   }
 }
 export default RoleProtection

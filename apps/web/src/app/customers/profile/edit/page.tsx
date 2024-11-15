@@ -94,21 +94,19 @@ const EditProfile = () => {
           </div>
           <div className="flex flex-col justify-center items-center gap-2">
             <div
-              className="w-36 h-36 rounded-full overflow-hidden cursor-pointer"
+              className="rounded-full w-44 h-44  overflow-hidden cursor-pointer"
               onClick={() => imgRef.current?.click()}
             >
               {previewUrl ? (
                 <Image
                   src={previewUrl}
                   alt="preview"
-                  width={144}
-                  height={144}
-                  layout="responsive"
-                  objectFit="cover"
-                  className="rounded-full"
-                />
+                  width={176} 
+                  height={176} 
+                  className="rounded-full w-44 h-44 object-cover"
+                  />
               ) : (
-                <div className="w-36 h-36 bg-gray-200 rounded-full flex items-center justify-center">
+                <div className="w-44 h-44 bg-gray-200 rounded-full flex items-center justify-center">
                   <span>No Image</span>
                 </div>
               )}
@@ -156,7 +154,6 @@ const EditProfile = () => {
             >
               Save Changes
             </Button>
-            <button type='submit'>save</button>
           </form>
         </Card>
       </div>

@@ -38,6 +38,9 @@ export const customerSlice = createSlice({
       state.fullName = ''
       state.address = []
       state.avatar = ''
+    },
+    updateAction: (state, action) => {
+      
     }
   }
 })
