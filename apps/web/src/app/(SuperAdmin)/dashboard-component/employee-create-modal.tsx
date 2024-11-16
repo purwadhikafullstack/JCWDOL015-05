@@ -14,7 +14,7 @@ interface EmployeeCreateModalProps {
   setRole: (value: string) => void;
   outletId: number;
   setOutletId: (value: number) => void;
-  station: string | null;
+  station: string;
   setStation: (value: string) => void | null;
 }
 
@@ -89,7 +89,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
               </label>
               <select
                 className="w-full border rounded p-2 mb-4 bg-gray-200"
-                value={station ? station : 'washing'}
+                value={station}
                 onChange={(e) => setStation(e.target.value)}
                 defaultValue="washing"
               >

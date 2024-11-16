@@ -20,7 +20,7 @@ export default function ItemInputPage() {
     [orderId: number]: number;
   }>({});
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number>(1); // Replace with actual outletAdminId
+  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
 
   const fetchOrders = useCallback(async () => {
     try {

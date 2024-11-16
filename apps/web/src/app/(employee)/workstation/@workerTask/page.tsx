@@ -12,16 +12,10 @@ type Item = {
   quantity: number;
 };
 
-type Order = {
-  orderId: number;
-  status: string;
-  items: Item[];
-};
-
 export default function WorkerTaskPage() {
-  const [workerId, setWorkerId] = useState<number>(3);
+  const [workerId, setWorkerId] = useState<number>(6);
   const [order, setOrder] = useState<Order | null>(null);
-  const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
   const [station, setStation] = useState<string | null>('packing');
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
   const [allChecked, setAllChecked] = useState(false);
@@ -95,6 +89,7 @@ export default function WorkerTaskPage() {
     orderId: number,
     workerId: number,
     status: string,
+    paymentStatus: string,
   ) => {
     try {
       const response = await fetch(
@@ -104,7 +99,7 @@ export default function WorkerTaskPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ workerId, status }),
+          body: JSON.stringify({ workerId, status, paymentStatus }),
         },
       );
 
@@ -162,7 +157,12 @@ export default function WorkerTaskPage() {
                 <Button
                   className="bg-green-500 hover:bg-green-600"
                   onClick={() =>
-                    handleSubmit(order.orderId, workerId, order.status)
+                    handleSubmit(
+                      order.orderId,
+                      workerId,
+                      order.status,
+                      order.paymentStatus,
+                    )
                   }
                 >
                   Submit

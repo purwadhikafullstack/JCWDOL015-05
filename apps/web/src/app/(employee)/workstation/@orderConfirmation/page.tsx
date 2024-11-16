@@ -7,8 +7,8 @@ const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletId
-  const [outletAdminId, setOutletAdminId] = useState<number>(1); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletId
+  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -41,7 +41,7 @@ export default function OrderConfirmationPage() {
       );
 
       if (response.ok) {
-        alert(`Order #${orderId} has been assigned to a driver`);
+        alert(`Order #${orderId} has been assigned to driver`);
         fetchOrders();
       } else {
         const errorData = await response.json();

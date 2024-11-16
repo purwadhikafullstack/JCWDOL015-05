@@ -6,8 +6,8 @@ const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function BypassRequestPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number>(1); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number>(1); // Replace with actual outletAdminId
+  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -30,6 +30,7 @@ export default function BypassRequestPage() {
     orderId: number,
     status: string,
     action: string,
+    paymentStatus: string,
   ) => {
     try {
       const response = await fetch(
@@ -39,12 +40,14 @@ export default function BypassRequestPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ status, action }),
+          body: JSON.stringify({ status, action, paymentStatus }),
         },
       );
 
       if (response.ok) {
-        alert(`submission success`);
+        action === 'confirm'
+          ? alert(`process has been bypassed`)
+          : alert('bypass rejected & returned');
         fetchOrders();
       } else {
         const errorData = await response.json();
@@ -79,7 +82,12 @@ export default function BypassRequestPage() {
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
                   onClick={() =>
-                    handleConfirm(order.orderId, order.status, 'confirm')
+                    handleConfirm(
+                      order.orderId,
+                      order.status,
+                      'confirm',
+                      order.paymentStatus,
+                    )
                   }
                 >
                   Confirm
@@ -87,7 +95,12 @@ export default function BypassRequestPage() {
                 <Button
                   className="w-32 p-2 bg-red-500 text-white rounded hover:bg-red-600"
                   onClick={() =>
-                    handleConfirm(order.orderId, order.status, 'reject')
+                    handleConfirm(
+                      order.orderId,
+                      order.status,
+                      'reject',
+                      order.paymentStatus,
+                    )
                   }
                 >
                   Reject

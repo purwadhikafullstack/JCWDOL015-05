@@ -62,7 +62,7 @@ export class AssignmentRouter {
       this.assignmentController.completePickup,
     );
     this.router.patch(
-      'complete-delivery',
+      '/complete-delivery',
       this.assignmentController.completeDelivery,
     );
     this.router.get(

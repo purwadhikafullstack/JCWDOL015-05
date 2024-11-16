@@ -148,7 +148,7 @@ export class AssignmentController {
 
   async confirmBypass(req: Request, res: Response) {
     const { orderId } = req.params;
-    const { status, action } = req.body;
+    const { status, action, paymentStatus } = req.body;
 
     // Determine newStatus based on the values of action and status
     let newStatus;
@@ -160,7 +160,11 @@ export class AssignmentController {
       } else if (status === 'penyetrikaan') {
         newStatus = 'packing';
       } else if (status === 'packing') {
-        newStatus = 'menungguPembayaran';
+        if (paymentStatus === 'paid') {
+          newStatus = 'siapDiantar'; // Ready for delivery
+        } else {
+          newStatus = 'menungguPembayaran'; // Waiting for payment
+        }
       }
     }
 
@@ -338,7 +342,7 @@ export class AssignmentController {
         where: { driverId: driverId },
         data: { isAvailable: true },
       });
-      return res.status(200).json({ message: 'Laundry arrived at outlet' });
+      return res.status(200).json({ message: 'Delivered to customer' });
     } catch (error) {}
   }
 
@@ -409,15 +413,11 @@ export class AssignmentController {
 
   async submitTask(req: Request, res: Response) {
     const { orderId } = req.params;
-    const { workerId, status } = req.body;
+    const { workerId, status, paymentStatus } = req.body;
 
     // Validate `orderId` and `workerId` are numbers
     const parsedOrderId = parseInt(orderId);
     const parsedWorkerId = parseInt(workerId);
-
-    if (isNaN(parsedOrderId) || isNaN(parsedWorkerId)) {
-      return res.status(400).json({ error: 'Invalid orderId or workerId' });
-    }
 
     try {
       // Determine the next status based on current status
@@ -430,22 +430,34 @@ export class AssignmentController {
           newStatus = 'packing';
           break;
         case 'packing':
-          newStatus = 'menungguPembayaran';
+          if (paymentStatus === 'paid') {
+            newStatus = 'siapDiantar'; // Ready for delivery
+          } else {
+            newStatus = 'menungguPembayaran'; // Waiting for payment
+          }
           break;
         default:
           return res.status(400).json({ error: 'Invalid status value' });
       }
 
-      // Perform the transaction to add worker and update order status
-      await prisma.$transaction([
-        prisma.workersOnOrders.create({
+      // Attempt to create worker-on-order association
+      try {
+        await prisma.workersOnOrders.create({
           data: { workerId: parsedWorkerId, orderId: parsedOrderId },
-        }),
-        prisma.order.update({
-          where: { orderId: parsedOrderId },
-          data: { status: newStatus },
-        }),
-      ]);
+        });
+      } catch (checker) {
+        console.warn(
+          'Failed to create worker-on-order association (possibly already exists):',
+          checker,
+        );
+        // treated as non-critical, proceed to update the order status
+      }
+
+      // Update the order status
+      await prisma.order.update({
+        where: { orderId: parsedOrderId },
+        data: { status: newStatus },
+      });
 
       return res.status(200).json({
         message: 'Task submitted successfully',

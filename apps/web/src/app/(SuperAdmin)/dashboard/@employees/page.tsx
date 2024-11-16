@@ -34,7 +34,7 @@ export default function EmployeeManagement() {
   const [role, setRole] = useState<string | null>(null);
   const [outletId, setOutletId] = useState<number | null>(null);
   const [outlets, setOutlets] = useState<Outlets[]>([]);
-  const [station, setStation] = useState<string | null>(null);
+  const [station, setStation] = useState<string>('washing');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -76,6 +76,7 @@ export default function EmployeeManagement() {
 
   const openCreateModal = () => {
     setRole('outletAdmin');
+    setStation('washing');
     setIsCreateModalOpen(true);
   };
 
@@ -85,7 +86,7 @@ export default function EmployeeManagement() {
     setFullName(null);
     setRole(null);
     setOutletId(null);
-    setStation(null);
+    setStation('washing');
     setIsCreateModalOpen(false);
   };
 
@@ -161,7 +162,7 @@ export default function EmployeeManagement() {
     setFullName(null);
     setRole(null);
     setOutletId(null);
-    setStation(null);
+    setStation('');
     setIsUpdateModalOpen(false);
   };
 
@@ -269,9 +270,7 @@ export default function EmployeeManagement() {
                         employee.fullName,
                         employee.role,
                         employee.outletId,
-                        employee.worker?.station
-                          ? employee.worker?.station
-                          : 'washing',
+                        employee.worker?.station!,
                       )
                     }
                   />
