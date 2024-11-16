@@ -15,7 +15,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-    background-color: floralwhite;
+    background-color: #393737;
 }
 
 a {

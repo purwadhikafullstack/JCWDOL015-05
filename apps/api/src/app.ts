@@ -23,6 +23,7 @@ import '../src/services/passportConfig'
 import { WorkerRouter } from './routers/worker.router';
 import { NotificationRouter } from './routers/notification.router';
 import { DriverRouter } from './routers/driver.router';
+import { ProcessOrderRouter } from './routers/processOrder.router';
 export default class App {
   private app: Express;
 
@@ -75,6 +76,7 @@ export default class App {
     const workerRouter = new WorkerRouter()
     const notificationRouter =  new NotificationRouter()
     const driverRouter = new DriverRouter()
+    const processOrderRouter = new ProcessOrderRouter()
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
@@ -87,8 +89,9 @@ export default class App {
     this.app.use('/api/orders', orderRouter.getRouter())
     this.app.use('/api/submit', attendanceRouter.getRouter())
     this.app.use('/api/worker', workerRouter.getRouter())
-    this.app.use('/api/notifications', notificationRouter.getROuter())
+    this.app.use('/api/notifications', notificationRouter.getRouter())
     this.app.use('/api/driver', driverRouter.getRouter())
+    this.app.use('/api/process', processOrderRouter.getRouter())
   }
 
   public start(): void {

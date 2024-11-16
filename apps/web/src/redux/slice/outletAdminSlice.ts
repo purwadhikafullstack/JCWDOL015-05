@@ -1,10 +1,10 @@
 
-import { IDriverData } from "@/type/worker";
+import { IOutletAdminData } from "@/type/worker";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Define the initial state structure
-const initialState: IDriverData = {
-  driverId: 0,
+const initialState: IOutletAdminData = {
+  outletAdminId: 0,
   employeeId: 0,
   employee: {
     email: '',
@@ -15,19 +15,19 @@ const initialState: IDriverData = {
   station: '',  
 };
 
-export const driverSlice = createSlice({
-  name: 'driver',
+export const outletAdminSlice = createSlice({
+  name: 'outletAdmin',
   initialState,
   reducers: {
-    driverLoginAction: (state, action: PayloadAction<IDriverData>) => {
-      const { driverId, employeeId, station, employee } = action.payload;
-      state.driverId = driverId;
+    outletAdminLoginAction: (state, action: PayloadAction<IOutletAdminData>) => {
+      const { outletAdminId, employeeId, station, employee } = action.payload;
+      state.outletAdminId = outletAdminId;
       state.employeeId = employeeId;
       state.station = station;
       state.employee = { ...employee };
     },
-    driverLogoutAction: (state) => {
-      state.driverId = 0;
+    outletAdminLogoutAction: (state) => {
+      state.outletAdminId = 0;
       state.employeeId = 0;
       state.station = '';
       state.employee = { email: '', fullName: '', role: '', avatar: '' };
@@ -36,5 +36,5 @@ export const driverSlice = createSlice({
 });
 
 // Export the actions and the reducer
-export const { driverLoginAction, driverLogoutAction } = driverSlice.actions;
-export default driverSlice.reducer;
+export const { outletAdminLoginAction, outletAdminLogoutAction } = outletAdminSlice.actions;
+export default outletAdminSlice.reducer;

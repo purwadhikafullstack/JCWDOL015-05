@@ -13,7 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import * as yup from 'yup'
 import { useDispatch } from "react-redux"
 import { workerLoginAction } from "@/redux/slice/workerSlice"
-import { driverLoginAction, outletAdminLoginAction } from "@/redux/slice/driverSlice"
+import { driverLoginAction,  } from "@/redux/slice/driverSlice"
+import { outletAdminLoginAction } from "@/redux/slice/outletAdminSlice"
 const EmployeeLoginSchema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().required().min(8)

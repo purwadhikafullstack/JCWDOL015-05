@@ -22,7 +22,7 @@ export class OrderRouter {
     this.router.get('/:customerId', this.orderController.getOrderListCustomer)
   }
 
-  public getRouter(): Router {
+  getRouter(): Router {
     return this.router;
   }
 }

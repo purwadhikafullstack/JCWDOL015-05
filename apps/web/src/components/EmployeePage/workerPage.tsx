@@ -17,6 +17,7 @@ export default function WorkerPage() {
     }
     return (
         <div>
+            {worker?.workerId}
             {checkStation(Station.washing) && (
                 <WashingPage/>
             )}
