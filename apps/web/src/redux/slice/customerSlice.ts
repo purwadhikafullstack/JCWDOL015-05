@@ -1,3 +1,4 @@
+import { IUserEdit } from "@/type/customers"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 export type ICustomerData = {
@@ -38,9 +39,6 @@ export const customerSlice = createSlice({
       state.fullName = ''
       state.address = []
       state.avatar = ''
-    },
-    updateAction: (state, action) => {
-      
     }
   }
 })

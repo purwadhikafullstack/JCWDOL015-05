@@ -14,6 +14,8 @@ export class AddressRouter {
   private initializeRoutes(): void {
     this.router.post('/', this.addressController.createAddress);
     this.router.get('/:customerId', this.addressController.getUserAddress);
+    this.router.post('/primary', this.addressController.mainAddress);
+    this.router.delete('/:addressId', this.addressController.deleteAddress)
   }
 
   getRouter(): Router {

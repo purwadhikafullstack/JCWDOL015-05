@@ -25,8 +25,24 @@ export type ICustomerAddressData = {
   kota: string
   kecamatan: string
   detailAddress: string
+  isPrimary: boolean
+}
+export type ICustomerAddressProfile = {
+  addressId: number
+  customerId: number
+  longitude: number
+  latitude: number
+  provinsi: string
+  kota: string
+  kecamatan: string
+  detailAddress: string
+  isPrimary: boolean
 }
 
+export type ISetPrimaryAddress = {
+  addressId : number
+  customerId: number
+}
 export type IAddress = {
   addressId: number
   customerId: number

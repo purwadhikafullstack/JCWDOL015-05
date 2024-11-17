@@ -55,6 +55,7 @@ export default function Map() {
   const [addresses, setAddresses] = useState<ILocation[]>([]);
   const MAP_API = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   const customers = useAppSelector((state) => state.customer);
+  
   const initMap = () => {
     mapRef.current = new maplibregl.Map({
       container: mapContainerRef.current!,
@@ -95,6 +96,7 @@ export default function Map() {
       console.error('Coordinate already set');
     }
   };
+  
   const formik = useFormik({
     initialValues: {
       addressId: 0,
@@ -104,7 +106,7 @@ export default function Map() {
       city: '',
       subdistrict: '',
       detailAddress: '',
-      customerId: customers.customerId,
+      customerId: '',
     },
     validationSchema: mapSchema,
     onSubmit: (values, action) => {

@@ -9,6 +9,7 @@ import {
   editProfile,
   getCustomerData,
 } from '@/services/api/customers/customers';
+import RoleProtection from '@/services/Unauthorized';
 import { IUserEdit } from '@/type/customers';
 import { useMutation } from '@tanstack/react-query';
 import { useFormik } from 'formik';
@@ -161,4 +162,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile;
+export default RoleProtection(EditProfile, ['customer']);

@@ -32,7 +32,7 @@ export type ICustomerNewPass = {
 }
 export type IUserEdit = {
   customerId: number,
-  avatar? : File | null,
+  avatar? : File | null | string,
   fullName: string,
 }
 export type ICustomerOrderData = {

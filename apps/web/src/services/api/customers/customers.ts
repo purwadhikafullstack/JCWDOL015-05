@@ -114,5 +114,6 @@ export const getCustomerData = async (customerId: number) => {
   const url = `${BASEURL}/api/users/${customerId}`
   const res = await fetch(url)
   const result = await res.json()
+  console.log(result)
   return {result, ok: res.ok, data: result.data}
 }

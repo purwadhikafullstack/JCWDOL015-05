@@ -35,6 +35,71 @@ export class AddressController {
       })
     }
   }
+  async mainAddress(req: Request, res : Response) {
+    try {
+      const {customerId, addressId} = req.body
+
+      const checkUserAddress = await prisma.address.findMany({
+        where : {
+          customerId : +customerId,
+        }
+      })
+      // checkUserAddress.map((address)=>{
+      //   if(address.isPrimary === true){
+      //      prisma.address.update({
+      //       where: {addressId: +address.addressId, isPrimary: true},
+      //       data: {
+      //         isPrimary: false
+      //       }
+      //     })
+      //   }
+      // })
+      // Loop through the addresses and update any primary address to false
+    for (let address of checkUserAddress) {
+      if (address.isPrimary) {
+        await prisma.address.update({
+          where: { addressId: +address.addressId , isPrimary: true},
+          data: {
+            isPrimary: false,
+          },
+        });
+      }
+    }
+      await prisma.address.update({
+        where: {addressId: +addressId},
+        data: {
+          isPrimary: true
+        }
+      })
+      res.status(200).send({
+        status: 'ok',
+        message: `address ${addressId} updated to primary`
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        err: err
+      })
+    }
+  }
+  async deleteAddress(req: Request, res: Response){
+    try {
+      const {addressId} = req.params
+      const deleteAddress = await prisma.address.delete({
+        where: {addressId: +addressId}
+      })
+      res.status(200).send({
+        status: 'ok',
+        data: deleteAddress,
+        message: `delete address id ${addressId}`
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        err: err
+      })
+    }
+  }
   async getUserAddress(req: Request, res: Response) {
     try {
       const {

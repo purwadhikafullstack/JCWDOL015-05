@@ -38,12 +38,7 @@ export const LoginPage = () => {
 
       dispatch(loginAction(user))
       createToken(result.user.token)
-      // queryClient.setQueryData(['customer'], {
-      //   customerId: user.customerId,
-      //   role: user.role,
-      //   email: user.email,
-      //   fullName: user.fullName
-      // })
+
       toast.success(result.msg)
       router.push('/')
     },
