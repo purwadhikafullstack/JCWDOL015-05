@@ -75,7 +75,7 @@ export class OrderController {
           data: {
             customerId,
             outletId,
-            status: "menungguPenjemputanDriver",
+            status: "menungguKonfirmasi",
             customerAddressId: addressId,
             pickupDate: new Date(pickupDate),
             pickupTime,

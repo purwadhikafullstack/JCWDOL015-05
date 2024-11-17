@@ -11,13 +11,15 @@ import { useAppSelector } from "@/redux/hooks"
 import { customerDataSchema, orderDataSchema } from "@/schemaData/schemaData"
 import { getCustomerAddress } from "@/services/api/address/address"
 import { createPickupOrder, getNearOutlet, IOrderPickup } from "@/services/api/customers/pickupOrders"
-import { IAddress, ICustomerAddressData } from "@/type/address"
+import { IAddress, ICustomerAddressData, ICustomerAddressProfile } from "@/type/address"
 import { ICustomerAddress } from "@/type/customers"
 import { IOutletData } from "@/type/outlet"
 import { DialogTitle } from "@radix-ui/react-dialog"
+import { useMutation } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { FormikHelpers, useFormik } from "formik"
 import { CalendarIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 
@@ -29,12 +31,13 @@ const jadwalPickup = [
 
 export const CustomerPickupPage = () => {
   const [foundOutlet, setFoundOutlet] = useState<IOutletData[]>([])
-  const [customerAddress, setCustomerAddress] = useState([])
+  const [customerAddress, setCustomerAddress] = useState<ICustomerAddressProfile[]>([])
   const [date, setDate] = useState<Date>()
   const [address, setAddress] = useState<ICustomerAddressData>()
   const [openCalendar, setOpenCalendar] = useState(false)
   const [openDialog, setOpenDialog] = useState(false)
   const customer = useAppSelector((state) => state.customer)
+  const router = useRouter()
   const formik = useFormik({
     initialValues: {
       addressId: 0,
@@ -43,7 +46,8 @@ export const CustomerPickupPage = () => {
     validationSchema: customerDataSchema,
     onSubmit: (values, action) => {
       console.log(values)
-      getOutlet(values, action)
+      // getOutlet(values, action)
+      outletData.mutate(values)
     }
   })
   console.log(customerAddress)
@@ -57,44 +61,59 @@ export const CustomerPickupPage = () => {
     },
     validationSchema: orderDataSchema,
     onSubmit: (values, action) => {
-      pickupRequest(values, action)
-      // console.log(values)
+      // pickupRequest(values, action)
+      pickupMutation.mutate(values)
+      action.resetForm()
     },
-    onReset: () => {
-
-    }
 
   })
-  const getOutlet = async (data: IAddress, action: FormikHelpers<IAddress>) => {
-    const { result, ok, nearOutlet } = await getNearOutlet(data)
-    console.log(nearOutlet)
-    setFoundOutlet(nearOutlet)
-  }
-  const getUserAddress = async (customerId: number) => {
-    const { result, ok, address } = await getCustomerAddress(customerId)
-    setCustomerAddress(address)
-  }
-  const pickupRequest = async (data: IOrderPickup, action: FormikHelpers<IOrderPickup>) => {
-    try {
-      console.log(data)
-      const { result, ok } = await createPickupOrder(data)
-      if (!ok) throw result.msg
-      toast.success(result.msg)
+  const outletData = useMutation({
+    mutationFn: async (data: IAddress) => {
+      const {result , ok , nearOutlet} = await getNearOutlet(data)
+      return nearOutlet
+    },
+    onSuccess : (nearOutlet) =>{
+      setFoundOutlet(nearOutlet)
+    },
+    onError : (err) =>{
+      toast.error(err?.message)
+    }
+  })
+  const userAddress = useMutation({
+    mutationFn: async (customerId: number) => {
+      const {result, ok , address } = await getCustomerAddress(customerId)
+      return address
+    },
+    onSuccess: (address)=>{
+      setCustomerAddress(address)
+    },
+    onError: (err) => {
+      toast.error(err?.message)
+    }
+  })
+  const pickupMutation = useMutation({
+    mutationFn: async(data: IOrderPickup) => {
+      const {result , ok } = await createPickupOrder(data)
+      return {data, result}
+    },
+    onSuccess: (data, result)=>{
+      toast.success("Sukses Order")
       setOpenDialog(false)
       setAddress(undefined)
-      setFoundOutlet([])
-      action.resetForm()
-    } catch (err) {
-      console.log(err)
+      router.push('/customers/profile')
+    },
+    onError: (err)=>{
+      toast.error(err?.message)
     }
-  }
+  })
+  
   const handleSelectAddress = (value: string) => {
     formik.setFieldValue('addressId', value)
     formik.setFieldValue('detailAddress', value)
     formik.setFieldValue('customerId', customer.customerId)
 
     pickupFormik.setFieldValue('addressId', parseInt(value))
-    const selectedDetailAddress = customerAddress.find((data: IOrderPickup) => data.addressId.toString() === value)
+    const selectedDetailAddress = customerAddress.find((data) => data.addressId.toString() === value)
     setAddress(selectedDetailAddress)
     pickupFormik.setFieldValue('customerId', customer.customerId)
   }
@@ -109,13 +128,17 @@ export const CustomerPickupPage = () => {
     setDate(value)
     pickupFormik.setFieldValue('pickupDate', value)
   }
+  const sortCustomerAddress = customerAddress.sort(
+    (a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0),
+  );
   useEffect(() => {
-    getUserAddress(customer.customerId)
+    
+    userAddress.mutate(customer.customerId)
   }, [])
   return (
-    <section className="flex flex-col items-center w-full gap-10">
-      <Card className="w-1/2 mt-32">
-        <form onSubmit={formik.handleSubmit}>
+    <section className="flex flex-col items-center w-full h-screen gap-10">
+      <Card className="w-3/4 p-5 mt-32">
+        <form onSubmit={formik.handleSubmit} className="space-y-3">
           <Select
             onValueChange={handleSelectAddress}
             name="addressId"
@@ -125,9 +148,12 @@ export const CustomerPickupPage = () => {
             </SelectTrigger>
             <SelectContent>
               {
-                customerAddress.map((data: ICustomerAddressData, index) => (
+                sortCustomerAddress
+                .map((data, index) => (
                   <SelectItem key={index} value={data.addressId.toString()} >
-                    <p>{`${data.detailAddress}, kec.${data.kecamatan},${data.kota}, ${data.provinsi}`}</p>
+                    <p className={`${data.isPrimary === true ? 'font-semibold' : ''}`}>
+                      {`${data.detailAddress}, kec.${data.kecamatan},${data.kota}, ${data.provinsi} ${data.isPrimary === true ? "(Alamat Utama)": ""}`} 
+                    </p>
                   </SelectItem>
                 ))
               }
@@ -170,20 +196,19 @@ export const CustomerPickupPage = () => {
               }
             </SelectContent>
           </Select>
-          <button className="w-full p-3 text-white bg-blue-500 rounded-md" type="submit">Cari</button>
+          <button className="w-full p-3 text-white bg-blue-500 rounded-md" type="submit">{outletData.isPending ? "Loading ...": "Cari"}</button>
         </form>
 
       </Card>
       {
       foundOutlet.length > 0 ?
          (
-          <Card className="w-1/2">
+          <Card className="w-3/4">
           {
             foundOutlet.map((data: IOutletData, index) => (
               <div key={index} className="w-full p-5 border rounded-md ">
                 <form onSubmit={pickupFormik.handleSubmit} className="flex flex-row items-end justify-between">
                   <div>
-                    <p>{data.outletId}</p>
                     <p>{`Nama Outlet : ${data.name}`}</p>
                     <p>{`Kecamatan : ${data.kecamatan}`}</p>
                     <p>{`Kota : ${data.kota}`}</p>
@@ -223,7 +248,7 @@ export const CustomerPickupPage = () => {
         )
       :
          (
-          <Card className="w-1/2">
+          <Card className="w-3/4 rounded-md text-center">
             <p>Outlet Tidak Tersedia</p>
           </Card>
         )

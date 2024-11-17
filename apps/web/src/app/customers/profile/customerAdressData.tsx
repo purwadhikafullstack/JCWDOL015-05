@@ -27,6 +27,7 @@ import { useFormik } from 'formik';
 import { CheckCircleIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { toast } from 'react-toastify';
+import AddressDropdownMenu from './addressTableAction';
 
 const tableHeader = [
   'Alamat Lengkap',
@@ -111,59 +112,15 @@ export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
             </td>
             <td>
               <div className="flex flex-row gap-1">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="secondary">Actions</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleSetPrimary(address.addressId, address.customerId)
-                      }
-                    >
-                      Jadikan Alamat Utama
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={() =>
-                        console.log(`Edit Address: ${address.detailAddress}`)
-                      }
-                    >
-                      Edit (Still Development)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={()=> {
-                        setOpenDialog(true)
-                        setSelectedAddressId(address.addressId)
-                      }}
-                      className="text-red-500 cursor-pointer"
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                  <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                  
-                  <DialogContent>
-                    <p>Apakah Anda Yakin Menhapus Alamat ini?</p>
-                    <DialogFooter>
-                      <Button
-                        variant="outline"
-                        onClick={() => setOpenDialog(false)}
-                      >
-                        Batal
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        onClick={()=> handleDeleteAddress(selectedAddressId)}
-                      >
-                        Hapus
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-                </DropdownMenu>
-                
+
+              
+                <AddressDropdownMenu 
+                  addressId={address.addressId}
+                  customerId={address.customerId}
+                  detailAddress={address.detailAddress}
+                  onSetPrimary={handleSetPrimary}
+                  onDelete={handleDeleteAddress}
+                />
               </div>
             </td>
           </tr>

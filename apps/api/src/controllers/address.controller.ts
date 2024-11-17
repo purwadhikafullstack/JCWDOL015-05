@@ -91,7 +91,7 @@ export class AddressController {
       res.status(200).send({
         status: 'ok',
         data: deleteAddress,
-        message: `delete address id ${addressId}`
+        message: `Berhasil Menghapus Alamat`
       })
     } catch (err) {
       res.status(400).send({
