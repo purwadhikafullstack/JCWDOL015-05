@@ -1,67 +1,103 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 interface UpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
-  item: string;
-  quantity: number;
-  setItem: (value: string) => void;
-  setQuantity: (value: number) => void;
+  onConfirm: (values: { item: string; quantity: number }) => void;
+  initialItem: string;
+  initialQuantity: number;
 }
 
 const ItemUpdateModal: React.FC<UpdateModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  item,
-  quantity,
-  setItem,
-  setQuantity,
+  initialItem,
+  initialQuantity,
 }) => {
+  // Validation Schema
+  const validationSchema = Yup.object({
+    item: Yup.string()
+      .required('Item name is required')
+      .min(2, 'Item name must be at least 2 characters'),
+    quantity: Yup.number()
+      .required('Quantity is required')
+      .min(1, 'Quantity must be at least 1'),
+  });
+
+  // Initialize Formik
+  const formik = useFormik({
+    initialValues: {
+      item: initialItem || '', // Default to empty if not provided
+      quantity: initialQuantity || 0, // Default to 0 if not provided
+    },
+    enableReinitialize: true, // Reinitialize Formik values when props change
+    validationSchema,
+    onSubmit: (values) => {
+      onConfirm(values); // Pass updated data to parent
+      onClose(); // Close modal after submission
+    },
+  });
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
-        <h2 className="text-xl font-semibold mb-4">Update</h2>
+        <h2 className="text-xl font-semibold mb-4">Update Item</h2>
 
-        <div>
+        <form onSubmit={formik.handleSubmit}>
+          {/* Item Name Input */}
           <label className="block text-left text-sm font-medium mb-1">
-            Outlet Name
+            Item Name
           </label>
           <input
             type="text"
-            value={item}
-            onChange={(e) => setItem(e.target.value)}
-            className="w-full border rounded p-2 mb-4 bg-gray-200"
+            name="item"
+            value={formik.values.item}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="w-full border rounded p-2 mb-2 bg-gray-200"
           />
+          {formik.touched.item && formik.errors.item && (
+            <p className="text-red-500 text-sm">{formik.errors.item}</p>
+          )}
 
+          {/* Quantity Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Quantity
           </label>
           <input
             type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="w-full border rounded p-2 mb-4 bg-gray-200"
-          ></input>
-        </div>
+            name="quantity"
+            min={1}
+            value={formik.values.quantity}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="w-full border rounded p-2 mb-2 bg-gray-200"
+          />
+          {formik.touched.quantity && formik.errors.quantity && (
+            <p className="text-red-500 text-sm">{formik.errors.quantity}</p>
+          )}
 
-        <div className="flex justify-between mt-6">
-          <button
-            onClick={onConfirm}
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
-          >
-            Save
-          </button>
-          <button
-            onClick={onClose}
-            className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded-md"
-          >
-            Cancel
-          </button>
-        </div>
+          <div className="flex justify-between mt-6">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded-md"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

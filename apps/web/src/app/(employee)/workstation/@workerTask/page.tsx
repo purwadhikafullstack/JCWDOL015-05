@@ -13,10 +13,10 @@ type Item = {
 };
 
 export default function WorkerTaskPage() {
-  const [workerId, setWorkerId] = useState<number>(6);
+  const [workerId, setWorkerId] = useState<number>(4);
   const [order, setOrder] = useState<Order | null>(null);
   const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
-  const [station, setStation] = useState<string | null>('packing');
+  const [station, setStation] = useState<string | null>('washing');
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [message, setMessage] = useState('');

@@ -114,9 +114,17 @@ export default function ItemManagement() {
     setIsUpdateModalOpen(false);
   };
 
-  const handleUpdateItem = async () => {
+  const handleUpdateItem = async (values: {
+    item: string;
+    quantity: number;
+  }) => {
     try {
-      const updatedItem = await UpdateItem(itemId, itemName, itemQuantity);
+      const updatedItem = await UpdateItem(
+        itemId,
+        values.item,
+        values.quantity,
+      );
+      // const updatedItem = await UpdateItem(itemId, itemName, itemQuantity);
       setItems((prevItems) =>
         prevItems.map((item: Item) =>
           item.itemId === itemId
@@ -149,9 +157,17 @@ export default function ItemManagement() {
     setItemQuantity(null);
   };
 
-  const handleCreateItem = async () => {
+  const handleCreateItem = async (values: {
+    orderId: number;
+    item: string;
+    quantity: number;
+  }) => {
     try {
-      const newItem = await createItem(orderId, itemName, itemQuantity);
+      const newItem = await createItem(
+        values.orderId,
+        values.item,
+        values.quantity,
+      );
       setItems((prevItems) => [...prevItems, newItem]);
       fetchItems(currentPage);
       closeCreateModal();
@@ -275,21 +291,13 @@ export default function ItemManagement() {
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
         onConfirm={handleCreateItem}
-        orderId={orderId!}
-        setOrderId={setOrderId}
-        item={itemName!}
-        setItem={setItemName}
-        quantity={itemQuantity!}
-        setQuantity={setItemQuantity}
       />
       <ItemUpdateModal
         isOpen={isUpdateModalOpen}
         onClose={closeUpdateModal}
         onConfirm={handleUpdateItem}
-        item={itemName!}
-        setItem={setItemName}
-        quantity={itemQuantity!}
-        setQuantity={setItemQuantity}
+        initialItem={itemName!} // Current item name
+        initialQuantity={itemQuantity!} // Current quantity
       />
       <DeleteModal
         isOpen={isDeleteModalOpen}

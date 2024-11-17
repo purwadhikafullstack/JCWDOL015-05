@@ -89,6 +89,7 @@ export default function OutletManagement() {
       setOutlets((prevoutlets) =>
         prevoutlets.filter((outlet: Outlet) => outlet.outletId !== outletId),
       );
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting outlet:', error);
     }
@@ -124,22 +125,30 @@ export default function OutletManagement() {
     setIsUpdateModalOpen(false);
   };
 
-  const handleUpdateOutlet = async () => {
+  const handleUpdateOutlet = async (values: {
+    name: string;
+    provinsi: string;
+    kota: string;
+    kecamatan: string;
+    longitude: number;
+    latitude: number;
+  }) => {
     try {
       const updatedOutlet = await UpdateOutlet(
         outletId!,
-        outletName!,
-        outletProvinsi!,
-        outletKota!,
-        outletKecamatan!,
-        outletLongitude!,
-        outletLatitude!,
+        values.name,
+        values.provinsi,
+        values.kota,
+        values.kecamatan,
+        values.longitude,
+        values.latitude,
       );
       setOutlets((prevoutlets) =>
         prevoutlets.map((outlet: Outlet) =>
           outlet.outletId === updatedOutlet.outletId
             ? {
                 ...outlet,
+                name: updatedOutlet.name,
                 provinsi: updatedOutlet.provinsi,
                 kota: updatedOutlet.kota,
                 kecamatan: updatedOutlet.kecamatan,
@@ -165,15 +174,22 @@ export default function OutletManagement() {
     setIsCreateModalOpen(false);
   };
 
-  const handleCreateOutlet = async () => {
+  const handleCreateOutlet = async (values: {
+    name: string;
+    provinsi: string;
+    kota: string;
+    kecamatan: string;
+    longitude: number;
+    latitude: number;
+  }) => {
     try {
       const newOutlet = await createOutlet(
-        outletName!,
-        outletProvinsi!,
-        outletKota!,
-        outletKecamatan!,
-        outletLongitude!,
-        outletLatitude!,
+        values.name,
+        values.provinsi,
+        values.kota,
+        values.kecamatan,
+        values.longitude,
+        values.latitude,
       );
       setOutlets((prevItems) => [...prevItems, newOutlet]);
       await fetchOutlets();
@@ -296,35 +312,17 @@ export default function OutletManagement() {
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
         onConfirm={handleCreateOutlet}
-        name={outletName!}
-        setName={setOutletName}
-        provinsi={outletProvinsi!}
-        setProvinsi={setOutletProvinsi}
-        kota={outletKota!}
-        setKota={setOutletkota}
-        kecamatan={outletKecamatan!}
-        setKecamatan={setOutleKecamatan}
-        longitude={outletLongitude!}
-        setLongitude={setOutletLongitude}
-        latitude={outletLatitude!}
-        setLatitude={setOutletLatitude}
       />
       <OutletUpdateModal
         isOpen={isUpdateModalOpen}
         onClose={closeUpdateModal}
         onConfirm={handleUpdateOutlet}
-        name={outletName!}
-        setName={setOutletName}
-        provinsi={outletProvinsi!}
-        setProvinsi={setOutletProvinsi}
-        kota={outletKota!}
-        setKota={setOutletkota}
-        kecamatan={outletKecamatan!}
-        setKecamatan={setOutleKecamatan}
-        longitude={outletLongitude!}
-        setLongitude={setOutletLongitude}
-        latitude={outletLatitude!}
-        setLatitude={setOutletLatitude}
+        initialName={outletName!}
+        initialProvinsi={outletProvinsi!}
+        initialKota={outletKota!}
+        initialKecamatan={outletKecamatan!}
+        initialLongitude={outletLongitude!}
+        initialLatitude={outletLatitude!}
       />
       <DeleteModal
         isOpen={isDeleteModalOpen}

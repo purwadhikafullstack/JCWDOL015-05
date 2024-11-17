@@ -54,7 +54,7 @@ export async function UpdateOutlet(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        outlet: name,
+        name,
         provinsi,
         kota,
         kecamatan,
