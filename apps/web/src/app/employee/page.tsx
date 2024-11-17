@@ -45,14 +45,8 @@ export default function Employee() {
     }
 
     return (
-        <section>
-            <button onClick={handleLogout}>
-                Log Out
-            </button>
-            <br />
-
-            {role}
+        <div>
             {renderPage()}
-        </section>
+        </div>
     )
 }

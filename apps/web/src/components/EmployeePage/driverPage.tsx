@@ -1,188 +1,201 @@
-'use client';
+'use client'
 
-import { useAppSelector } from "@/redux/hooks";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useAppDispatch, useAppSelector } from "@/redux/hooks"
+import { Role} from "@/type/role"
+import { useDispatch } from "react-redux"
+import WashingPage from "./stationPage.tsx/washing"
+import { IAttendance } from "@/type/employee"
+import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { useRouter } from "next/navigation"
+
+interface Attendance {
+    attendanceId: number;
+    employeeId: number;
+    clockIn: string | null;
+    clockOut: string | null;
+}
 
 export default function DriverPage() {
-    const dispatch = useDispatch();
-    const driver = useAppSelector((state) => state.driver);
+    const router = useRouter()
+    const driver = useAppSelector((state) => state.driver)
+    const [employeeId, setEmployeeId] = useState(driver.employeeId)
+    const [attendanceLog, setAttendanceLog] = useState<IAttendance[]>([]);
+    const [isClockedIn, setIsClockedIn] = useState<boolean>(false)
+    const [completedAttendance, setCompletedAttendance] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [attendanceHistory, setAttendanceHistory] = useState<Attendance[]>([]);
 
-    const [driverId, setDriverId] = useState(driver?.driverId);
-    const [requests, setRequests] = useState<any[]>([]);
-    const [history, setHistory] = useState<any[]>([]);
-
-    useEffect(() => {
-        if (driverId) {
-            const fetchRequest = async () => {
-                try {
-                    const response = await fetch(`http://localhost:8000/api/driver/${driverId}/requests`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setRequests(data);
-                    } else {
-                        console.error('Failed to fetch data');
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            };
-
-            const fetchHistory = async () => {
-                try {
-                    const response = await fetch(`http://localhost:8000/api/driver/${driverId}/history`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setHistory(data);
-                    } else {
-                        console.error('Failed to fetch history');
-                    }
-                } catch (error) {
-                    console.error('Error fetching history:', error);
-                }
-            };
-
-            fetchRequest();
-            fetchHistory();
+    const fetchAttendance = async () => {
+        setLoading(true);
+        setError(null);
+        if (!employeeId) {
+            toast.error("Employee ID is not available.");
+            setLoading(false);
+            return;
         }
-    }, [driverId]);
-
-    // WebSocket connection to listen for new requests
-    useEffect(() => {
-        if (driverId) {
-            const ws = new WebSocket("ws://localhost:8080");
-
-            ws.onopen = () => {
-                console.log("WebSocket connection established");
-            };
-
-            ws.onmessage = (event) => {
-                const message = JSON.parse(event.data);
-                console.log("Pesan diterima dari server:", message); // Tambahkan log ini
-            
-                if (message.type === 'new-request') {
-                    toast.success(`Request baru diterima: ${message.message}`, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                    });
-                    setRequests(prevRequests => [...prevRequests, message.request]);
-                }
-            };
-            
-
-            ws.onclose = () => {
-                console.log("WebSocket connection closed");
-            };
-
-            return () => {
-                ws.close();
-            };
-        }
-    }, [driverId]);
-
-    const acceptRequest = async (requestId: any) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/driver/${requestId}/accept`, {
-                method: 'POST',
-            });
-            if (response.ok) {
-                setRequests(prevRequests => prevRequests.map(request => 
-                    request.orderId === requestId ? { ...request, status: 'Accepted' } : request
-                ));
-            } else {
-                console.error('Failed to accept request');
+            const response = await fetch(`http://localhost:8000/api/submit/attendance/${employeeId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch attendance log');
+            }
+            const data = await response.json();
+            setAttendanceLog(data);
+            const lastEntry = data[data.length - 1];
+            if (lastEntry) {
+                setIsClockedIn(!lastEntry.clockOut);
+                setCompletedAttendance(lastEntry.clockIn && lastEntry.clockOut);
             }
         } catch (error) {
-            console.error(error);
+            console.error('Failed to fetch attendance log:', error);
+            setError(error instanceof Error ? error.message : 'Unknown error');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleClockIn = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ employeeId })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                toast.success(data.msg);
+                router.push('/workstation')
+                fetchAttendance(); 
+            } else {
+                toast.error(data.error);
+            }
+        } catch (error) {
+            console.error('Clock-in Failed:', error);
+        }
+    }
+
+    const handleClockOut = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ employeeId })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                toast.success(data.msg);
+                fetchAttendance();
+                router.push('/employeeLogin')
+            } else {
+                toast.error(data.error);
+            }
+        } catch (error) {
+            console.error('Clock-out Failed:', error);
+        }
+    }
+
+    const fetchAttendanceHistory = async () => {
+        setLoading(true);
+        setError(null); // Reset error before fetch
+        try {
+            const response = await fetch(`http://localhost:8000/api/submit/attendance/${driver.employeeId}`);
+            console.log('Response:', response); // Log response
+            if (!response.ok) {
+                throw new Error('Failed to fetch attendance history');
+            }
+            const data = await response.json();
+            console.log('Data:', data); // Log data received
+            setAttendanceHistory(data);
+        } catch (error) {
+            console.error('Failed to fetch attendance history:', error);
+            setError(error instanceof Error ? error.message : 'Unknown error'); // Set error message
+        } finally {
+            setLoading(false);
         }
     };
 
-    const completeOrder = async (requestId: any) => {
-        try {
-            const response = await fetch(`http://localhost:8000/api/driver/${requestId}/complete`, {
-                method: 'POST',
-            });
-            if (response.ok) {
-                const updatedHistory = await fetch(`http://localhost:8000/api/driver/${driverId}/history`);
-                const data = await updatedHistory.json();
-                setHistory(data);
-                setRequests(prevRequests => prevRequests.filter(request => request.orderId !== requestId));
-            } else {
-                console.error('Failed to complete the order');
-            }
-        } catch (error) {
-            console.error(error);
-        }
+    const formatTime = (isoString: string | null) => {
+        if (!isoString) return 'N/A';
+        const date = new Date(isoString);
+        return date.toLocaleString('en-US', { 
+            dateStyle: 'short', 
+            timeStyle: 'short' 
+        });
     };
+
+    useEffect(() => {
+        fetchAttendance();
+    }, [employeeId]);
+
+    useEffect(() => {
+        fetchAttendanceHistory();
+    }, [])
 
     return (
-        <div className="flex flex-col justify-center items-center">
-            <ToastContainer />
-            
-            {/* Requests Section */}
-            <div className="mb-8 w-full">
-                <h2 className="font-bold text-xl mb-4">Current Requests</h2>
-                {requests.length === 0 ? (
-                    <p>No Request</p>
-                ) : (
-                    requests.map((request: any) => (
-                        <div key={request.orderId} className="mb-4 p-4 border-b">
-                            <h3 className="font-bold">Order #{request.orderId}</h3>
-                            <p>{request.order.customerId}</p>
-                            <p>{request.order.address}</p>
-                            <p>Items: {request.order.items && Array.isArray(request.order.items) ? request.order.items.join(", ") : "No items listed"}</p>
-                            <div className="mt-2 flex justify-between">
-                                <span>Status: {request.status}</span>
-                                {request.status === 'Pending' && (
-                                    <button
-                                        onClick={() => acceptRequest(request.orderId)}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                    >
-                                        Accept Request
-                                    </button>
-                                )}
-                                {request.status === 'Accepted' && (
-                                    <button
-                                        onClick={() => completeOrder(request.orderId)}
-                                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                                    >
-                                        Complete Order
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    ))
-                )}
-            </div>
-
-            {/* History Section */}
-            <div className="w-full">
-                <h2 className="font-bold text-xl mb-4">Request History</h2>
-                {history.length === 0 ? (
-                    <p>No History</p>
-                ) : (
-                    history.map((entry: any) => (
-                        <div key={entry.orderId} className="mb-4 p-4 border-b">
-                            <h3 className="font-bold">Order #{entry.orderId}</h3>
-                            <p>{entry.order.customerName}</p>
-                            <p>{entry.order.address}</p>
-                            <p>Items: {entry.order.items && Array.isArray(entry.order.items) ? entry.order.items.join(", ") : "No items listed"}</p>
-                            <div className="mt-2 flex justify-between">
-                                <span>Status: {entry.status}</span>
-                                <span>Activity: {entry.activity}</span>
-                                <span>Created At: {new Date(entry.createdAt).toLocaleString()}</span>
-                            </div>
-                        </div>
-                    ))
-                )}
-            </div>
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+    {/* Main Attendance Section */}
+    <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg mb-10">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Attendance</h1>
+        <div className="space-y-4">
+            <p className="text-lg"><strong>Name:</strong> {driver.employee.fullName}</p>
+            <p className="text-lg"><strong>Outlet ID:</strong> {driver.employee.outletId}</p>
+            <p className="text-lg"><strong>Employee ID:</strong> {employeeId}</p>
         </div>
-    );
+        {loading && <p className="text-blue-500 mt-4">Loading...</p>}
+        {error && <p className="text-red-500 mt-4">{error}</p>}
+        <div className="flex justify-center gap-4 mt-6">
+            {!completedAttendance ? (
+                isClockedIn ? (
+                    <button
+                        onClick={handleClockOut}
+                        className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition"
+                    >
+                        Clock Out
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleClockIn}
+                        className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition"
+                    >
+                        Clock In
+                    </button>
+                )
+            ) : (
+                <p className="text-green-500 font-medium">Attendance completed for today.</p>
+            )}
+        </div>
+    </div>
+
+    {/* Attendance History Section */}
+    <div className="max-w-4xl w-full p-6 bg-white shadow-lg rounded-lg">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Attendance History</h1>
+        {loading ? (
+            <p className="text-blue-500">Loading...</p>
+        ) : error ? (
+            <p className="text-red-500">{error}</p>
+        ) : (
+            <ul className="divide-y divide-gray-200">
+                {attendanceHistory.length === 0 ? (
+                    <li className="py-4 text-center text-gray-500">No attendance records found.</li>
+                ) : (
+                    attendanceHistory.map((record) => (
+                        <li key={record.attendanceId} className="py-4">
+                            <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center">
+                                <div>
+                                    <p className="font-medium"><strong>Employee ID:</strong> {record.employeeId}</p>
+                                    <p className="text-gray-600"><strong>Clock In:</strong> {formatTime(record.clockIn)}</p>
+                                    <p className="text-gray-600"><strong>Clock Out:</strong> {formatTime(record.clockOut)}</p>
+                                </div>
+                               
+                            </div>
+                        </li>
+                    ))
+                )}
+            </ul>
+        )}
+    </div>
+</div>
+
+    )
 }

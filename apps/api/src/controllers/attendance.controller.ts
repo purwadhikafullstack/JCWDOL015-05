@@ -110,6 +110,13 @@ export class AttendanceController {
     async getAllAttendanceLogs(req: Request, res: Response) {
         try {
             const attendanceLogs: Attendance[] = await prisma.attendance.findMany({
+                include: {
+                    employee: {
+                        select: {
+                            fullName: true
+                        }
+                    }
+                },
                 orderBy: { clockIn: 'desc' },
             });
 

@@ -11,6 +11,7 @@ const initialState: IDriverData = {
     fullName: '',
     role: '', 
     avatar: '',
+    outletId: 0
   },
   station: '',  
 };
@@ -30,7 +31,7 @@ export const driverSlice = createSlice({
       state.driverId = 0;
       state.employeeId = 0;
       state.station = '';
-      state.employee = { email: '', fullName: '', role: '', avatar: '' };
+      state.employee = { email: '', fullName: '', role: '', avatar: '', outletId: 0 };
     }
   }
 });

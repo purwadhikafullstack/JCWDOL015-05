@@ -16,7 +16,7 @@ export type ICustomerOrderData = {
   weight: number;
   pricePerKg: number;
   total: number;
-  createdAt : Date
+  createdAt: Date;
 };
 export default function Profile() {
   const [orderList, setOrderList] = useState<ICustomerOrderData[]>([]);
@@ -75,7 +75,7 @@ export default function Profile() {
                 </thead>
                 <tbody className="">
                   {orderList.map((order, index) => (
-                    <tr className="">
+                    <tr key={index} className="">
                       <td>{order.orderId}</td>
                       <td>{order.outlet.name}</td>
                       <td>{format(order.createdAt, 'yyyy-MM-dd')}</td>

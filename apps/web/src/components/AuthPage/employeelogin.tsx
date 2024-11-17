@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { createToken } from "@/lib/server"
 import { employeeLogin, IEmployeeLogin } from "@/services/api/employee/employee"
@@ -13,57 +13,66 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import * as yup from 'yup'
 import { useDispatch } from "react-redux"
 import { workerLoginAction } from "@/redux/slice/workerSlice"
-import { driverLoginAction,  } from "@/redux/slice/driverSlice"
-import { outletAdminLoginAction } from "@/redux/slice/outletAdminSlice"
+import { driverLoginAction} from "@/redux/slice/driverSlice"
+import { outletAdminLoginAction } from "@/redux/slice/outletAdminSlice";
 const EmployeeLoginSchema = yup.object().shape({
   email: yup.string().email().required(),
-  password: yup.string().required().min(8)
-})
+  password: yup.string().required().min(8),
+  role: yup.string().required()
+});
 export default function EmployeeLoginPage() {
-  const router = useRouter()
-  const dispatch = useDispatch()
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const mutation = useMutation({
     mutationFn: async (data: IEmployeeLogin) => await employeeLogin(data),
     onSuccess: (data) => {
-      const { result, ok, employee, worker, driver, outletadmin } = data
-      if (!ok) throw result.msg
-      createToken(result.user.token)
-      toast.success(result.msg)
-     
-      if(worker) dispatch(workerLoginAction(worker))
-        if(driver) dispatch(driverLoginAction(driver))
-          if(outletadmin) dispatch(outletAdminLoginAction(outletadmin))
-          
+      const { result, ok, employee, worker, driver, outletAdmin } = data;
+      if (!ok) throw result.msg;
+      createToken(result.user.token);
+      console.log(`worker: ${worker}`)
+      console.log(`outletAdmin : ${outletAdmin}`);
+      // console.log(JSON.stringify(outletadmin.employee, null, 2));
 
-      console.log(worker)
-      router.push('/employee')
+      toast.success(result.msg);
+
+      if (worker) {
+        dispatch(workerLoginAction(result.worker))
+        router.push('/employee')
+      };
+      if (driver) {
+        dispatch(driverLoginAction(result.driver))
+        router.push('/employee')
+      };
+      if (outletAdmin) {
+        dispatch(outletAdminLoginAction(result.outletAdmin))
+        router.push('/workstation')
+      };
+
     },
     onError: (err) => {
-      console.log(err)
-      toast.error(err?.message)
-    }
-  })
+      console.log(err);
+      toast.error(err?.message);
+
+    },
+  });
 
   const formik = useFormik({
     initialValues: {
       email: '',
-      password: ''
+      password: '',
+      role: ''
     },
     validationSchema: EmployeeLoginSchema,
     onSubmit: (values, action) => {
-      mutation.mutate(values)
-      action.resetForm()
-    }
-  })
+      mutation.mutate(values);
+      action.resetForm();
+    },
+  });
   const handleSelect = (value: string) => {
-    formik.setFieldValue('role', value)
-  }
-  const role = [
-    'outletAdmin',
-    'worker',
-    'driver'
-  ]
+    formik.setFieldValue('role', value);
+  };
+  const listrole = ['outletAdmin', 'worker', 'driver'];
   return (
     <section className="flex flex-col items-center justify-center w-full h-screen">
       {/* <div>
@@ -83,7 +92,8 @@ export default function EmployeeLoginPage() {
                 placeholder="email"
                 value={formik.values.email}
                 onChange={formik.handleChange}
-                onBlur={formik.handleBlur} />
+                onBlur={formik.handleBlur}
+              />
               <Label>Password</Label>
               <Input
                 name="password"
@@ -94,31 +104,28 @@ export default function EmployeeLoginPage() {
                 onBlur={formik.handleBlur}
               />
               <Label>Role</Label>
-              <Select
-                name="role"
-                onValueChange={handleSelect}
-              >
+              <Select name="role" onValueChange={handleSelect}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  {
-                    role.map((role, index) => (
-                      <SelectItem key={index} value={role}>{role}</SelectItem>
-                    ))
-                  }
+                  {listrole.map((role, index) => (
+                    <SelectItem key={index} value={role}>
+                      {role}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <button
                 type="submit"
-                className="w-full p-1 bg-blue-500 rounded-2xl">
+                className="w-full p-1 bg-blue-500 rounded-2xl"
+              >
                 {mutation.isPending ? 'Logging in...' : 'Login'}
               </button>
             </div>
           </div>
         </form>
-
       </Card>
-    </section >
-  )
+    </section>
+  );
 }

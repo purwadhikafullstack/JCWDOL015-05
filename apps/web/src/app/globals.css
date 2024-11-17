@@ -2,12 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+input[type='date']::-webkit-calendar-picker-indicator {
+  background-color: #0390fc; /* Tailwind's indigo-600 color */
+  color: white; /* Icon color */
+  border-radius: 20%; /* Optional: makes the button circular */
+  padding: 0.25rem; /* Optional: adjusts spacing inside button */
 }
 
 body {
+  max-width: 100vw;
+  overflow-x: hidden;
   color: rgb(var(--foreground-rgb));
   /* background: linear-gradient(
       to bottom,
@@ -15,7 +19,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb)); */
-    background-color: #393737;
+  background-color: floralwhite;
 }
 
 a {
@@ -49,7 +53,7 @@ a {
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -75,7 +79,7 @@ a {
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%
+    --chart-5: 340 75% 55%;
   }
 }
 @layer base {
@@ -86,5 +90,3 @@ a {
     @apply bg-background text-foreground;
   }
 }
-
-

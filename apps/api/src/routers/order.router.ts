@@ -1,5 +1,5 @@
-import { OrderController } from "@/controllers/order.controller";
-import { Router } from "express";
+import { OrderController } from '@/controllers/order.controller';
+import { Router } from 'express';
 
 export class OrderRouter {
   private router: Router;
@@ -12,14 +12,21 @@ export class OrderRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.post('/pickup', this.orderController.getNearOutlets)
-    this.router.post('/pickup/create', this.orderController.createPickupOrder)
-    this.router.post('/', this.orderController.getOrderListbyOutlet)
-    this.router.post('/driver', this.orderController.driverOrderList)
-    this.router.post('/payment-links', this.orderController.generatePaymentLink)
-    this.router.post('/order', this.orderController.updatePaymentOrder)
-    this.router.get('/completed-order', this.orderController.updatePaymentOrder)
-    this.router.get('/:customerId', this.orderController.getOrderListCustomer)
+    this.router.get('/', this.orderController.getOrders);
+    this.router.post('/pickup', this.orderController.getNearOutlets);
+    this.router.post('/pickup/create', this.orderController.createPickupOrder);
+    this.router.post('/', this.orderController.getOrderListbyOutlet);
+    this.router.post('/driver', this.orderController.driverOrderList);
+    this.router.post(
+      '/payment-links',
+      this.orderController.generatePaymentLink,
+    );
+    this.router.post('/order', this.orderController.updatePaymentOrder);
+    this.router.get(
+      '/completed-order',
+      this.orderController.updatePaymentOrder,
+    );
+    this.router.get('/:customerId', this.orderController.getOrderListCustomer);
   }
 
   getRouter(): Router {

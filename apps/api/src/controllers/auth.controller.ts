@@ -87,6 +87,7 @@ export class AuthController {
   async loginUser(req: Request, res: Response) {
     try {
       const { email, password, role } = req.body
+      console.log(req.body)
       let token: string = ''
       let data
       let worker

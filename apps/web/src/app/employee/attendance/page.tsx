@@ -9,12 +9,17 @@ import { useDispatch } from "react-redux"
 import { toast } from "react-toastify"
 
 export default function Attendance() {
-    const dispatch = useDispatch()
-    const employee = useAppSelector((state) => state.employee)
-    const checkRole = (role: Role) => {
-        return employee?.role === role
-    }
-    const [employeeId, setEmployeeId] = useState(employee?.employeeId);
+    const driver = useAppSelector((state) => state.driver)
+    const worker = useAppSelector((state) => state.worker)
+
+    const [employeeId, setEmployeeId] = useState<number | null>(null);
+    useEffect(() => {
+        if (driver) {
+            setEmployeeId(driver.employeeId);
+        } else if (worker) {
+            setEmployeeId(worker.employeeId);
+        }
+    }, [driver, worker])
     const [attendanceLog, setAttendanceLog] = useState<IAttendance[]>([]);
     const [isClockedIn, setIsClockedIn] = useState<boolean>(false)
     const [completedAttendance, setCompletedAttendance] = useState<boolean>(false);

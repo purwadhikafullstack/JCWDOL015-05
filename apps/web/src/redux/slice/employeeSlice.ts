@@ -7,6 +7,7 @@ export type IEmployeeData = {
     fullName: string
     role: string
     avatar: string
+    outletId : number
 }
 
 
@@ -17,6 +18,7 @@ const initialState: IEmployeeData = {
     fullName: '',
     role: '',
     avatar: '',
+    outletId : 0
 }
 
 
@@ -25,12 +27,13 @@ export const employeeSlice = createSlice({
     initialState,
     reducers: {
         employeeLoginAction: (state, action: PayloadAction<IEmployeeData>) => {
-            const { employeeId, email, fullName, role, avatar } = action.payload
+            const { employeeId, email, fullName, role, avatar, outletId } = action.payload
             state.employeeId = employeeId
             state.email = email
             state.fullName = fullName
             state.role = role
             state.avatar = avatar
+            state.outletId = outletId
         },
         employeeLogoutAction: (state) => {
             state.employeeId = 0
@@ -38,6 +41,7 @@ export const employeeSlice = createSlice({
             state.fullName = ''
             state.role = ''
             state.avatar = ''
+            state.outletId = 0
         }
     }
 })

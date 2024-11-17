@@ -11,6 +11,7 @@ const initialState: IOutletAdminData = {
     fullName: '',
     role: '', 
     avatar: '',
+    outletId: 0
   },
   station: '',  
 };
@@ -30,7 +31,7 @@ export const outletAdminSlice = createSlice({
       state.outletAdminId = 0;
       state.employeeId = 0;
       state.station = '';
-      state.employee = { email: '', fullName: '', role: '', avatar: '' };
+      state.employee = { email: '', fullName: '', role: '', avatar: '', outletId: 0 };
     }
   }
 });
