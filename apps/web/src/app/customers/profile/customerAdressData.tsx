@@ -41,7 +41,7 @@ interface CustomerAddressProps {
 }
 export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState(0)
+  const [selectedAddressId, setSelectedAddressId] = useState(0);
   const sortedOptions = [...options].sort(
     (a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0),
   );
@@ -57,8 +57,8 @@ export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
   });
   const deleteAddressMutation = useMutation({
     mutationFn: async (addressId: number) => {
-      const {result, ok} = await deleteAddress(addressId)
-      return result
+      const { result, ok } = await deleteAddress(addressId);
+      return result;
     },
     onSuccess: (result) => {
       toast.success(result?.message);
@@ -71,61 +71,61 @@ export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
     primaryAddress.mutate({ addressId, customerId });
   };
   const handleDeleteAddress = (addressId: number) => {
-    setOpenDialog(false)
+    setOpenDialog(false);
     deleteAddressMutation.mutate(addressId);
     // toast.success(`${addressId}`)
     // console.log(addressId)
   };
 
   return (
-    <table className="w-full table-auto">
-      <thead>
-        <th className="text-left w-fit">Index</th>
-        {tableHeader.map((title) => (
-          <th className="text-left">{title}</th>
-        ))}
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {sortedOptions.map((address, index) => (
-          <tr>
-            <td>{index + 1}</td>
-            <td>{address.detailAddress}</td>
-            <td>
-              <div className="flex flex-col text-sm">
-                <p> {address.kecamatan}</p>
-                <p>{address.kota}</p>
-                <p>{address.provinsi}</p>
-              </div>
-            </td>
-            <td>
-              <div className="flex flex-col text-sm">
-                <p>{address.latitude}</p>
-                <p>{address.longitude}</p>
-              </div>
-            </td>
-            <td className="text-center">
-              {address.isPrimary === true ? (
-                <CheckCircleIcon></CheckCircleIcon>
-              ) : (
-                ''
-              )}
-            </td>
-            <td>
-              <div className="flex flex-row gap-1">
-
-              
-                <AddressDropdownMenu 
-                  addressId={address.addressId}
-                  customerId={address.customerId}
-                  detailAddress={address.detailAddress}
-                  onSetPrimary={handleSetPrimary}
-                  onDelete={handleDeleteAddress}
-                />
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="overflow-x-auto">
+      <table className="w-full table-auto">
+        <thead>
+          <th className="text-left w-fit">Index</th>
+          {tableHeader.map((title) => (
+            <th className="text-left">{title}</th>
+          ))}
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {sortedOptions.map((address, index) => (
+            <tr>
+              <td>{index + 1}</td>
+              <td>{address.detailAddress}</td>
+              <td>
+                <div className="flex flex-col text-sm">
+                  <p> {address.kecamatan}</p>
+                  <p>{address.kota}</p>
+                  <p>{address.provinsi}</p>
+                </div>
+              </td>
+              <td>
+                <div className="flex flex-col text-sm">
+                  <p>{address.latitude}</p>
+                  <p>{address.longitude}</p>
+                </div>
+              </td>
+              <td className="text-center">
+                {address.isPrimary === true ? (
+                  <CheckCircleIcon></CheckCircleIcon>
+                ) : (
+                  ''
+                )}
+              </td>
+              <td>
+                <div className="flex flex-row gap-1">
+                  <AddressDropdownMenu
+                    addressId={address.addressId}
+                    customerId={address.customerId}
+                    detailAddress={address.detailAddress}
+                    onSetPrimary={handleSetPrimary}
+                    onDelete={handleDeleteAddress}
+                  />
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };

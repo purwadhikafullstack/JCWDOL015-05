@@ -2,6 +2,7 @@ import { AuthController } from "@/controllers/auth.controller";
 import { uploader } from "@/middleware/multer";
 import { Router } from "express";
 import passport from "passport";
+// import passport from "../services/passportConfig";
 export class UserRouter {
   private router: Router
   private authController: AuthController
@@ -22,14 +23,28 @@ export class UserRouter {
     this.router.patch('/edit',
       uploader('avatar-', '/avatar').single('avatar')
       ,this.authController.editProfile)
-    this.router.get('/auth/google',
-      passport.authenticate('google',
-        { scope: ["profile", "email"] }
-      ))
-    this.router.get('/auth/google/callback',
-      passport.authenticate('google',
-        { session: false, successRedirect: '' }),
-    )
+      this.router.get('/auth/google', (req, res, next) => {
+        console.log('Google login route hit');
+        next();
+      }, passport.authenticate('google', { scope: ['profile', 'email'] }));
+      
+    // this.router.get('/auth/google/callback',
+    //   passport.authenticate('google',{ 
+    //     session: false, 
+    //     successRedirect: '/' , 
+    //     failureRedirect: '/login',
+        
+    //   })
+    // )
+    this.router.get('/auth/google/callback', (req, res, next) => {
+      console.log('Callback route hit');
+      next();
+    }, passport.authenticate('google', { session: false }), (req, res) => {
+      res.send('Authentication successful');
+    });
+    
+    
+    
   }
 
   getRouter(): Router {

@@ -16,7 +16,7 @@ import { LocationRouter } from './routers/location.router';
 import { AddressRouter } from './routers/address.router';
 import { OrderRouter } from './routers/order.router';
 import passport from 'passport';
-import '../src/services/passportConfig'
+import '@/services/passportConfig'
 import cron from 'node-cron'
 import prisma from './prisma';
 import path from 'path'
@@ -32,15 +32,14 @@ export default class App {
   }
 
   private configure(): void {
+    
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
 
-    this.app.use(passport.initialize())
     this.app.use('/api/public',
       express.static(path.join(__dirname, "../public/"))
     )
-    console.log('Serving static files from:', path.join(__dirname, "../public"));
   }
 
   private handleError(): void {
@@ -75,7 +74,7 @@ export default class App {
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
-
+    this.app.use(passport.initialize())
     // this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', authRouter.getRouter())
     this.app.use('/api/location', locationRouter.getRouter())

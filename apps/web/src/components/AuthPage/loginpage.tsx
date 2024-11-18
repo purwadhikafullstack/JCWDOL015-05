@@ -9,12 +9,13 @@ import { ICustomerLogin } from "@/type/customers"
 import { customerLogin, googleLogin } from "@/services/api/customers/customers"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
-import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { loginAction } from "@/redux/slice/customerSlice"
-import { createToken } from "@/lib/server"
+import { createToken, getToken } from "@/lib/server"
 import { BASEURL } from "@/services/api/address/address"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 const loginSchema = yup.object().shape({
   email: yup.string().email().required(),
@@ -25,8 +26,9 @@ const initialValues: ICustomerLogin = {
   password: ""
 }
 
-
 export const LoginPage = () => {
+  const [token, setToken] = useState('')
+
   const router = useRouter()
   const queryClient = useQueryClient()
   const dispatch = useDispatch()
@@ -59,6 +61,7 @@ export const LoginPage = () => {
   const socialLogin = () => {
 
   }
+
   // const handleSubmit = async (data: ICustomerLogin, action: FormikHelpers<ICustomerLogin>) => {
   //   try {
 
@@ -66,6 +69,7 @@ export const LoginPage = () => {
 
   //   }
   // }
+
   return (
     <section className="flex flex-col items-center justify-center w-full h-screen">
       {/* <div>
@@ -115,9 +119,7 @@ export const LoginPage = () => {
         <Button onClick={googleLogin} className="w-full">
           Sign In With Google
         </Button>
-        <Button className="w-full bg-blue-500">
-          Sign In With Facebook
-        </Button>
+       
       </Card>
     </section >
   )

@@ -25,7 +25,7 @@ export const customerLogin = async (data: ICustomerLogin) => {
   return { result, ok: res.ok, user: result.user.data }
 }
 export const customerVerify = async (data: ICustomerVerify, token: any) => {
-  const url = `http://localhost:8000/api/users/verify/${data.token}`
+  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/verify/${data.token}`
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -42,14 +42,8 @@ export const customerVerify = async (data: ICustomerVerify, token: any) => {
 
 export const googleLogin = async () => {
   try {
-    // const res = await fetch(`${BASEURL}/api/users/auth/google`, {
-    //   method: "GET",
-    //   credentials: "include"
-    // });
-    // const result = await res.json();
-    // console.log(result);
-    // return { result, ok: res.ok };
-    window.location.href = `http://localhost:8000/api/users/auth/google`
+    window.location.href = `http://localhost:8000/api/users/auth/google
+    `
   } catch (err) {
     console.error("Failed to fetch:", err);
   }
