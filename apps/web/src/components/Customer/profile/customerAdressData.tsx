@@ -27,7 +27,7 @@ import { useFormik } from 'formik';
 import { CheckCircleIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { toast } from 'react-toastify';
-import AddressDropdownMenu from './addressTableAction';
+import AddressDropdownMenu from '../../../components/Customer/profile/addressTableAction';
 
 const tableHeader = [
   'Alamat Lengkap',
@@ -83,12 +83,12 @@ export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
         <thead>
           <th className="text-left w-fit">Index</th>
           {tableHeader.map((title) => (
-            <th className="text-left">{title}</th>
+            <th key={title} className="text-left">{title}</th>
           ))}
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {sortedOptions.map((address, index) => (
-            <tr>
+            <tr key={index}>
               <td>{index + 1}</td>
               <td>{address.detailAddress}</td>
               <td>

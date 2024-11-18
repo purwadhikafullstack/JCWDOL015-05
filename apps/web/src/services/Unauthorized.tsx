@@ -7,12 +7,12 @@ import { useEffect } from "react"
 
 const RoleProtection = (WrappedComponent: React.ComponentType<any>, allowedRoles: string[]) => {
   return (props: any) => {
+    const customer = useAppSelector((state) => state.customer)
     // const worker = useAppSelector((state) => state.worker)
     // const outletAdmin = useAppSelector((state) => state.outletAdmin)
     // const driver = useAppSelector((state) => state.driver)
     // const superAdmin = useAppSelector((state) => state.superAdmin)
     // || worker?.role || outletAdmin?.role || driver?.role || superAdmin?.role
-    const customer = useAppSelector((state) => state.customer)
     const currentRole = customer?.role 
 
     const router = useRouter()

@@ -58,7 +58,7 @@ export default function OrderList() {
         <tbody>
           {
             data.map((order: IOrderData, index) => (
-              <tr>
+              <tr key={index}>
                 <td>{order.orderId}</td>
                 <td>{order.customer.fullName}</td>
                 <td>{order.status}</td>

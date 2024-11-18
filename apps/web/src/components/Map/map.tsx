@@ -1,7 +1,7 @@
 'use client';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { FormikHelpers, useFormik } from 'formik';
 import { ICustomerAddress } from '@/type/customers';
@@ -56,7 +56,7 @@ export default function Map() {
   const MAP_API = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   const customers = useAppSelector((state) => state.customer);
   
-  const initMap = () => {
+  const initMap = useCallback( () => {
     mapRef.current = new maplibregl.Map({
       container: mapContainerRef.current!,
       style: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_API}`,
@@ -77,7 +77,8 @@ export default function Map() {
     } else {
       mapRef.current.off('click', mapClick);
     }
-  };
+  },[mapState, marker,MAP_API])
+ 
 
   const handleConfirm = () => {
     setShowDialog(false);
@@ -135,19 +136,7 @@ export default function Map() {
       console.log(err);
     },
   });
-  // const handleSubmit = async (
-  //   data: ICustomerAddress,
-  //   action: FormikHelpers<ICustomerAddress>,
-  // ) => {
 
-  //   try {
-  //     console.log('clicked')
-  //   console.log(data)
-  //     const { result, ok } = await createAddress(data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
   const handleCancel = () => {
     formik.setFieldValue('longitude', null);
     formik.setFieldValue('latitude', null);
@@ -161,20 +150,24 @@ export default function Map() {
   const handleShowMap = () => {
     if (!showMap) setShowMap(true);
   };
-  const getData = async () => {
-    try {
-      const { result, ok, location } = await getDetailLocation();
+  const locationMutation = useMutation({
+    mutationFn: async ()=> {
+      const { result, ok, location } = await getDetailLocation()
       if (!ok) throw result.msg;
-      setAddresses(location);
-
+      return location
+    },
+    onSuccess: (location)=> {
+      setAddresses(location)
       const filterProvince = Array.from(
         new Set(location.map((item: any) => item.province)),
       ).map((province) => ({ province })) as IProvince[];
       setProvinces(filterProvince);
-    } catch (err) {
+    },
+    onError:(err)=> {
       console.log(err);
     }
-  };
+  })
+
   const handleSelectProvinsi = (value: string) => {
     setSelectedProvince(value);
     formik.setFieldValue('province', value);
@@ -206,7 +199,7 @@ export default function Map() {
     formik.setFieldValue('subdistrict', value);
   };
   useEffect(() => {
-    getData();
+    locationMutation.mutate()
     if (selectedProvince != '') {
       const filterCity = Array.from(
         new Set(
@@ -237,10 +230,11 @@ export default function Map() {
     } else {
       setSubdistricts([]);
     }
-  }, [selectedProvince, selectedCity]);
+  }, [selectedProvince, selectedCity, addresses, locationMutation]);
   useEffect(() => {
     if (!map) initMap();
-  }, [map, marker, mapState]);
+  }, [map, marker, mapState, initMap])
+
   useEffect(() => {
     if (mapRef.current && coordinates) {
       mapRef.current.flyTo({
@@ -251,7 +245,7 @@ export default function Map() {
         easing: (t: any) => t,
       });
     }
-  }, [coordinates, mapState]);
+  }, [coordinates, mapState])
   return (
     <section className="flex flex-col items-center mt-24 w-full h-screen">
       <Card className='w-3/4 p-5'>

@@ -16,7 +16,7 @@ export default function Login() {
     if(token){
       router.push('/')
     }
-  },[token])
+  },[token,router])
   return (
     <LoginPage />
   )

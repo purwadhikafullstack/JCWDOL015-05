@@ -47,3 +47,9 @@ export type ICustomerOrderData = {
   total: number;
   createdAt : Date
 };
+export type ICustomerPayment = {
+  orderId: number
+  customerId: number
+  weight: number
+  price : number
+}

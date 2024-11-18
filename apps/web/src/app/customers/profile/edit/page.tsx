@@ -27,23 +27,13 @@ const EditProfileSchema = yup.object().shape({
 
 
 const EditProfile = () => {
+  const customer = useAppSelector((state) => state.customer);
+
   const [data, setData] = useState<IUserEdit>();
   const imgRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const router = useRouter();
-  const customer = useAppSelector((state) => state.customer);
-
-  console.log(previewUrl)
-  const getData = async () => {
-    const { result, ok, data } = await getCustomerData(customer.customerId);
-    console.log(result)
-    if (!ok) throw result.msg;
-    setData(data);
-    setPreviewUrl(data.avatar || null);
-    // Populate specific fields without overriding Formik values
-    formik.setFieldValue('fullName', data.fullName);
-  };
 
   const mutation = useMutation({
     mutationFn: async (data: IUserEdit) => await editProfile(data),
@@ -71,10 +61,18 @@ const EditProfile = () => {
       action.resetForm();
     },
   });
-
+  
   useEffect(() => {
-    getData();
-  }, []);
+    const getData = async () => {
+      const { result, ok, data } = await getCustomerData(customer.customerId);
+      if (!ok) throw result.msg;
+      setData(data);
+      setPreviewUrl(data.avatar || null);
+      // Populate specific fields without overriding Formik values
+      formik.setFieldValue('fullName', data.fullName);
+    };
+    if (customer.customerId) getData()
+  }, [customer.customerId, formik]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

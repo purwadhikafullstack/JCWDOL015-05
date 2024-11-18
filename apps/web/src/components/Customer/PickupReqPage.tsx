@@ -134,7 +134,7 @@ export const CustomerPickupPage = () => {
   useEffect(() => {
     
     userAddress.mutate(customer.customerId)
-  }, [])
+  }, [customer.customerId, userAddress])
   return (
     <section className="flex flex-col items-center w-full h-screen gap-10">
       <Card className="w-3/4 p-5 mt-32">

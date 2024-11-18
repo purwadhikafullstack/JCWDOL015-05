@@ -9,13 +9,13 @@ import { useMutation } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { OrderListComponent } from './orderListComponent';
+import { OrderListComponent } from '../../../components/Customer/profile/orderListComponent';
 import { ICustomerAddressData, ICustomerAddressProfile } from '@/type/address';
 import { getCustomerData } from '../../../services/api/customers/customers';
 import { ICustomerData } from '@/redux/slice/customerSlice';
 import { toast } from 'react-toastify';
 import { getCustomerAddress } from '@/services/api/address/address';
-import { CustomerAddressData } from './customerAdressData';
+import { CustomerAddressData } from '@/components/Customer/profile/customerAdressData';
 
 const Profile = () => {
   const [orderList, setOrderList] = useState<ICustomerOrderData[]>([]);
