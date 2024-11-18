@@ -30,7 +30,7 @@ export default function GetPickupPage() {
       if (response.ok) {
         const data = await response.json();
         setOrders(data);
-        if(data?.orderId) {
+        if(data.length > 0) {
           toast.success('Message: New Request PickUp')
         }
       }

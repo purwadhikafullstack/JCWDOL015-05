@@ -38,8 +38,7 @@ export default function ListAttendance() {
     }, []);
 
     return (
-        <div className="h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-            <h1 className="text-2xl font-bold mb-4">Attendance Logs</h1>
+        <div className="min-h-screen flex flex-col items-center justify-center">
             {loading ? (
                 <p className="text-blue-500">Loading...</p>
             ) : error ? (
@@ -47,10 +46,10 @@ export default function ListAttendance() {
             ) : attendanceLogs.length === 0 ? (
                 <p className="text-gray-500">No attendance records found.</p>
             ) : (
-                <div className="w-full max-w-4xl bg-white shadow-md rounded-lg overflow-hidden">
+                <div className="w-full max-w-5xl bg-white shadow-lg rounded-lg overflow-hidden">
                     <table className="w-full table-auto border-collapse">
                         <thead>
-                            <tr className="bg-gray-200 text-left">
+                            <tr className="bg-[#1678F3] text-white font-semibold text-left text-xl">
                                 <th className="px-4 py-2">Name</th>
                                 <th className="px-4 py-2">Employee ID</th>
                                 <th className="px-4 py-2">Clock In</th>
@@ -59,7 +58,7 @@ export default function ListAttendance() {
                         </thead>
                         <tbody>
                             {attendanceLogs.map((log: any) => (
-                                <tr key={log.id} className="border-t">
+                                <tr key={log.id} className="border-t text-black font-medium text-lg">
                                     <td className="px-4 py-2">{log.employee.fullName}</td>
                                     <td className="px-4 py-2">{log.employeeId}</td>
                                     <td className="px-4 py-2">{new Date(log.clockIn).toLocaleString()}</td>

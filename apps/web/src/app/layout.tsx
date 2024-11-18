@@ -6,7 +6,7 @@ import { Footer } from '@/components/Footer';
 import { usePathname } from 'next/navigation';
 import { SessionProvider } from 'next-auth/react'
 const inter = Inter({ subsets: ['latin'] });
-const disabledNavbar = ['/login', '/register', '/:token']
+const disabledNavbar = ['/login', '/register', '/:token', '/employeeLogin']
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import StoreProvider from '@/components/StoreProvider';

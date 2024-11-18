@@ -34,17 +34,23 @@ export default function OutletAdminHistoryPage() {
     }, [outletAdminId])
 
     return (
-        <div>
-            {historys.length > 0 ? (
-                historys.map((history) => (
-                    <div key={history.outletAdminId}>
-                        <p>Order ID : {history.orderId}</p>
-                        <p>Status : {history.status}</p>
-                    </div>
-                ))
-            ) : (
-                <p>no history</p>
-            )}
-        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {historys.length > 0 ? (
+          historys.map((history) => (
+            <div
+              key={history.outletAdminId}
+              className="border p-4 mb-2 rounded-lg bg-gray-100 shadow-md"
+            >
+              <p className="font-semibold text-xl">Order ID : {history.orderId}</p>
+              <p className="font-medium text-lg">Status : {history.status}</p>
+            </div>
+          ))
+        ) : (
+          <div className="flex items-center justify-center col-span-full h-64">
+            <p className="text-gray-500">No history</p>
+          </div>
+        )}
+      </div>
+      
     )
 }

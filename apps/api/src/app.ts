@@ -83,8 +83,6 @@ export default class App {
     const orderRouter = new OrderRouter();
     const attendanceRouter = new AttendanceRouter();
     const workerRouter = new WorkerRouter();
-    const notificationRouter = new NotificationRouter();
-    // const driverRouter = new DriverRouter();
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
@@ -103,7 +101,6 @@ export default class App {
     this.app.use('/api/orders', orderRouter.getRouter())
     this.app.use('/api/submit', attendanceRouter.getRouter())
     this.app.use('/api/worker', workerRouter.getRouter())
-    this.app.use('/api/notifications', notificationRouter.getRouter())
   }
 
   public start(): void {

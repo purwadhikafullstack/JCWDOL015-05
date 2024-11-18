@@ -30,7 +30,7 @@ export const CustomerNavbar = () => {
   // const storedData = queryClient.getQueryData(['customer'])
   // console.log("Stored customer data:", storedData)
   return (
-    <div className="relative flex items-center h-[60px] px-[45px] bg-[#fffaf0]">
+    <div className="relative flex items-center h-[50px] px-[45px] bg-[#fffaf0]">
       {/* Logo */}
       <div className="absolute left-[45px]">
         <Link href={'/'}>

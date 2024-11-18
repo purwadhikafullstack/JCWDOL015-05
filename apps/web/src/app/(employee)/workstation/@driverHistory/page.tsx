@@ -37,19 +37,22 @@ export default function DriverHistoryPage() {
   
 
   return (
-    <div className="p-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {historys.length > 0 ? (
         historys.map((history) => (
           <div
             key={`${history.driverId}-${history.activity}`}
-            className="border p-4 mb-2 rounded-lg shadow-md bg-gray-100 w-[250px]"
+            className="border p-4 mb-2 rounded-lg bg-gray-100 shadow-md min-w-[300px]"
           >
-            <p className="font-semibold">Order ID: {history.orderId}</p>
-            <p>Activity: {history.activity}</p>
+            <p className="font-semibold text-xl">Order ID: {history.orderId}</p>
+            <p className="font-medium text-lg">Activity: {history.activity}</p>
           </div>
         ))
       ) : (
-        <p>No history available for this driver.</p>
+        <div className="flex items-center justify-center col-span-full h-64">
+
+          <p className="text-gray-500">No history available for this driver.</p>
+        </div>
       )}
     </div>
   );
