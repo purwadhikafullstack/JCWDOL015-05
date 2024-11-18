@@ -110,7 +110,8 @@ CREATE TABLE `Order` (
     `complain` VARCHAR(191) NULL,
     `status` ENUM('menungguKonfirmasi', 'menungguPenjemputanDriver', 'laundryMenujuOutlet', 'laundrySampaiOutlet', 'pencucian', 'penyetrikaan', 'packing', 'menungguPembayaran', 'siapDiantar', 'sedangDikirim', 'selesai') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedaAt` DATETIME(3) NULL,
+    `updatedAt` DATETIME(3) NOT NULL,
+    `deliverDate` DATETIME(3) NULL,
 
     PRIMARY KEY (`orderId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

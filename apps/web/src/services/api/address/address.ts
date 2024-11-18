@@ -1,3 +1,4 @@
+import { ISetPrimaryAddress } from "@/type/address"
 import { ICustomerAddress } from "@/type/customers"
 
 
@@ -12,8 +13,9 @@ export const createAddress = async (data: ICustomerAddress) => {
     },
     body: JSON.stringify(data)
   })
-  console.log(res)
+  
   const result = await res.json()
+  console.log(result)
   return { result, ok: res.ok }
 }
 export const getProvience = async () => {
@@ -63,4 +65,24 @@ export const getLngLat = async (address: string) => {
   })
   const result = await res.json()
   return { result , ok: res.ok , resLng : result.lng , resLat : result.lat }
+}
+
+export const setPrimaryAddress = async (data: ISetPrimaryAddress) =>{
+  const url = `${BASEURL}/api/addresses/primary`
+  const res = await fetch(url, {
+    method : "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+}
+export const deleteAddress = async(addressId: number) =>{
+  const url = `${BASEURL}/api/addresses/${addressId}`
+  const res = await fetch(url, {
+    method: "DELETE"
+  })
+  if(!res.ok) throw new Error ('Error Delete Data')
+  const result = await res.json()
+  return {result, ok: res.ok}
 }

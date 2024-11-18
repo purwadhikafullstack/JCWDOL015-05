@@ -1,7 +1,7 @@
 import prisma from "@/prisma";
 import { Request, Response } from "express";
 import { sign as jwtSign, verify } from 'jsonwebtoken'
-import fs from 'fs'
+import fs, { stat } from 'fs'
 import path from "path";
 import Handlebars from 'handlebars'
 import { transporter } from "@/services/nodemailer";
@@ -28,8 +28,10 @@ export class AuthController {
       const templatePath = path.join(__dirname, '../template/verification.hbs')
       const templateSrc = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = Handlebars.compile(templateSrc)
+      const urlVerifikasi = `${process.env.BASE_URL}/verify/${token}`
+      console.log(urlVerifikasi)
       const html = compiledTemplate({
-        url: `http://localhost:3000/verify/${token}`
+        url : urlVerifikasi
       })
       await transporter.sendMail({
         from: process.env.MAIL_USER,
@@ -162,30 +164,7 @@ export class AuthController {
       })
     }
   }
-  // async loginWorker(req: Request, res: Response) {
-  //   try {
-  //     const { email, password } = req.body
-  //     const checkEmail = await prisma.employee.findUnique({
-  //       where: { email: email }
-  //     })
-  //     if (!checkEmail) throw 'Wrong Email'
-  //     const payload = { id: checkEmail?.employeeId, role: checkEmail?.role }
-  //     const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1d' })
-
-  //     res.status(200).send({
-  //       status: 'ok',
-  //       msg: 'Login Success',
-  //       user: {
-  //         token: token,
-  //         data: checkEmail
-  //       }
-  //     })
-  //   } catch (err) {
-  //     res.status(400).send({
-  //       err: err
-  //     })
-  //   }
-  // }
+  
   async sendResetPassword(req: Request, res: Response) {
     try {
       const { email } = req.body
@@ -202,7 +181,7 @@ export class AuthController {
       const templateSrc = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = Handlebars.compile(templateSrc)
       const html = compiledTemplate({
-        url: `http://localhost:3000/customers/reset-password/${token}`
+        url: `${process.env.BASE_URL}/customers/reset-password/${token}`
       })
       await transporter.sendMail({
         from: process.env.MAIL_USER,
@@ -252,6 +231,54 @@ export class AuthController {
         err: err
       })
       console.log(err)
+    }
+  }
+  async editProfile (req: Request, res: Response){
+    try {
+      const {customerId, fullName, email } = req.body
+      console.log(customerId)
+      let link
+      if(req.file){
+        link = `${process.env.API_BASE_URL}/api/public/avatar/${req.file?.filename}`
+      }
+      const checkUsers = await prisma.customer.findUnique({
+        where: {customerId: +customerId}
+      })
+      if(!checkUsers) throw 'User Not Found'
+      const newData = await prisma.customer.update({
+        where: {customerId: +customerId},
+        data: {
+          fullName: fullName,
+          email : email,
+          avatar: link || checkUsers.avatar,
+        }
+      })
+      res.status(200).send({
+        status: 'ok',
+        data: newData
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        err: err
+      })
+    }
+  }
+  async getUserById (req: Request, res: Response) {
+    try {
+      const {customerId} = req.params
+      const customer = await prisma.customer.findUnique({
+        where: {customerId : +customerId}
+      })
+      res.status(200).send({
+        status : 'ok',
+        data : customer
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        err : err
+      })
     }
   }
   async socialLoginCallback(req: Request, res: Response) {

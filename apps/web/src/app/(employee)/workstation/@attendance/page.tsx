@@ -1,21 +1,20 @@
 'use client'
-
 import { useAppSelector } from "@/redux/hooks";
 import { IAttendance } from "@/type/employee";
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "react-toastify";
 
 export default function Attendance() {
     const [attendanceLog, setAttendanceLog] = useState<IAttendance[]>([]);
-    const [isClockedIn, setIsClockedIn] = useState<boolean>(false)
+    const [isClockedIn, setIsClockedIn] = useState<boolean>(false);
     const [completedAttendance, setCompletedAttendance] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const worker = useAppSelector((state) => state.worker)
-    const driver = useAppSelector((state) => state.driver)
+    const worker = useAppSelector((state) => state.worker);
+    const driver = useAppSelector((state) => state.driver);
 
-    const [employeeId, setEmployeeId] = useState<number | null>(null)
+    const [employeeId, setEmployeeId] = useState<number | null>(null);
 
     useEffect(() => {
         if (driver) {
@@ -23,9 +22,9 @@ export default function Attendance() {
         } else if (worker) {
             setEmployeeId(worker.employeeId);
         }
-    }, [driver, worker]); 
+    }, [driver, worker]);
 
-    const fetchAttendance = async () => {
+    const fetchAttendance = useCallback(async () => {
         setLoading(true);
         setError(null);
         if (!employeeId) {
@@ -50,14 +49,14 @@ export default function Attendance() {
         } finally {
             setLoading(false);
         }
-    }
+    }, [employeeId]); // Hanya akan berubah jika employeeId berubah
 
     const handleClockIn = async () => {
         try {
             const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ employeeId })
+                body: JSON.stringify({ employeeId }),
             });
             const data = await response.json();
             if (response.ok) {
@@ -69,14 +68,14 @@ export default function Attendance() {
         } catch (error) {
             console.error('Clock-in Failed:', error);
         }
-    }
+    };
 
     const handleClockOut = async () => {
         try {
             const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ employeeId })
+                body: JSON.stringify({ employeeId }),
             });
             const data = await response.json();
             if (response.ok) {
@@ -88,16 +87,14 @@ export default function Attendance() {
         } catch (error) {
             console.error('Clock-out Failed:', error);
         }
-    }
+    };
 
     useEffect(() => {
         fetchAttendance();
-    }, [employeeId]);
-
-    
+    }, [fetchAttendance]); // Tetap stabil karena fetchAttendance dibungkus dengan useCallback
 
     return (
-        <div className='h-screen flex items-center justify-center'>
+        <div className="h-screen flex items-center justify-center">
             <div className="p-6 max-w-md mx-auto bg-white shadow-md rounded-md">
                 <h1 className="text-2xl font-semibold mb-4">Attendance</h1>
                 <p>Employee ID: {employeeId}</p>
@@ -124,8 +121,7 @@ export default function Attendance() {
                         <p className="text-green-500">Attendance completed for today.</p>
                     )}
                 </div>
-                
             </div>
         </div>
-    )
+    );
 }

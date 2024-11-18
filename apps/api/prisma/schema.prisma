@@ -158,8 +158,8 @@ model Order {
   complain String?
   status OrderStatus
   createdAt DateTime  @default(now())
-  updatedaAt DateTime? @updatedAt
-
+  updatedAt DateTime @updatedAt
+  deliverDate DateTime?
   // relations
   outlet Outlet? @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
   outletAdmin OutletAdmin? @relation(fields: [outletAdminId], references: [outletAdminId], onDelete: SetNull)

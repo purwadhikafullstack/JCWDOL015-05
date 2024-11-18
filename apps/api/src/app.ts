@@ -26,7 +26,10 @@ import { AttendanceRouter } from './routers/attendance.router';
 import passport from 'passport';
 import '../src/services/passportConfig';
 import { WorkerRouter } from './routers/worker.router';
-import { NotificationRouter } from './routers/notification.router';
+import '@/services/passportConfig'
+import cron from 'node-cron'
+import prisma from './prisma';
+import path from 'path'
 export default class App {
   private app: Express;
 
@@ -35,14 +38,19 @@ export default class App {
     this.configure();
     this.routes();
     this.handleError();
+    this.privateSetupCron()
   }
 
   private configure(): void {
+    
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
 
     this.app.use(passport.initialize());
+    this.app.use('/api/public',
+      express.static(path.join(__dirname, "../public/"))
+    )
   }
 
   private handleError(): void {
@@ -93,6 +101,7 @@ export default class App {
     this.app.use('/api/order', orderRouter.getRouter());
     this.app.use('/api/report', reportRouter.getRouter());
     this.app.use('/api/assignment', assignmentRouter.getRouter());
+    this.app.use(passport.initialize())
     // this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', authRouter.getRouter());
     this.app.use('/api/location', locationRouter.getRouter());
@@ -102,7 +111,28 @@ export default class App {
     this.app.use('/api/submit', attendanceRouter.getRouter())
     this.app.use('/api/worker', workerRouter.getRouter())
   }
-
+  privateSetupCron ():void{
+    cron.schedule('0 0 * * *', async()=> {
+      console.log("Running Cron Job auto confirmation")
+      try {
+        const thresholdDate = new Date()
+        thresholdDate.setHours(thresholdDate.getHours() - 48);
+        
+        await prisma.order.updateMany({
+          where : {
+            status: "sedangDikirim",
+            deliverDate : thresholdDate
+          },
+          data: {
+            status: "selesai"
+          }
+        })
+        console.log("Auto-confirmation job completed successfully.");
+      } catch (error) {
+        console.error("Error in auto-confirmation job:", error)
+      }
+    })
+  }
   public start(): void {
     this.app.listen(PORT, () => {
       console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);

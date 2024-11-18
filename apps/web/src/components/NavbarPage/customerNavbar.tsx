@@ -1,36 +1,37 @@
 'use client';
-import Image from "next/image";
-import logo from "../../assets/logo.png";
-import home from "../../assets/home.png";
-import Link from "next/link";
-import { usePathname } from "next/navigation"; // Use this instead of useRouter for Next 13+
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "@/redux/hooks";
-import { getToken } from "@/lib/server";
-import { logoutAction } from "@/redux/slice/customerSlice";
+import Image from 'next/image';
+import logo from '@/assets/logo.png';
+import home from '@/assets/home.png';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation'; // Use this instead of useRouter for Next 13+
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/redux/hooks';
+import { getToken } from '@/lib/server';
+import { logoutAction } from '@/redux/slice/customerSlice';
 
-export const CustomerNavbar = () => {
-  const [token, setToken] = useState('')
-  const dispatch = useDispatch()
+export const Navbar = () => {
+  const [token, setToken] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
 
-  const pathname = usePathname();  // usePathname is safe for server-side rendering
-  const customer = useAppSelector((state) => state.customer)
-  console.log(customer)
+  const pathname = usePathname(); // usePathname is safe for server-side rendering
+  const customer = useAppSelector((state) => state.customer);
   const getTokenData = async () => {
-    const res = await getToken()
-    setToken(res as string)
-  }
-
+    const res = await getToken();
+    console.log(res);
+    setToken(res as string);
+  };
+  const handleIsOpen = () => {
+    setIsOpen(!isOpen);
+  };
   useEffect(() => {
-
-
-    getTokenData()
-  }, [])
+    getTokenData();
+  }, []);
   // const storedData = queryClient.getQueryData(['customer'])
   // console.log("Stored customer data:", storedData)
   return (
-    <div className="relative flex items-center h-[50px] px-[45px] bg-[#fffaf0]">
+    <div className="relative flex items-center h-[60px] px-[45px] bg-[#fffaf0]">
       {/* Logo */}
       <div className="absolute left-[45px]">
         <Link href={'/'}>
@@ -75,20 +76,66 @@ export const CustomerNavbar = () => {
       {/* Login / Signup buttons */}
       <div className="absolute right-[45px] flex font-bold text-[16px] text-white gap-[24px]">
         {token ? (
-          <Link href={'/login'}>
+          <>
+            {/* <Link href={'/login'}>
             <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">Profile</button>
-          </Link>
+          </Link> */}
+            <div className="rounded-full cursor-pointer h-11 w-11">
+              <Image
+                className="object-cover overflow-hidden rounded-full cursor-pointer h-11 w-11"
+                src={customer.avatar}
+                alt=""
+                width={44} // specify the width
+                height={44} // specify the height
+              />
+            </div>
+            <div
+              className={`absolute overflow-x-hidden p-3 space-y-3 bg-blue-500 rounded-md top-20 right-5 z-30 ${isOpen ? 'block' : 'hidden'}`}
+            >
+              <div className="flex flex-row items-center gap-3">
+                <div className="">
+                  <Image
+                    className="object-cover overflow-hidden rounded-full cursor-pointer h-11 w-11"
+                    src={customer.avatar}
+                    alt=""
+                    width={44} // specify the width
+                    height={44} // specify the height
+                  />
+                </div>
+                <div>
+                  <p className="text-xl">{customer.fullName}</p>
+                  <p>{customer.role}</p>
+                  <p>{customer.email}</p>
+                </div>
+              </div>
+              <div className="border border-gray-200 border-b-1"></div>
+              <p className="p-2 hover:bg-white hover:text-black hover:rounded-md">
+                <Link href={'/dashboard'}>Dashboard</Link>
+              </p>
+              <p className="p-2 hover:bg-white hover:text-black hover:rounded-md">
+                <Link href={'/profile'}>Profile</Link>
+              </p>
+              <div className="border border-gray-200 border-b-1"></div>
+              <p className="p-2 hover:bg-white hover:text-black hover:rounded-md">
+                <Link href={'/login'}>Logout</Link>
+              </p>
+            </div>
+          </>
         ) : (
           <>
             <Link href={'/login'}>
-              <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">LOGIN</button>
+              <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">
+                LOGIN
+              </button>
             </Link>
             <Link href={'/register'}>
-              <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">SIGN UP</button>
+              <button className="bg-[#4682B4] py-[3px] px-[15px] rounded-[8px]">
+                SIGN UP
+              </button>
             </Link>
           </>
         )}
       </div>
     </div>
   );
-}
+};
