@@ -1,13 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function OnPickupPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [driverId, setDriverId] = useState<number>(4); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletId
-  const [isAvailable, setIsAvailable] = useState<boolean>(false); // Replace with actual isAvailable
+  const [driverId, setDriverId] = useState<number | null>(null);
+  const [outletId, setOutletId] = useState<number | null>(null);
+  const [isAvailable, setIsAvailable] = useState<boolean>(false);
+
+  const driver = useAppSelector((state) => state.driver)
+
+  useEffect(() => {
+    if (driver) {
+      setDriverId(driver.driverId)
+      setOutletId(driver.employee?.outletId)
+    }
+  }, [driver])
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -131,7 +141,7 @@ export default function OnPickupPage() {
               {order.status === 'laundryMenujuOutlet' && (
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  onClick={() => handleCompletePickup(order.orderId, driverId)}
+                  onClick={() => driverId !== null && handleCompletePickup(order.orderId, driverId)}
                 >
                   Complete Pickup
                 </Button>
@@ -139,7 +149,7 @@ export default function OnPickupPage() {
               {order.status === 'sedangDikirim' && (
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  onClick={() => handleCompleteDelivery(driverId)}
+                  onClick={() => driverId !== null && handleCompleteDelivery(driverId)}
                 >
                   Complete Delivery
                 </Button>

@@ -77,6 +77,16 @@ export class AssignmentRouter {
       '/submit-task/:orderId',
       this.assignmentController.submitTask,
     );
+
+    this.router.get(
+      '/driver/history/:driverId', this.assignmentController.getDriverJobHistory
+    )
+    this.router.get(
+      '/outletadmin/history/:outletAdminId', this.assignmentController.getOutletAdminJobHistory
+    )
+    this.router.get(
+      '/worker/history/:workerId', this.assignmentController.getWorkerJobHistory
+    )
   }
 
   getRouter(): Router {

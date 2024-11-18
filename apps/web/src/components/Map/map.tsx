@@ -100,7 +100,7 @@ export default function Map() {
     action: FormikHelpers<ICustomerAddress>,
   ) => {
     try {
-      // console.log('clicked')
+      console.log('clicked')
       const { result, ok } = await createAddress(data);
       action.resetForm();
       if (!ok) throw result.msg;

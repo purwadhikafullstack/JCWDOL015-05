@@ -1,36 +1,34 @@
 'use client'
 
-import { useAppSelector } from "@/redux/hooks"
-import { Role } from "@/type/role"
-import { IAttendance } from "@/type/employee"
-import Link from "next/link"
+import { useAppSelector } from "@/redux/hooks";
+import { IAttendance } from "@/type/employee";
 import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
 import { toast } from "react-toastify"
 
 export default function Attendance() {
-    const driver = useAppSelector((state) => state.driver)
-    const worker = useAppSelector((state) => state.worker)
-
-    const [employeeId, setEmployeeId] = useState<number | null>(null);
-    useEffect(() => {
-        if (driver) {
-            setEmployeeId(driver.employeeId);
-        } else if (worker) {
-            setEmployeeId(worker.employeeId);
-        }
-    }, [driver, worker])
     const [attendanceLog, setAttendanceLog] = useState<IAttendance[]>([]);
     const [isClockedIn, setIsClockedIn] = useState<boolean>(false)
     const [completedAttendance, setCompletedAttendance] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
+    const worker = useAppSelector((state) => state.worker)
+    const driver = useAppSelector((state) => state.driver)
+
+    const [employeeId, setEmployeeId] = useState<number | null>(null)
+
+    useEffect(() => {
+        if (driver) {
+            setEmployeeId(driver.employeeId);
+        } else if (worker) {
+            setEmployeeId(worker.employeeId);
+        }
+    }, [driver, worker]); 
+
     const fetchAttendance = async () => {
         setLoading(true);
         setError(null);
         if (!employeeId) {
-            toast.error("Employee ID is not available.");
             setLoading(false);
             return;
         }
@@ -96,6 +94,8 @@ export default function Attendance() {
         fetchAttendance();
     }, [employeeId]);
 
+    
+
     return (
         <div className='h-screen flex items-center justify-center'>
             <div className="p-6 max-w-md mx-auto bg-white shadow-md rounded-md">
@@ -124,11 +124,7 @@ export default function Attendance() {
                         <p className="text-green-500">Attendance completed for today.</p>
                     )}
                 </div>
-                <Link href={'/employee/attendance/history'}>
-                    <button className='bg-blue-500 px-4 py-2 text-white rounded-md'>
-                        History
-                    </button>
-                </Link>
+                
             </div>
         </div>
     )

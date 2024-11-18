@@ -27,7 +27,6 @@ import passport from 'passport';
 import '../src/services/passportConfig';
 import { WorkerRouter } from './routers/worker.router';
 import { NotificationRouter } from './routers/notification.router';
-// import { DriverRouter } from './routers/driver.router';
 export default class App {
   private app: Express;
 
@@ -100,12 +99,11 @@ export default class App {
     this.app.use('/api/users', authRouter.getRouter());
     this.app.use('/api/location', locationRouter.getRouter());
     // this.app.use('/api/request',  requestRouter.getRouter())
-    this.app.use('/api/addresses', addressRouter.getRouter());
-    this.app.use('/api/orders', orderRouter.getRouter());
-    this.app.use('/api/submit', attendanceRouter.getRouter());
-    this.app.use('/api/worker', workerRouter.getRouter());
-    this.app.use('/api/notifications', notificationRouter.getROuter());
-    // this.app.use('/api/driver', driverRouter.getRouter());
+    this.app.use('/api/addresses', addressRouter.getRouter())
+    this.app.use('/api/orders', orderRouter.getRouter())
+    this.app.use('/api/submit', attendanceRouter.getRouter())
+    this.app.use('/api/worker', workerRouter.getRouter())
+    this.app.use('/api/notifications', notificationRouter.getRouter())
   }
 
   public start(): void {

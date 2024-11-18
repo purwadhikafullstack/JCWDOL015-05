@@ -1,23 +1,39 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletId
-  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
+  const [outletId, setOutletId] = useState<number | null>(null); 
+  const [outletAdminId, setOutletAdminId] = useState<number | null>(null); 
+  
+  const outletAdmin = useAppSelector((state) => state.outletAdmin)
+
+  useEffect(() => {
+    if(outletAdmin) {
+      setOutletAdminId(outletAdmin.outletAdminId)
+      setOutletId(outletAdmin.employee?.outletId)
+    }
+  })
 
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/order-confirmation/${outletId}`,
       );
-      if (!response.ok) throw new Error('Failed to fetch orders');
-      const data = await response.json();
-      setOrders(data);
+      if (response.ok) {
+
+        const data = await response.json();
+        setOrders(data);
+        if(data.length > 0) {
+          toast.success('Message: New Order Confirmation')
+        } 
+      }
     } catch (error) {
       console.error('Orders fetching error:', error);
     }

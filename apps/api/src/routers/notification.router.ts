@@ -17,7 +17,7 @@ export class NotificationRouter {
         this.router.put('/:notificationId/read', this.notificationController.markNotificationAsRead)
     }
 
-    getROuter(): Router {
+    getRouter(): Router {
         return this.router
     }
 }

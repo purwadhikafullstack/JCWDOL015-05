@@ -13,10 +13,17 @@ interface Attendance {
 }
 
 export default function History() {
-    const dispatch = useDispatch()
-    const employee = useAppSelector((state) => state.employee)
+    const driver = useAppSelector((state) => state.driver)
+    const worker = useAppSelector((state) => state.worker)
 
-    const [employeeId, setEmployeeId] = useState(employee?.employeeId);
+    const [employeeId, setEmployeeId] = useState<number | null>(null);
+    useEffect(() => {
+        if (driver) {
+            setEmployeeId(driver.employeeId);
+        } else if (worker) {
+            setEmployeeId(worker.employeeId);
+        }
+    }, [driver, worker])
     const [attendanceHistory, setAttendanceHistory] = useState<Attendance[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +43,7 @@ export default function History() {
         setLoading(true);
         setError(null); // Reset error before fetch
         try {
-            const response = await fetch(`${API_URL}/api/submit/attendance/${employee.employeeId}`);
+            const response = await fetch(`${API_URL}/api/submit/attendance/${driver.employeeId} || ${worker.employeeId}`);
             console.log('Response:', response); // Log response
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance history');
@@ -81,9 +88,6 @@ export default function History() {
                         )}
                     </ul>
                 )}
-                <Link href={'/employee/attendance'}>
-                <button>Back</button>
-                </Link>
             </div>
         </div>
     );

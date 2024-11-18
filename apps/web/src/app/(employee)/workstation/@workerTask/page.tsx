@@ -1,8 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useAppSelector } from '@/redux/hooks';
 import { Label } from '@radix-ui/react-label';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -13,26 +15,44 @@ type Item = {
 };
 
 export default function WorkerTaskPage() {
-  const [workerId, setWorkerId] = useState<number>(4);
+  const [workerId, setWorkerId] = useState<number | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
-  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
-  const [station, setStation] = useState<string | null>('washing');
+  const [outletId, setOutletId] = useState<number | null>(null);
+  const [station, setStation] = useState<string | null>('');
   const [checkedItems, setCheckedItems] = useState<boolean[]>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [message, setMessage] = useState('');
+
+  const worker = useAppSelector((state) => state.worker);
+
+  useEffect(() => {
+    if (worker) {
+      setWorkerId(worker.workerId);
+      setOutletId(worker.employee?.outletId);
+      setStation(worker.station);
+    }
+  }, [worker]);
 
   const fetchTask = useCallback(async () => {
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/get-task/${station}/${outletId}`,
       );
-      const data = await response.json();
-      console.log(data);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
 
-      setOrder(data);
+        // Only show toast if there's a new order
+        if (data?.orderId) {
+          toast.success('Message: New Order'); // Toast only when orderId is present
+          setOrder(data);
+        } else {
+          setOrder(null); // Clear order if no new order is available
+        }
 
-      if (data?.items) {
-        setCheckedItems(new Array(data.items.length).fill(false));
+        if (data?.items) {
+          setCheckedItems(new Array(data.items.length).fill(false));
+        }
       }
     } catch (error) {
       console.error('Orders fetching error', error);
@@ -87,7 +107,7 @@ export default function WorkerTaskPage() {
 
   const handleSubmit = async (
     orderId: number,
-    workerId: number,
+    workerId: number | null,
     status: string,
     paymentStatus: string,
   ) => {

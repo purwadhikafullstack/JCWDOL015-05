@@ -6,6 +6,7 @@ export type IWorkerData = {
         fullName: string,
         role: string,
         avatar: string,
+        outletId : number
     },
     station: string
 
@@ -19,6 +20,7 @@ export type IDriverData = {
         fullName: string,
         role: string,
         avatar: string,
+        outletId: number
     },
     station: string
 
@@ -32,6 +34,7 @@ export type IOutletAdminData = {
         fullName: string,
         role: string,
         avatar: string,
+        outletId: number
     },
     station: string
 

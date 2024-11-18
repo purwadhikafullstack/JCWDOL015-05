@@ -10,6 +10,7 @@ const initialState: IWorkerData = {
     fullName: '',
     role: '', 
     avatar: '',
+    outletId: 0
   },
   station: '',  
 };
@@ -24,12 +25,13 @@ export const workerSlice = createSlice({
       state.employeeId = employeeId;
       state.station = station;
       state.employee = { ...employee };
+
     },
     workerLogoutAction: (state) => {
       state.workerId = 0;
       state.employeeId = 0;
       state.station = '';
-      state.employee = { email: '', fullName: '', role: '', avatar: '' };
+      state.employee = { email: '', fullName: '', role: '', avatar: '', outletId: 0 };
     }
   }
 });

@@ -189,7 +189,6 @@ export class AssignmentController {
         where: {
           outletId: parseInt(outletId),
           status: 'menungguPenjemputanDriver',
-          drivers: { none: {} },
         },
         include: {
           customerAddress: { select: { detailAddress: true } },
@@ -332,7 +331,7 @@ export class AssignmentController {
         }),
       ]);
       return res.status(200).json({ message: 'Laundry arrived at outlet' });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async completeDelivery(req: Request, res: Response) {
@@ -343,7 +342,7 @@ export class AssignmentController {
         data: { isAvailable: true },
       });
       return res.status(200).json({ message: 'Delivered to customer' });
-    } catch (error) {}
+    } catch (error) { }
   }
 
   // WORKER SECTION
@@ -467,6 +466,114 @@ export class AssignmentController {
       return res.status(500).json({
         error: 'Failed to submit task',
       });
+    }
+  }
+
+  async getDriverJobHistory(req: Request, res: Response) {
+    const { driverId } = req.params;
+    try {
+      // Fetching the job history for the driver based on completed pickup or delivery status
+      const jobHistory = await prisma.driversOnOrders.findMany({
+        where: {
+          driverId: parseInt(driverId),
+          OR: [
+            { order: { status: 'laundrySampaiOutlet' } },  // Completed pickup status
+            { order: { status: 'selesai' } }, 
+          ],
+        },
+        include: {
+          order: {
+            select: {
+              orderId: true,
+              createdAt: true,
+              customer: {
+                select: { fullName: true },
+              },
+              customerAddress: {
+                select: { detailAddress: true },
+              },
+            },
+          },
+        },
+        orderBy: {
+          order: {
+            createdAt: 'desc', // To get the most recent jobs first
+          },
+        },
+      });
+  
+      res.status(200).json(jobHistory);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to fetch driver job history' });
+    }
+  }
+  
+
+  // OUTLET ADMIN JOB HISTORY
+  async getOutletAdminJobHistory(req: Request, res: Response) {
+    const { outletAdminId } = req.params;
+    try {
+      const jobHistory = await prisma.order.findMany({
+        where: {
+          outletAdminId: parseInt(outletAdminId),
+          status: 'selesai', // Filter for completed status
+        },
+        include: {
+          customer: {
+            select: { fullName: true },
+          },
+          customerAddress: {
+            select: { detailAddress: true },
+          },
+          items: true,
+        },
+        orderBy: {
+          createdAt: 'desc', // To get the most recent jobs first
+        },
+      });
+  
+      res.status(200).json(jobHistory);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to fetch outlet admin job history' });
+    }
+  }
+
+  // WORKER JOB HISTORY
+  async getWorkerJobHistory(req: Request, res: Response) {
+    const { workerId } = req.params;
+    try {
+      const jobHistory = await prisma.workersOnOrders.findMany({
+        where: {
+          workerId: parseInt(workerId),
+        },
+        include: {
+          order: {
+            select: {
+              orderId: true,
+              customer: {
+                select: { fullName: true },
+              },
+  
+            },
+          },
+          worker : {
+            select: {
+              station: true,
+              workerId: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc', // To get the most recent jobs first
+        },
+      });
+
+      res.status(200).json(jobHistory);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to fetch worker job history' });
     }
   }
 }

@@ -1,14 +1,25 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function BypassRequestPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number>(2); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number>(2); // Replace with actual outletAdminId
+  const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
+  const [outletId, setOutletId] = useState<number | null>(null);
 
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
+
+  useEffect(() => {
+    if (outletAdmin) {
+      setOutletAdminId(outletAdmin.outletAdminId);
+      setOutletId(outletAdmin.employee?.outletId);
+    }
+  }, [outletAdmin]);
+  
+  
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
