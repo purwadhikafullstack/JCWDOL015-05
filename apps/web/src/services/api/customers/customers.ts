@@ -1,6 +1,6 @@
 import { ICustomerLogin, ICustomerNewPass, ICustomerReg, ICustomersResetPass, ICustomerVerify, IUserEdit } from "@/type/customers";
 
-const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000'
+const BASEURL = process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000'
 export const customerReg = async (data: ICustomerReg) => {
   const res = await fetch(`${BASEURL}/api/users/register`, {
     method: 'POST',
@@ -25,7 +25,8 @@ export const customerLogin = async (data: ICustomerLogin) => {
   return { result, ok: res.ok, user: result.user.data }
 }
 export const customerVerify = async (data: ICustomerVerify, token: any) => {
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/verify/${data.token}`
+  const url = `${BASEURL}/api/users/verify/${data.token}`
+  console.log(url)
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -42,7 +43,7 @@ export const customerVerify = async (data: ICustomerVerify, token: any) => {
 
 export const googleLogin = async () => {
   try {
-    window.location.href = `http://localhost:8000/api/users/auth/google
+    window.location.href = `${BASEURL}/api/users/auth/google
     `
   } catch (err) {
     console.error("Failed to fetch:", err);

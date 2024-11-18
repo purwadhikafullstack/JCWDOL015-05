@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { customerVerify } from "@/services/api/customers/customers";
 // import { customerVerify } from "@/services/customers/customers";
 import { ICustomerVerify } from "@/type/customers";
+import { useMutation } from "@tanstack/react-query";
 import { FormikHelpers, useFormik } from "formik";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -24,18 +25,28 @@ const verifySchema = yup.object().shape({
 export default function Verify() {
   const router = useRouter()
   const { token } = useParams()
-  const handleSubmit = async (data: ICustomerVerify, action: FormikHelpers<ICustomerVerify>) => {
-    try {
-      const { result, ok } = await customerVerify(data, token)
-      if (!ok) throw result.msg
-      action.resetForm()
+  // const handleSubmit = async (data: ICustomerVerify, action: FormikHelpers<ICustomerVerify>) => {
+  //   try {
+  //     const { result, ok } = await customerVerify(data, token)
+  //     if (!ok) throw result.msg
+  //     action.resetForm()
+  //     router.push('/login')
+  //     toast.success(result.msg)
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error(err as string)
+  //   }
+  // }
+  const submitMutation = useMutation({
+    mutationFn: async (data: ICustomerVerify) => await customerVerify(data,token),
+    onSuccess: (data,token)=>{
+      toast.success("Success Registering Data")
       router.push('/login')
-      toast.success(result.msg)
-    } catch (err) {
-      console.log(err);
-      toast.error(err as string)
+    },
+    onError: (err)=>{
+      toast.error(err?.message)
     }
-  }
+  })
   const formik = useFormik({
     initialValues: {
       token: token || "",
@@ -44,12 +55,14 @@ export default function Verify() {
     },
     validationSchema: verifySchema,
     onSubmit: (values, action) => {
-      handleSubmit(values, action)
+      submitMutation.mutate(values)
+      action.resetForm()
+      // handleSubmit(values, action)
     }
   })
   return (
     <section className="flex flex-col items-center justify-center w-full h-screen">
-      <Card className="w-1/4 p-5 space-y-5 shadow-none ">
+      <Card className="w-1/2 p-5 space-y-5 shadow-none ">
         <form onSubmit={formik.handleSubmit} className="space-y-3">
           <div className="space-y-2">
             <Label>Password</Label>
@@ -73,7 +86,7 @@ export default function Verify() {
               onBlur={formik.handleBlur}
             />
           </div>
-          <button type="submit" className="w-full">Submit</button>
+          <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 cursor-pointer">{submitMutation.isPending ? "Loading...": "Submit"}</Button>
         </form>
       </Card>
     </section>

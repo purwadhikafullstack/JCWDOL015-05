@@ -9,6 +9,7 @@ import { format } from "date-fns"
 import { useFormik } from "formik"
 import { useRouter } from "next/navigation"
 import { FC } from "react"
+import { toast } from "react-toastify"
 
 const tableHeader = [
     'No Order',
@@ -35,11 +36,12 @@ export const OrderListComponent: FC<OrderListProps> = ({
             return result 
         },
         onSuccess: (result)=>{
-            console.log(result)
+            console.log(result.data)
             router.push(`${result.data.redirect_url}`)
         },
         onError: (err)=>{
             console.log(err)
+            toast.error(`Pembayaran Gagal Mohon Coba Lagi`)
         }
     })
     const handlePayment = (order: ICustomerOrderData) => {
@@ -59,8 +61,8 @@ export const OrderListComponent: FC<OrderListProps> = ({
             price: 0
         },
         onSubmit(values,action){
-            paymentMutation.mutate(values)
             console.log(values)
+            paymentMutation.mutate(values)
         }
     })
     return(

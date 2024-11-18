@@ -28,7 +28,6 @@ const EditProfileSchema = yup.object().shape({
 
 const EditProfile = () => {
   const customer = useAppSelector((state) => state.customer);
-
   const [data, setData] = useState<IUserEdit>();
   const imgRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -72,7 +71,7 @@ const EditProfile = () => {
       formik.setFieldValue('fullName', data.fullName);
     };
     if (customer.customerId) getData()
-  }, [customer.customerId, formik]);
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

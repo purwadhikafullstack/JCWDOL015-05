@@ -38,7 +38,7 @@ export const LoginPage = () => {
       const { result, ok, user } = data;
       if (!ok) throw result.msg;
 
-      dispatch(loginAction(user))
+      dispatch(loginAction(data.user))
       createToken(result.user.token)
 
       toast.success(result.msg)

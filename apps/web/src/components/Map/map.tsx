@@ -25,6 +25,7 @@ import { mapSchema } from '@/schemaData/schemaData';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { Card } from '../ui/card';
+import { useRouter } from 'next/navigation';
 
 export default function Map() {
   const mapContainerRef = useRef<any | null>(null);
@@ -55,8 +56,8 @@ export default function Map() {
   const [addresses, setAddresses] = useState<ILocation[]>([]);
   const MAP_API = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
   const customers = useAppSelector((state) => state.customer);
-  
-  const initMap = useCallback( () => {
+  const router = useRouter()
+  const initMap =  () => {
     mapRef.current = new maplibregl.Map({
       container: mapContainerRef.current!,
       style: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_API}`,
@@ -77,7 +78,7 @@ export default function Map() {
     } else {
       mapRef.current.off('click', mapClick);
     }
-  },[mapState, marker,MAP_API])
+  }
  
 
   const handleConfirm = () => {
@@ -107,17 +108,16 @@ export default function Map() {
       city: '',
       subdistrict: '',
       detailAddress: '',
-      customerId: '',
+      customerId:customers.customerId  || 0 , 
     },
-    validationSchema: mapSchema,
+    // validationSchema: mapSchema,
     onSubmit: (values, action) => {
-      // handleSubmit(values, action);
-      mutation.mutate(values);
+      console.log(`values : ${values.customerId}`);
+      sendDataMutation.mutate(values);
       action.resetForm();
-      console.log(`values : ${values}`);
     },
   });
-  const mutation = useMutation({
+  const sendDataMutation = useMutation({
     mutationFn: async (data: ICustomerAddress) => await createAddress(data),
     onSuccess: (data) => {
       const { result, ok } = data;
@@ -128,15 +128,14 @@ export default function Map() {
       setSelectedProvince('')
       setSelectedCity('')
       setSelectedSubdistrict('')
-      toast.success(result.msg);
-      console.log(result.data);
+      toast.success(result.msg || 'Berhasil Menambah Alamat');
+      router.push('/customers/profile')
     },
     onError: (err) => {
-      toast.error(err?.message);
+      toast.error(err?.message || 'Gagal Mengirim Data');
       console.log(err);
     },
   });
-
   const handleCancel = () => {
     formik.setFieldValue('longitude', null);
     formik.setFieldValue('latitude', null);
@@ -184,10 +183,8 @@ export default function Map() {
     formik.setFieldValue('city', value);
   };
   const handleSelectSubdistric = async (value: string) => {
-    console.log(selectedCity, selectedProvince);
     setSelectedSubdistrict(value);
     let city = selectedCity.replace(/^(KAB\.|KOTA)\s*/, '');
-    console.log(city);
     let address = `${value},${city}`;
     const { result, ok, resLng, resLat } = await getLngLat(address);
     console.log(result);
@@ -230,10 +227,10 @@ export default function Map() {
     } else {
       setSubdistricts([]);
     }
-  }, [selectedProvince, selectedCity, addresses, locationMutation]);
+  }, [selectedProvince, selectedCity]);
   useEffect(() => {
     if (!map) initMap();
-  }, [map, marker, mapState, initMap])
+  }, [map, marker, mapState])
 
   useEffect(() => {
     if (mapRef.current && coordinates) {
@@ -287,9 +284,10 @@ export default function Map() {
               />
               <Input
                 name="customerId"
-                value={formik.values.customerId}
+                value={customers.customerId}
+                defaultValue={customers.customerId}
                 onChange={formik.handleChange}
-                type="hidden"
+                type="text"
               />
               <Label>Alamat Lengkap</Label>
               <Input
@@ -311,12 +309,12 @@ export default function Map() {
                 onChange={formik.handleChange}
               />
               <div>
-                <button
+                <Button
                   type="submit"
-                  className={`px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${marker != null ? '' : 'hidden'}`}
+                  className={`px-4 w-full mt-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${marker != null ? '' : 'hidden'}`}
                 >
-                  {mutation.isPending ? 'loading...' : 'Send Data'}
-                </button>
+                  {sendDataMutation.isPending ? 'loading...' : 'Send Data'}
+                </Button>
               </div>
             </form>
           </div>
@@ -332,27 +330,27 @@ export default function Map() {
             <p>Latitude: {coordinates?.lat}</p>
 
             <div className="flex justify-end mt-4 space-x-4">
-              <button
+              <Button
                 onClick={handleConfirm}
                 className={`w-full px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600 ${marker != null ? 'hidden' : ''}`}
               >
                 Confirm
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleCancel}
                 className={`w-full px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 ${marker != null ? '' : 'hidden'}`}
               >
                 {marker != null ? 'Delete' : 'Cancel'}
-              </button>
+              </Button>
             </div>
           </div>
         )}
-        <button
-          className={`px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${selectedSubdistrict != '' ? '' : 'hidden'}`}
+        <Button
+          className={`px-4 py-2 w-full mt-4 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${selectedSubdistrict != '' ? '' : 'hidden'}`}
           onClick={handleShowMap}
         >
           Atur Coordinate
-        </button>
+        </Button>
         
       </div>
       </Card>

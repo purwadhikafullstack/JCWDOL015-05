@@ -21,7 +21,7 @@ export type ICustomerAddress = {
   city: string
   subdistrict: string
   detailAddress: string
-  customerId : string
+  customerId : number
 }
 export type ICustomersResetPass = {
   email: string
