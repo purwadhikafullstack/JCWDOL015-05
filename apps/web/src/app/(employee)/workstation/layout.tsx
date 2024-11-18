@@ -34,16 +34,12 @@ export default function WorkstationLayout({
   outletAdminHistory: React.ReactNode;
   workerHistory: React.ReactNode;
   attendance: React.ReactNode
+}) 
 
-}) {
-
+{
   const worker = useAppSelector((state) => state.worker)
   const driver = useAppSelector((state) => state.driver)
   const outletAdmin = useAppSelector((state) => state.outletAdmin)
-
-  
-
-
   if (outletAdmin.employee?.role === 'outletAdmin') {
     return (
       <div className="flex flex-col gap-4 py-5 min-h-screen text-gray-800 ">

@@ -14,6 +14,11 @@ type Item = {
   quantity: number;
 };
 
+type Order = {
+  orderId: number;
+  pricePerKg: number;
+};
+
 export default function ItemInputPage() {
   const [itemsByOrder, setItemsByOrder] = useState<{
     [orderId: number]: Item[];
@@ -23,7 +28,7 @@ export default function ItemInputPage() {
   }>({});
   const [orders, setOrders] = useState<Order[]>([]);
   const [outletAdminId, setOutletAdminId] = useState<number | null>(null); 
-
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const outletAdmin = useAppSelector((state) => state.outletAdmin)
 
   useEffect(() => {
@@ -106,11 +111,40 @@ export default function ItemInputPage() {
     }));
   };
 
-  const handleWeightChange = (orderId: number, value: number) => {
+  const handleWeightChange = (orderId: number, value: string) => {
+    // Convert the input string to a float number (if it's a valid number)
+    const weight = parseFloat(value);
     setWeightsByOrder((prevWeights) => ({
       ...prevWeights,
-      [orderId]: value,
+      [orderId]: isNaN(weight) ? 0 : weight, // Ensure valid number
     }));
+  };
+
+  const validateForm = (orderId: number) => {
+    const errors: { [key: string]: string } = {};
+    const items = itemsByOrder[orderId];
+    const weight = weightsByOrder[orderId];
+
+    // Check if weight is greater than 0
+    if (weight <= 0) {
+      errors['weight'] = 'Weight must be greater than 0 kg';
+    }
+
+    // Check if there is at least one item and all items have a name and quantity
+    if (items.length === 0) {
+      errors['items'] = 'At least one item is required';
+    } else {
+      items.forEach((item, index) => {
+        if (!item.item.trim()) {
+          errors[`item-${index}`] = `Item name is required`;
+        }
+        if (item.quantity <= 0) {
+          errors[`quantity-${index}`] = `Quantity must be greater than 0`;
+        }
+      });
+    }
+
+    return errors;
   };
 
   const handleSubmit = async (
@@ -119,30 +153,38 @@ export default function ItemInputPage() {
     pricePerKg: number,
   ) => {
     e.preventDefault();
-    const items = itemsByOrder[orderId];
-    const weight = weightsByOrder[orderId];
-    try {
-      const response = await fetch(`${BASEURL}/api/assignment/item-submit`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ items, weight, orderId, pricePerKg }),
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Response:', data);
-        alert(`Items for Order #${orderId} submitted successfully`);
-        fetchOrders();
-      } else {
-        const errorData = await response.json();
-        console.error('Error:', errorData);
+    const formErrors = validateForm(orderId);
+    setErrors(formErrors);
+
+    // If no errors, submit the form
+    if (Object.keys(formErrors).length === 0) {
+      const items = itemsByOrder[orderId];
+      const weight = weightsByOrder[orderId];
+
+      try {
+        const response = await fetch(`${BASEURL}/api/assignment/item-submit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ items, weight, orderId, pricePerKg }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Response:', data);
+          alert(`Items for Order #${orderId} submitted successfully`);
+          fetchOrders();
+        } else {
+          const errorData = await response.json();
+          console.error('Error:', errorData);
+          alert(`Failed to submit items for Order #${orderId}`);
+        }
+      } catch (error) {
+        console.error('Error submitting items:', error);
         alert(`Failed to submit items for Order #${orderId}`);
       }
-    } catch (error) {
-      console.error('Error submitting items:', error);
-      alert(`Failed to submit items for Order #${orderId}`);
     }
   };
 
@@ -165,31 +207,42 @@ export default function ItemInputPage() {
                 type="number"
                 value={weightsByOrder[order.orderId] || ''}
                 onChange={(e) =>
-                  handleWeightChange(order.orderId, parseFloat(e.target.value))
+                  handleWeightChange(order.orderId, e.target.value)
                 }
-                placeholder="weight"
+                placeholder="Weight"
                 className="w-28 border rounded p-2 bg-gray-100"
-                min="0"
-              />{' '}
+                step="0.1" // Allow decimal values
+                min={0.1}
+              />
               <span>Kg</span>
+              {errors['weight'] && (
+                <div className="text-sm text-red-500">{errors['weight']}</div>
+              )}
             </div>
 
             {itemsByOrder[order.orderId]?.map((item, index) => (
               <div key={index} className="mb-4 flex gap-4 items-center">
-                <Input
-                  type="text"
-                  value={item.item}
-                  onChange={(e) =>
-                    handleInputChange(
-                      order.orderId,
-                      index,
-                      'item',
-                      e.target.value,
-                    )
-                  }
-                  placeholder="Item name"
-                  className="w-full border rounded p-2 bg-gray-100"
-                />
+                <div className="flex flex-col gap-1">
+                  <Input
+                    type="text"
+                    value={item.item}
+                    onChange={(e) =>
+                      handleInputChange(
+                        order.orderId,
+                        index,
+                        'item',
+                        e.target.value,
+                      )
+                    }
+                    placeholder="Item name"
+                    className="w-full border rounded p-2 bg-gray-100"
+                  />
+                  {errors[`item-${index}`] && (
+                    <div className="text-sm text-red-500">
+                      {errors[`item-${index}`]}
+                    </div>
+                  )}
+                </div>
                 <Input
                   type="number"
                   value={item.quantity}
@@ -205,12 +258,18 @@ export default function ItemInputPage() {
                   className="w-20 border rounded p-2 bg-gray-100"
                   min="1"
                 />
+                {errors[`quantity-${index}`] && (
+                  <div className="text-sm text-red-500">
+                    {errors[`quantity-${index}`]}
+                  </div>
+                )}
                 <DeleteButton
                   type="button"
                   onClick={() => handleRemoveItem(order.orderId, index)}
                 />
               </div>
             ))}
+
             <div className="flex flex-row-reverse justify-between">
               <Button
                 type="button"

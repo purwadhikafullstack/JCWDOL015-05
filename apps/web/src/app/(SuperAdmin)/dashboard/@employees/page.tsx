@@ -90,15 +90,22 @@ export default function EmployeeManagement() {
     setIsCreateModalOpen(false);
   };
 
-  const handleCreateEmployee = async () => {
+  const handleCreateEmployee = async (values: {
+    email: string;
+    password: string;
+    fullName: string;
+    role: string;
+    outletId: number;
+    station: string;
+  }) => {
     try {
       const newEmployee = await createEmployee(
-        email!,
-        password!,
-        fullName!,
-        role!,
-        outletId!,
-        station!,
+        values.email,
+        values.password,
+        values.fullName,
+        values.role,
+        values.outletId,
+        values.station,
       );
       setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
       await fetchEmployees();
@@ -166,16 +173,23 @@ export default function EmployeeManagement() {
     setIsUpdateModalOpen(false);
   };
 
-  const handleUpdateEmployee = async () => {
+  const handleUpdateEmployee = async (values: {
+    email: string;
+    password: string;
+    fullName: string;
+    role: string;
+    outletId: number | null;
+    station: string | null;
+  }) => {
     try {
       const updatedEmployee = await UpdateEmployee(
         employeeId!,
-        email,
-        password,
-        fullName,
-        role,
-        outletId,
-        station,
+        values.email,
+        values.password,
+        values.fullName,
+        values.role,
+        values.outletId,
+        values.station,
       );
       setEmployees((prevEmployees) =>
         prevEmployees.map((employee: Employee) =>
@@ -310,36 +324,18 @@ export default function EmployeeManagement() {
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
         onConfirm={handleCreateEmployee}
-        email={email!}
-        setEmail={setEmail}
-        password={password!}
-        setPassword={setPassword}
-        fullName={fullName!}
-        setFullName={setFullName}
-        role={role!}
-        setRole={setRole}
-        outletId={outletId!}
-        setOutletId={setOutletId}
-        station={station!}
-        setStation={setStation}
       />
 
       <EmployeeUpdateModal
         isOpen={isUpdateModalOpen}
         onClose={closeUpdateModal}
         onConfirm={handleUpdateEmployee}
-        email={email!}
-        setEmail={setEmail}
-        password={password!}
-        setPassword={setPassword}
-        fullName={fullName!}
-        setFullName={setFullName}
-        role={role!}
-        setRole={setRole}
-        outletId={outletId!}
-        setOutletId={setOutletId}
-        station={station!}
-        setStation={setStation}
+        initialEmail={email!}
+        initialPassword={password!}
+        initialFullName={fullName!}
+        initialRole={role!}
+        initialOutletId={outletId!}
+        InitialStation={station}
       />
 
       <DeleteModal
