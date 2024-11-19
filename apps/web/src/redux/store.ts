@@ -8,7 +8,7 @@ import driverReducer from "./slice/driverSlice"
 import outletAdminReducer from "./slice/outletAdminSlice"
 
 
-const createNoopStorage = () => {
+export const createNoopStorage = () => {
   return {
     getItem() {
       return Promise.resolve(null);
@@ -70,11 +70,11 @@ export const makeStore = () => {
           },
         }),
     }) as StoreWithPersistor;
-    store.__persistor = persistStore(store)
+    const persistor = persistStore(store)
+    store.__persistor = persistor
     return store
   }
 }
-
 export type AppStore = ReturnType<typeof makeStore>
 export type RootState = ReturnType<AppStore["getState"]>
 export type AppDispatch = AppStore["dispatch"]

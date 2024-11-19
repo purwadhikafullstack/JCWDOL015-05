@@ -1,3 +1,4 @@
+import { IUserEdit } from "@/type/customers"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 export type ICustomerData = {

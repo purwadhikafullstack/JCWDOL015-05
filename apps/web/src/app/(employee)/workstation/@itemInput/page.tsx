@@ -27,11 +27,10 @@ export default function ItemInputPage() {
     [orderId: number]: number;
   }>({});
   const [orders, setOrders] = useState<Order[]>([]);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
 
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
-
+  const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   useEffect(() => {
     if (outletAdmin) {
       setOutletAdminId(outletAdmin.outletAdminId);

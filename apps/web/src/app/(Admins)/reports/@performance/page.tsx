@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
+import { useAppSelector } from '@/redux/hooks';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), {
   ssr: false,
@@ -27,6 +28,8 @@ const EmployeePerformanceReport = () => {
   const [outletId, setOutletId] = useState<string>('');
   const [outlets, setOutlets] = useState<Outlets[]>([]);
   const [employeeType, setEmployeeType] = useState<string>('worker');
+
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 

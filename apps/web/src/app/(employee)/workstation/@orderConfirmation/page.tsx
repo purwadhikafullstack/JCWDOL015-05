@@ -9,17 +9,17 @@ const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletId, setOutletId] = useState<number | null>(null); 
-  const [outletAdminId, setOutletAdminId] = useState<number | null>(null); 
-  
-  const outletAdmin = useAppSelector((state) => state.outletAdmin)
+  const [outletId, setOutletId] = useState<number | null>(null);
+  const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
+
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
   useEffect(() => {
-    if(outletAdmin) {
-      setOutletAdminId(outletAdmin.outletAdminId)
-      setOutletId(outletAdmin.employee?.outletId)
+    if (outletAdmin) {
+      setOutletAdminId(outletAdmin.outletAdminId);
+      setOutletId(outletAdmin.employee?.outletId);
     }
-  })
+  }, [outletAdmin]);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -27,12 +27,11 @@ export default function OrderConfirmationPage() {
         `${BASEURL}/api/assignment/order-confirmation/${outletId}`,
       );
       if (response.ok) {
-
         const data = await response.json();
         setOrders(data);
-        if(data.length > 0) {
-          toast.success('Message: New Order Confirmation')
-        } 
+        if (data.length > 0) {
+          toast.success('Message: New Order Confirmation');
+        }
       }
     } catch (error) {
       console.error('Orders fetching error:', error);

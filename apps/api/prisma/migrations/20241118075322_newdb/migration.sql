@@ -110,7 +110,8 @@ CREATE TABLE `Order` (
     `complain` VARCHAR(191) NULL,
     `status` ENUM('menungguKonfirmasi', 'menungguPenjemputanDriver', 'laundryMenujuOutlet', 'laundrySampaiOutlet', 'pencucian', 'penyetrikaan', 'packing', 'menungguPembayaran', 'siapDiantar', 'sedangDikirim', 'selesai') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedaAt` DATETIME(3) NULL,
+    `updatedAt` DATETIME(3) NOT NULL,
+    `deliverDate` DATETIME(3) NULL,
 
     PRIMARY KEY (`orderId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -150,7 +151,6 @@ CREATE TABLE `DriversOnOrders` (
     `orderId` INTEGER NOT NULL,
     `driverId` INTEGER NOT NULL,
     `activity` ENUM('pickUp', 'delivery') NOT NULL,
-    `status` VARCHAR(191) NOT NULL DEFAULT 'Pending',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
@@ -175,18 +175,6 @@ CREATE TABLE `ListAddress` (
     `city` VARCHAR(191) NOT NULL,
     `subdistrictId` INTEGER NOT NULL,
     `subdistrict` VARCHAR(191) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `Notification` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `workerId` INTEGER NOT NULL,
-    `orderId` INTEGER NOT NULL,
-    `message` VARCHAR(191) NOT NULL,
-    `isRead` BOOLEAN NOT NULL DEFAULT false,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -235,9 +223,3 @@ ALTER TABLE `DriversOnOrders` ADD CONSTRAINT `DriversOnOrders_orderId_fkey` FORE
 
 -- AddForeignKey
 ALTER TABLE `DriversOnOrders` ADD CONSTRAINT `DriversOnOrders_driverId_fkey` FOREIGN KEY (`driverId`) REFERENCES `Driver`(`driverId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Notification` ADD CONSTRAINT `Notification_workerId_fkey` FOREIGN KEY (`workerId`) REFERENCES `Worker`(`workerId`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Notification` ADD CONSTRAINT `Notification_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`orderId`) ON DELETE RESTRICT ON UPDATE CASCADE;

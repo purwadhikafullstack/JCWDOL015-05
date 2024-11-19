@@ -1,15 +1,14 @@
 'use client'
 import DriverPage from "@/components/EmployeePage/driverPage"
-import OutletAdminPage from "@/components/EmployeePage/outletAdminPage"
 import WorkerPage from "@/components/EmployeePage/workerPage"
 import { useAppSelector } from "@/redux/hooks"
 import { driverLogoutAction } from "@/redux/slice/driverSlice"
-import { outletAdminLogoutAction } from "@/redux/slice/outletAdminSlice"
 import { workerLogoutAction } from "@/redux/slice/workerSlice"
 import { Role } from "@/type/role"
 import { useRouter } from "next/navigation"
 import { render } from "react-dom"
 import { useDispatch } from "react-redux"
+import ListAttendance from "../list-attendance/page"
 
 
 
@@ -27,9 +26,7 @@ export default function Employee() {
             dispatch(workerLogoutAction())
         } else if (driver) {
             dispatch(driverLogoutAction())
-        } else if (outletAdmin) {
-            dispatch(outletAdminLogoutAction())
-        }
+        } 
         router.push('/')
     }
 
@@ -39,7 +36,7 @@ export default function Employee() {
         switch (role) {
             case 'worker' : return <WorkerPage/>
             case 'driver' : return <DriverPage/>
-            case 'outletAdmin' : return <OutletAdminPage/>
+            case 'outletAdmin' : return <ListAttendance/>
             default: return <div>role not found</div>
         }
     }

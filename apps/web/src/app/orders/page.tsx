@@ -56,23 +56,28 @@ export default function OrderList() {
           </tr>
         </thead>
         <tbody>
-          {data.map((order: IOrderData, index) => (
-            <tr key={index}>
-              <td>{order.orderId}</td>
-              <td>{order.customer.fullName}</td>
-              <td>{order.status}</td>
-              <td>{format(order.pickupDate, 'yyyy-MM-dd')}</td>
-              <td>{order.pickupTime}</td>
-              <td>{order.weight ? order.weight : 0}</td>
-              <td>{order.paymentStatus}</td>
-              {/* <td>{order.createdAt}</td> */}
-              <td>{order.outlet.name}</td>
-              {/* <td>{`${order.outletAdmin}`}</td> */}
-              <td>
-                <Button>Confirm</Button>
-              </td>
-            </tr>
-          ))}
+          {
+            data.map((order: IOrderData, index) => (
+              <tr key={index}>
+                <td>{order.orderId}</td>
+                <td>{order.customer.fullName}</td>
+                <td>{order.status}</td>
+                <td>{format(order.pickupDate, 'yyyy-MM-dd')}</td>
+                <td>{order.pickupTime}</td>
+                <td>{order.weight ? order.weight : 0}</td>
+                <td>{order.paymentStatus}
+
+                </td>
+                {/* <td>{order.createdAt}</td> */}
+                <td>{order.outlet.name}</td>
+                {/* <td>{`${order.outletAdmin}`}</td> */}
+                <td>
+                  <Button>Confirm</Button>
+                </td>
+              </tr>
+            ))
+          }
+
         </tbody>
       </table>
     </section>

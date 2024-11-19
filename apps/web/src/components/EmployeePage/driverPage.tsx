@@ -134,10 +134,9 @@ export default function DriverPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-    {/* Main Attendance Section */}
     <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg mb-10">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Attendance</h1>
-        <div className="space-y-4">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Attendance</h1>
+        <div className="space-y-4 text-black font-medium">
             <p className="text-lg"><strong>Name:</strong> {driver.employee.fullName}</p>
             <p className="text-lg"><strong>Outlet ID:</strong> {driver.employee.outletId}</p>
             <p className="text-lg"><strong>Employee ID:</strong> {employeeId}</p>
@@ -167,7 +166,6 @@ export default function DriverPage() {
         </div>
     </div>
 
-    {/* Attendance History Section */}
     <div className="max-w-4xl w-full p-6 bg-white shadow-lg rounded-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Attendance History</h1>
         {loading ? (

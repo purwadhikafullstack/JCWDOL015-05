@@ -104,7 +104,7 @@ export class EmployeeController {
       if (role === 'worker') {
         await prisma.worker.create({
           data: {
-            station,
+            station: station || 'washing',
             employeeId: newEmployeeData.employeeId,
           },
         });

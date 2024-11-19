@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Select, Option } from '@/components/ui/select-report';
 import { ApexOptions } from 'apexcharts';
+import { useAppSelector } from '@/redux/hooks';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -21,6 +22,8 @@ const IncomeChartPage = () => {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [outlets, setOutlets] = useState<Outlets[]>([]);
+
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
   const fetchOulets = async () => {
     try {

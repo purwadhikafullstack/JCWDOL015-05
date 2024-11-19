@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useCallback, useEffect, useState } from 'react';
 import OrderTrackingModal from './order-list-component/tracking-modal';
 import { displayOrderStatus } from '../lib/formatter';
+import { useAppSelector } from '@/redux/hooks';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -29,6 +30,8 @@ const OrdersPage = () => {
 
   // Sorting
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
   const limit = 5;
 
@@ -86,6 +89,7 @@ const OrdersPage = () => {
     setStatus(status);
     setDrivers(drivers);
     setWorkers(workers);
+    console.log(updatedAt);
     setIsTrackingModalOpen(true);
   };
 
@@ -215,7 +219,7 @@ const OrdersPage = () => {
                   onClick={() =>
                     openTrackingModal(
                       order.orderId,
-                      new Date(order.updatedaAt!).toDateString(),
+                      new Date(order.updatedAt).toLocaleString(),
                       order.status,
                       order.drivers,
                       order.workers,

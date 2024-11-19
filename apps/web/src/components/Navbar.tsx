@@ -6,15 +6,15 @@ import { CustomerNavbar } from "./NavbarPage/customerNavbar";
 import EmployeeNavbarPage from "./NavbarPage/employeeNavbar";
 
 export default function Navbar() {
-  const worker = useAppSelector((state) => state.worker);
-
-  console.log("Worker State:", worker); // Check worker data in console
-
-  if (worker?.employee?.role === Role.worker) {
-    console.log("Rendering Employee Navbar");
-    return <EmployeeNavbarPage />;
-  } else {
-    console.log("Rendering Customer Navbar");
-    return <CustomerNavbar />;
+  const { worker, driver, outletAdmin, customer } = useAppSelector((state) => ({
+    worker: state.worker,
+    driver: state.driver,
+    outletAdmin: state.outletAdmin,
+    customer: state.customer,
+  }))
+  if(driver || outletAdmin || worker) {
+    return <EmployeeNavbarPage/>
+  } else if(customer) {
+    return<CustomerNavbar/>
   }
 }

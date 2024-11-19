@@ -117,18 +117,9 @@ export class OrderController {
         lat: getCustomerLoc?.latitude!,
         lng: getCustomerLoc?.longitude!,
       };
-      // const customer = { lat: parseFloat(customerLat), lng: parseFloat(customerLng) }
       const totalOutlet = await prisma.outlet.count();
       const getOutlets = await prisma.outlet.findMany();
       const maxRadius = 2000;
-      // const nearOutlet = getOutlets.filter((outlet) => {
-      //   const outletLoc = { lat: outlet.latitude!, lng: outlet.longitude! }
-      //   const distance = getDistance(customerLoc, outletLoc)
-      //   console.log(distance)
-      //   const nearOutlet = distance <= maxRadius
-      //   // return distance <= maxRadius
-      //   return { nearOutlet, distance, ...outlet }
-      // })
       const nearOutlet = getOutlets.map((outlet) => {
         const outletLoc = { lat: outlet.latitude!, lng: outlet.longitude! };
         const distance = getDistance(customerLoc, outletLoc);
@@ -187,7 +178,7 @@ export class OrderController {
           data: {
             customerId,
             outletId,
-            status: 'menungguPenjemputanDriver',
+            status: "menungguKonfirmasi",
             customerAddressId: addressId,
             pickupDate: new Date(pickupDate),
             pickupTime,
