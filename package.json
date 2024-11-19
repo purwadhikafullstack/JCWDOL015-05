@@ -13,13 +13,15 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.2",
     "@commitlint/config-conventional": "^18.4.2",
+    "@types/leaflet": "^1.9.14",
+    "cypress": "^13.15.2",
     "eslint": "^8.48.0",
     "husky": "^8.0.0",
     "lint-staged": "^15.1.0",
     "prettier": "^3.1.0",
     "tsc-alias": "^1.8.10",
     "tsconfig": "*",
-    "turbo": "latest"
+    "turbo": "^2.3.0"
   },
   "name": "finpro-nextjs-express-prisma",
   "packageManager": "npm@8.15.0",
@@ -34,6 +36,8 @@
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
-    "axios": "^1.7.2"
+    "axios": "^1.7.2",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1"
   }
 }
