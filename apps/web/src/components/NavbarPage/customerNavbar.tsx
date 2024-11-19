@@ -10,7 +10,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { getToken } from '@/lib/server';
 import { logoutAction } from '@/redux/slice/customerSlice';
 
-export const Navbar = () => {
+export const CustomerNavbar = () => {
   const [token, setToken] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();

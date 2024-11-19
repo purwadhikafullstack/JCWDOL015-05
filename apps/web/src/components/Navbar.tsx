@@ -2,8 +2,8 @@
 
 import { useAppSelector } from "@/redux/hooks";
 import { Role } from "@/type/role";
-import { CustomerNavbar } from "./NavbarPage/customerNavbar";
 import EmployeeNavbarPage from "./NavbarPage/employeeNavbar";
+import { CustomerNavbar } from "./NavbarPage/customerNavbar";
 
 export default function Navbar() {
   const { worker, driver, outletAdmin, customer } = useAppSelector((state) => ({
