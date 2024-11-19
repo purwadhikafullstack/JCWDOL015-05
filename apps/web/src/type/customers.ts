@@ -53,3 +53,10 @@ export type ICustomerPayment = {
   weight: number
   price : number
 }
+export type ISendEmailVerification = {
+  email: string
+}
+export type ICustomerEditEmail = {
+  email: string
+  newEmail: string
+}

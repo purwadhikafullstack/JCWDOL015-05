@@ -17,11 +17,7 @@ const verifySchema = yup.object().shape({
   password: yup.string().required().min(8),
   confirmPassword: yup.string().required().min(8)
 })
-// const initialValues: ICustomerVerify = {
-//   token: token || "",
-//   password: "",
-//   confirmPassword: ""
-// }
+
 export default function Verify() {
   const router = useRouter()
   const { token } = useParams()

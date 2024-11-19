@@ -3,18 +3,19 @@ import Image from 'next/image';
 import logo from '@/assets/logo.png';
 import home from '@/assets/home.png';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; // Use this instead of useRouter for Next 13+
+import { usePathname, useRouter } from 'next/navigation'; // Use this instead of useRouter for Next 13+
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/redux/hooks';
-import { getToken } from '@/lib/server';
+import { deleteToken, getToken } from '@/lib/server';
 import { logoutAction } from '@/redux/slice/customerSlice';
 import defaultProfile from '@/assets/images.webp';
+import { toast } from 'react-toastify';
 
 export const CustomerNavbar = () => {
   const [token, setToken] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  
+  const router = useRouter()
   const dispatch = useDispatch();
   const pathname = usePathname(); 
   const customer = useAppSelector((state) => state.customer);
@@ -27,7 +28,10 @@ export const CustomerNavbar = () => {
     setIsOpen(!isOpen);
   };
   const handleLogout = () => {
-    dispatch(logoutAction());
+    dispatch(logoutAction())
+    deleteToken()
+    toast.success('Logout Success')
+    router.push('/login')
   };
   useEffect(() => {
     getTokenData();
@@ -117,7 +121,7 @@ export const CustomerNavbar = () => {
               </div>
               <div className="border border-gray-200 border-b-1"></div>
               <p className="p-2 cursor-pointer hover:bg-white hover:text-black hover:rounded-md">
-                <Link href={'/'}>Setting</Link>
+                <Link href={'/customers/profile/edit'}>Setting</Link>
               </p>
               <p className="p-2 cursor-pointer hover:bg-white hover:text-black hover:rounded-md">
                 <Link href={'/profile'}>Profile</Link>

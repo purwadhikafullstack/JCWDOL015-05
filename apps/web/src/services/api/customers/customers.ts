@@ -1,4 +1,4 @@
-import { ICustomerLogin, ICustomerNewPass, ICustomerReg, ICustomersResetPass, ICustomerVerify, IUserEdit } from "@/type/customers";
+import { ICustomerEditEmail, ICustomerLogin, ICustomerNewPass, ICustomerReg, ICustomersResetPass, ICustomerVerify, ISendEmailVerification, IUserEdit } from "@/type/customers";
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000'
 export const customerReg = async (data: ICustomerReg) => {
@@ -21,6 +21,7 @@ export const customerLogin = async (data: ICustomerLogin) => {
     },
     body: JSON.stringify(data)
   })
+  console.log(res)
   const result = await res.json()
   return { result, ok: res.ok, user: result.user.data }
 }
@@ -111,4 +112,34 @@ export const getCustomerData = async (customerId: number) => {
   const result = await res.json()
   console.log(result)
   return {result, ok: res.ok, data: result.data}
+}
+export const sendEmailVerification = async(data: ISendEmailVerification) =>{
+  const url = `${BASEURL}/api/users/send-emailVerification`
+  const res = await fetch(url,{
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  const result = await res.json()
+  return {result, ok: res.ok}
+}
+export const verifyEmail = async (token : string) =>{
+  const url = `${BASEURL}/api/users/verify-email/${token}`
+  const res = await fetch(url)
+  const result = await res.json()
+  return {result, ok: res.ok}
+}
+export const changeEmail = async(data: ICustomerEditEmail) =>{
+  const url = `${BASEURL}/api/users/change-email`
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  const result = await res.json()
+  return {result, ok :res.ok}
 }

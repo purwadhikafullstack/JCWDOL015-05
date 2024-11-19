@@ -4,34 +4,37 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { deleteToken } from '@/lib/server';
 import { useAppSelector } from '@/redux/hooks';
+import { logoutAction } from '@/redux/slice/customerSlice';
 import {
+  changeEmail,
   editProfile,
   getCustomerData,
 } from '@/services/api/customers/customers';
 import RoleProtection from '@/services/Unauthorized';
-import { IUserEdit } from '@/type/customers';
+import { ICustomerEditEmail, ISendEmailVerification, IUserEdit } from '@/type/customers';
 import { useMutation } from '@tanstack/react-query';
 import { useFormik } from 'formik';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 
 const EditProfileSchema = yup.object().shape({
   customerId: yup.string().required(),
   fullName: yup.string().required('Full name is required'),
-  avatar : yup.string().nullable()
+  avatar: yup.string().nullable(),
 });
-
 
 const EditProfile = () => {
   const customer = useAppSelector((state) => state.customer);
   const [data, setData] = useState<IUserEdit>();
   const imgRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
+  const dispatch = useDispatch()
   const router = useRouter();
 
   const mutation = useMutation({
@@ -49,28 +52,46 @@ const EditProfile = () => {
   const formik = useFormik({
     initialValues: {
       avatar: null,
-      customerId : customer.customerId,
+      customerId: customer.customerId,
       fullName: '',
     },
     validationSchema: EditProfileSchema,
     onSubmit: (values, action) => {
-      console.log('clicked')
-      console.log(values)
       mutation.mutate(values);
-      action.resetForm();
     },
   });
-  
+  const changeEmailFormik = useFormik({
+    initialValues: {
+      email: '',
+      newEmail: ''
+    },
+    onSubmit: (values, action) => {
+      changeEmailMutation.mutate(values);
+    },
+  });
+  const changeEmailMutation = useMutation({
+    mutationFn: async (data: ICustomerEditEmail) => await changeEmail(data),
+    onSuccess: (data) => {
+      toast.success(data.result.message)
+      router.push('/login')
+      deleteToken()
+      dispatch(logoutAction())
+    },
+    onError: (err) => {
+      toast.error(err?.message)
+    },
+  });
+  const getData = async () => {
+    const { result, ok, data } = await getCustomerData(customer.customerId);
+    if (!ok) throw result.msg;
+    setData(data);
+    setPreviewUrl(data.avatar || null);
+    // Populate specific fields without overriding Formik values
+    formik.setFieldValue('fullName', data.fullName);
+    changeEmailFormik.setFieldValue('email', data.email)
+  };
   useEffect(() => {
-    const getData = async () => {
-      const { result, ok, data } = await getCustomerData(customer.customerId);
-      if (!ok) throw result.msg;
-      setData(data);
-      setPreviewUrl(data.avatar || null);
-      // Populate specific fields without overriding Formik values
-      formik.setFieldValue('fullName', data.fullName);
-    };
-    if (customer.customerId) getData()
+    getData();
   }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,12 +104,12 @@ const EditProfile = () => {
   };
 
   return (
-    <section className="w-full h-screen">
-      <div className="flex flex-col justify-center items-center">
-        <Card className="w-1/2 p-3 space-y-3">
+    <section className="w-full h-fit max-h-fit ">
+      <div className="flex flex-col justify-center items-center space-y-3">
+        <Card className="lg:w-1/2 sm:w-full p-3 space-y-3">
           <div>
             <h1 className="text-lg">Personal Data</h1>
-            <p className="text-gray-400">Edit profile</p>
+            <p className="text-gray-400 text-sm">Edit profile</p>
           </div>
           <div className="flex flex-col justify-center items-center gap-2">
             <div
@@ -99,10 +120,10 @@ const EditProfile = () => {
                 <Image
                   src={previewUrl}
                   alt="preview"
-                  width={176} 
-                  height={176} 
+                  width={176}
+                  height={176}
                   className="rounded-full w-44 h-44 object-cover"
-                  />
+                />
               ) : (
                 <div className="w-44 h-44 bg-gray-200 rounded-full flex items-center justify-center">
                   <span>No Image</span>
@@ -111,7 +132,7 @@ const EditProfile = () => {
             </div>
             <input
               type="file"
-              name='avatar'
+              name="avatar"
               ref={imgRef}
               className="hidden"
               accept="image/*"
@@ -124,9 +145,9 @@ const EditProfile = () => {
           <Label>Role</Label>
           <p className="text-gray-400 text-sm">Customer</p>
           <form onSubmit={formik.handleSubmit} className="space-y-3">
-          <Input
+            <Input
               name="fullName"
-              type="text"
+              type="hidden"
               placeholder="Full Name"
               value={formik.values.customerId}
               onChange={formik.handleChange}
@@ -153,6 +174,37 @@ const EditProfile = () => {
               Save Changes
             </Button>
           </form>
+        </Card>
+        
+        <Card className="w-1/2 p-3 ">
+        <div>
+            <h1 className="text-lg">Change Email</h1>
+            <p className="text-gray-400 text-sm">Change Email Need Re Verification</p>
+          </div>
+        <form onSubmit={changeEmailFormik.handleSubmit}>
+          <Label>Current Email</Label>
+          <Input
+            name="email"
+            type="text"
+            value={changeEmailFormik.values.email}
+            onBlur={changeEmailFormik.handleBlur}
+          />
+          <Label>New Email</Label>
+          <Input
+            name="newEmail"
+            type="text"
+            value={changeEmailFormik.values.newEmail}
+            onChange={changeEmailFormik.handleChange}
+            onBlur={changeEmailFormik.handleBlur}
+          />
+          <Button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600"
+          >
+            {changeEmailMutation.isPending ? 'Loading...' : 'Change Email'}
+          </Button>
+        </form>
+          
         </Card>
       </div>
     </section>
