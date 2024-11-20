@@ -139,6 +139,8 @@ export class EmployeeController {
       req.body;
 
     try {
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(password, salt);
       // Fetch the existing employee with its role details
       const existingEmployee = await prisma.employee.findUnique({
         where: { employeeId: Number(id) },
@@ -214,7 +216,7 @@ export class EmployeeController {
         where: { employeeId: Number(id) },
         data: {
           email,
-          password,
+          password: hashedPassword,
           fullName,
           role,
           outletId,

@@ -1,15 +1,19 @@
 'use client';
 import { useAppSelector } from '@/redux/hooks';
 
-export default function ReportsLayout({
+const ReportsLayout = ({
   income,
   performance,
 }: {
   income: React.ReactNode;
   performance: React.ReactNode;
-}) {
+}) => {
+  const superAdmin = useAppSelector((state) => state.superAdmin);
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
-  if (outletAdmin.employee?.role === 'outletAdmin') {
+  if (
+    outletAdmin.employee?.role === 'outletAdmin' ||
+    superAdmin.role === 'superAdmin'
+  ) {
     return (
       <div className="flex flex-col gap-4 p-5 bg-blue-300 min-h-screen">
         <div className="mb-8">{income}</div>
@@ -23,4 +27,6 @@ export default function ReportsLayout({
       </div>
     );
   }
-}
+};
+
+export default ReportsLayout;

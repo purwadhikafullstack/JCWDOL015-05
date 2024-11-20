@@ -18,8 +18,7 @@ export default function BypassRequestPage() {
       setOutletId(outletAdmin.employee?.outletId);
     }
   }, [outletAdmin]);
-  
-  
+
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(

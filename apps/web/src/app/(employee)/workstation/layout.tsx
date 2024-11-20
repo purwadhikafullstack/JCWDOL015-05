@@ -4,7 +4,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-export default function WorkstationLayout({
+const WorkstationLayout = ({
   orderConfirmation,
   itemInput,
   bypassRequest,
@@ -28,7 +28,7 @@ export default function WorkstationLayout({
   outletAdminHistory: React.ReactNode;
   workerHistory: React.ReactNode;
   attendance: React.ReactNode;
-}) {
+}) => {
   const worker = useAppSelector((state) => state.worker);
   const driver = useAppSelector((state) => state.driver);
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
@@ -117,4 +117,6 @@ export default function WorkstationLayout({
       </div>
     );
   }
-}
+};
+
+export default WorkstationLayout;

@@ -1,3 +1,125 @@
+// 'use client';
+
+// import { Button } from '@/components/ui/button';
+// import { useAppSelector } from '@/redux/hooks';
+// import { useCallback, useEffect, useState } from 'react';
+// import { toast } from 'react-toastify';
+
+// export default function GetPickupPage() {
+//   const [orders, setOrders] = useState<Order[]>([]);
+//   const [driverId, setDriverId] = useState<number | null>(null);
+//   const [outletId, setOutletId] = useState<number | null>(null);
+//   const [isAvailable, setIsAvailable] = useState<boolean>(true);
+
+//   const driver = useAppSelector((state) => state.driver);
+
+//   useEffect(() => {
+//     if (driver) {
+//       setDriverId(driver.driverId);
+//       setOutletId(driver.employee?.outletId);
+//     }
+//   }, [driver]);
+
+//   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+
+//   const fetchOrders = useCallback(async () => {
+//     try {
+//       const response = await fetch(
+//         `${BASEURL}/api/assignment/get-pickup/${outletId}`,
+//       );
+//       if (response.ok) {
+//         const data = await response.json();
+//         setOrders(data);
+//         if (data.length > 0) {
+//           toast.success('Message: New Request PickUp');
+//         }
+//       }
+//       console.log('error');
+//     } catch (error) {
+//       console.error('Orders fetching error:', error);
+//     }
+//   }, [outletId, BASEURL]);
+
+//   const fetchDriverAvailability = useCallback(async () => {
+//     try {
+//       const response = await fetch(
+//         `${BASEURL}/api/assignment/driver-availability/${driverId}`,
+//       );
+//       if (response.ok) {
+//         const data = await response.json();
+//         setIsAvailable(data.isAvailable);
+//       }
+//       console.log('error');
+//     } catch (error) {
+//       console.error('Orders fetching error:', error);
+//     }
+//   }, [driverId, BASEURL]);
+
+//   useEffect(() => {
+//     fetchOrders();
+//     fetchDriverAvailability();
+//   }, [fetchOrders, fetchDriverAvailability]);
+
+//   const handleConfirm = async (orderId: number, driverId: number) => {
+//     try {
+//       const response = await fetch(`${BASEURL}/api/assignment/confirm-pickup`, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ orderId, driverId }),
+//       });
+
+//       if (response.ok) {
+//         setIsAvailable(!isAvailable);
+//         alert(`Order #${orderId} is now yours, lets go!`);
+//         fetchOrders();
+//       } else {
+//         const errorData = await response.json();
+//         console.error('Error:', errorData);
+//         alert(`Failed to confirm Order #${orderId}`);
+//       }
+//     } catch (error) {
+//       console.error('Confirmation error:', error);
+//       alert(`An error occurred while confirming Order #${orderId}`);
+//     }
+//   };
+
+//   return (
+//     <div className="flex flex-col text-gray-800 items-center p-4">
+//       {orders.length > 0 && isAvailable === true ? (
+//         <div className="flex flex-col gap-4">
+//           {orders.map((order) => (
+//             <div
+//               key={order.orderId}
+//               className="rounded-xl min-w-80 text-center py-2 bg-white border-2 border-blue-400 shadow-md"
+//             >
+//               <h1 className="text-lg font-bold mb-4">Order #{order.orderId}</h1>
+//               <h1 className="text-md font-semibold">Customer Address:</h1>
+//               <p>{order.customerAddress?.detailAddress}</p>
+//               <h1 className="text-md font-semibold">Pickup Date:</h1>
+//               <p>
+//                 {new Date(order.pickupDate).toLocaleDateString()} |{' '}
+//                 {order.pickupTime}
+//               </p>
+//               <Button
+//                 className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
+//                 onClick={() =>
+//                   driverId !== null && handleConfirm(order.orderId, driverId)
+//                 }
+//               >
+//                 Confirm
+//               </Button>
+//             </div>
+//           ))}
+//         </div>
+//       ) : (
+//         <p>No orders available for pick-up.</p>
+//       )}
+//     </div>
+//   );
+// }
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -7,44 +129,65 @@ import { toast } from 'react-toastify';
 
 export default function GetPickupPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [driverId, setDriverId] = useState<number | null>(null); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number | null>(null); // Replace with actual outletAdminId
-  const [isAvailable, setIsAvailable] = useState<boolean>(true); // Replace with actual outletAdminId
+  const [driverId, setDriverId] = useState<number | null>(null);
+  const [outletId, setOutletId] = useState<number | null>(null);
+  const [isAvailable, setIsAvailable] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const driver = useAppSelector((state) => state.driver)
+  const driver = useAppSelector((state) => state.driver);
 
   useEffect(() => {
     if (driver) {
-      setDriverId(driver.driverId)
-      setOutletId(driver.employee?.outletId)
+      setDriverId(driver.driverId);
+      setOutletId(driver.employee?.outletId);
     }
-  }, [driver])
+  }, [driver]);
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
   const fetchOrders = useCallback(async () => {
     try {
+      if (!outletId) return; // Skip if outletId is not set
       const response = await fetch(
         `${BASEURL}/api/assignment/get-pickup/${outletId}`,
       );
       if (response.ok) {
         const data = await response.json();
         setOrders(data);
-        if(data.length > 0) {
-          toast.success('Message: New Request PickUp')
+        if (data.length > 0) {
+          toast.success('Message: New Request PickUp');
         }
       }
-      console.log('error')
     } catch (error) {
       console.error('Orders fetching error:', error);
     }
   }, [outletId, BASEURL]);
 
-
+  const fetchDriverAvailability = useCallback(async () => {
+    try {
+      if (!driverId) return; // Skip if driverId is not set
+      const response = await fetch(
+        `${BASEURL}/api/assignment/driver-availability/${driverId}`,
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setIsAvailable(data.isAvailable);
+      }
+    } catch (error) {
+      console.error('Driver availability fetching error:', error);
+    }
+  }, [driverId, BASEURL]);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    const fetchData = async () => {
+      if (driverId === null || outletId === null) return;
+      setLoading(true); // Start loading
+      await Promise.all([fetchOrders(), fetchDriverAvailability()]);
+      setLoading(false); // Stop loading
+    };
+
+    fetchData();
+  }, [fetchOrders, fetchDriverAvailability, driverId, outletId]);
 
   const handleConfirm = async (orderId: number, driverId: number) => {
     try {
@@ -57,9 +200,9 @@ export default function GetPickupPage() {
       });
 
       if (response.ok) {
-        setIsAvailable(!isAvailable);
-        alert(`Order #${orderId} is now yours, lets go!`);
-        fetchOrders();
+        setIsAvailable(false); // Assume driver is now unavailable
+        alert(`Order #${orderId} is now yours, let's go!`);
+        fetchOrders(); // Refresh the orders
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
@@ -71,9 +214,13 @@ export default function GetPickupPage() {
     }
   };
 
+  if (loading || driverId === null || outletId === null) {
+    return <p>Loading...</p>; // Display loading state until ready
+  }
+
   return (
     <div className="flex flex-col text-gray-800 items-center p-4">
-      {orders.length > 0 && isAvailable === true ? (
+      {orders.length > 0 && isAvailable ? (
         <div className="flex flex-col gap-4">
           {orders.map((order) => (
             <div
@@ -90,7 +237,9 @@ export default function GetPickupPage() {
               </p>
               <Button
                 className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                onClick={() => driverId !== null && handleConfirm(order.orderId, driverId)}
+                onClick={() =>
+                  driverId !== null && handleConfirm(order.orderId, driverId)
+                }
               >
                 Confirm
               </Button>

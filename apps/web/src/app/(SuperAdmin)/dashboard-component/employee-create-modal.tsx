@@ -68,6 +68,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
           <input
             type="text"
             name="email"
+            defaultValue={''}
             value={formik.values.email}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -84,6 +85,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
           <input
             type="text"
             name="password"
+            defaultValue={''}
             value={formik.values.password}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -100,6 +102,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
           <input
             type="text"
             name="fullName"
+            defaultValue={''}
             value={formik.values.fullName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}

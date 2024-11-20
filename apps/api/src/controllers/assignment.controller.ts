@@ -189,6 +189,9 @@ export class AssignmentController {
         where: {
           outletId: parseInt(outletId),
           status: 'menungguPenjemputanDriver',
+          drivers: {
+            none: {}, // menampilkan order yang belum diambil driver
+          },
         },
         include: {
           customerAddress: { select: { detailAddress: true } },
@@ -331,7 +334,9 @@ export class AssignmentController {
         }),
       ]);
       return res.status(200).json({ message: 'Laundry arrived at outlet' });
-    } catch (error) { }
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to complete pickup' });
+    }
   }
 
   async completeDelivery(req: Request, res: Response) {
@@ -342,7 +347,21 @@ export class AssignmentController {
         data: { isAvailable: true },
       });
       return res.status(200).json({ message: 'Delivered to customer' });
-    } catch (error) { }
+    } catch (error) {
+      res.status(500).json({ error: 'Delivery completion failed' });
+    }
+  }
+
+  async getDriverAvailability(req: Request, res: Response) {
+    const { driverId } = req.params;
+    try {
+      const data = await prisma.driver.findUnique({
+        where: { driverId: parseInt(driverId) },
+      });
+      return res.status(200).send(data);
+    } catch (error) {
+      res.status(500).json({ error: 'GET driver availability failed' });
+    }
   }
 
   // WORKER SECTION
@@ -477,8 +496,8 @@ export class AssignmentController {
         where: {
           driverId: parseInt(driverId),
           OR: [
-            { order: { status: 'laundrySampaiOutlet' } },  // Completed pickup status
-            { order: { status: 'selesai' } }, 
+            { order: { status: 'laundrySampaiOutlet' } }, // Completed pickup status
+            { order: { status: 'selesai' } },
           ],
         },
         include: {
@@ -501,14 +520,13 @@ export class AssignmentController {
           },
         },
       });
-  
+
       res.status(200).json(jobHistory);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to fetch driver job history' });
     }
   }
-  
 
   // OUTLET ADMIN JOB HISTORY
   async getOutletAdminJobHistory(req: Request, res: Response) {
@@ -532,11 +550,13 @@ export class AssignmentController {
           createdAt: 'desc', // To get the most recent jobs first
         },
       });
-  
+
       res.status(200).json(jobHistory);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Failed to fetch outlet admin job history' });
+      res
+        .status(500)
+        .json({ error: 'Failed to fetch outlet admin job history' });
     }
   }
 
@@ -555,15 +575,14 @@ export class AssignmentController {
               customer: {
                 select: { fullName: true },
               },
-  
             },
           },
-          worker : {
+          worker: {
             select: {
               station: true,
-              workerId: true
-            }
-          }
+              workerId: true,
+            },
+          },
         },
         orderBy: {
           createdAt: 'desc', // To get the most recent jobs first

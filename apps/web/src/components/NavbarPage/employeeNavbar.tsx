@@ -8,6 +8,7 @@ import { useAppSelector } from '@/redux/hooks';
 import { driverLogoutAction } from '@/redux/slice/driverSlice';
 import { outletAdminLogoutAction } from '@/redux/slice/outletAdminSlice';
 import { useRouter } from 'next/navigation';
+import { superAdminLogoutAction } from '@/redux/slice/superAdminSlice';
 
 export default function EmployeeNavbarPage() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function EmployeeNavbarPage() {
       if (worker) dispatch(workerLogoutAction());
       if (driver) dispatch(driverLogoutAction());
       if (outletAdmin) dispatch(outletAdminLogoutAction());
-      if (superAdmin) dispatch(outletAdminLogoutAction());
+      if (superAdmin) dispatch(superAdminLogoutAction());
     }
     router.push('/employeeLogin');
   };
