@@ -13,9 +13,7 @@ const WorkstationLayout = ({
   onPickup,
   workerTask,
   driverHistory,
-  outletAdminHistory,
   workerHistory,
-  attendance,
 }: {
   orderConfirmation: React.ReactNode;
   itemInput: React.ReactNode;
@@ -25,9 +23,7 @@ const WorkstationLayout = ({
   onPickup: React.ReactNode;
   workerTask: React.ReactNode;
   driverHistory: React.ReactNode;
-  outletAdminHistory: React.ReactNode;
   workerHistory: React.ReactNode;
-  attendance: React.ReactNode;
 }) => {
   const worker = useAppSelector((state) => state.worker);
   const driver = useAppSelector((state) => state.driver);
@@ -55,10 +51,6 @@ const WorkstationLayout = ({
             Bypass Request
           </h1>
           {bypassRequest}
-        </div>
-        <div className="border-y-2 border-gray-400 p-4 shadow-lg">
-          <h1 className="text-center font-bold text-2xl mb-8">History</h1>
-          {outletAdminHistory}
         </div>
       </div>
     );

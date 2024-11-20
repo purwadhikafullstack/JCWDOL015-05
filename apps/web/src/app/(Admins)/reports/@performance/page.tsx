@@ -21,16 +21,22 @@ interface OrderCountData {
 }
 
 const EmployeePerformanceReport = () => {
+  const superAdmin = useAppSelector((state) => state.superAdmin);
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
+  const loggedInOutletId = outletAdmin.employee?.outletId;
+
   const [chartData, setChartData] = useState<OrderCountData[]>([]);
   const [uniqueDates, setUniqueDates] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [rangeType, setRangeType] = useState<string>('daily');
-  const [outletId, setOutletId] = useState<string>('');
+  const [outletId, setOutletId] = useState<string>(
+    outletAdmin.employee?.role === 'outletAdmin' && loggedInOutletId
+      ? loggedInOutletId.toString()
+      : '',
+  );
   const [outlets, setOutlets] = useState<Outlets[]>([]);
   const [employeeType, setEmployeeType] = useState<string>('worker');
-
-  const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -75,9 +81,16 @@ const EmployeePerformanceReport = () => {
   }, [startDate, endDate, rangeType, outletId, BASEURL, employeeType]);
 
   useEffect(() => {
-    fetchData();
+    // Set initial outletId based on the logged-in user
+    if (outletAdmin && loggedInOutletId) {
+      setOutletId(loggedInOutletId.toString());
+    }
     fetchOutlets();
-  }, [fetchData, fetchOutlets]);
+  }, [outletAdmin, loggedInOutletId, fetchOutlets]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -125,19 +138,20 @@ const EmployeePerformanceReport = () => {
 
       <div className="flex flex-wrap gap-4 mb-4">
         <div className="md: flex flex-wrap gap-4">
-          <select
-            value={outletId}
-            onChange={(e) => setOutletId(e.target.value)}
-            className="border p-2 rounded bg-white"
-          >
-            <option value="">All Outlets</option>
-            {outlets.map((outlet) => (
-              <option key={outlet.outletId} value={outlet.outletId}>
-                {outlet.name}
-              </option>
-            ))}
-          </select>
-
+          {superAdmin.role === 'superAdmin' && (
+            <select
+              value={outletId}
+              onChange={(e) => setOutletId(e.target.value)}
+              className="border p-2 rounded bg-white"
+            >
+              <option value="">All Outlets</option>
+              {outlets.map((outlet) => (
+                <option key={outlet.outletId} value={outlet.outletId}>
+                  {outlet.name}
+                </option>
+              ))}
+            </select>
+          )}
           <select
             className="border p-2 rounded bg-white"
             value={employeeType}

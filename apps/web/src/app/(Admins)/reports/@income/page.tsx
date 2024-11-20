@@ -17,14 +17,26 @@ interface IncomeData {
 }
 
 const IncomeChartPage = () => {
+  const superAdmin = useAppSelector((state) => state.superAdmin);
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
+  const loggedInOutletId = outletAdmin.employee?.outletId;
+
   const [incomeData, setIncomeData] = useState<IncomeData[]>([]);
   const [rangeType, setRangeType] = useState<string>('daily');
-  const [outletId, setOutletId] = useState<string>('');
+  const [outletId, setOutletId] = useState<string>(
+    outletAdmin.employee?.role === 'outletAdmin' && loggedInOutletId
+      ? loggedInOutletId.toString()
+      : '',
+  );
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [outlets, setOutlets] = useState<Outlets[]>([]);
 
-  const outletAdmin = useAppSelector((state) => state.outletAdmin);
+  useEffect(() => {
+    if (outletAdmin && loggedInOutletId) {
+      setOutletId(loggedInOutletId.toString());
+    }
+  }, [outletAdmin, loggedInOutletId]);
 
   const fetchOulets = async () => {
     try {
@@ -131,19 +143,20 @@ const IncomeChartPage = () => {
         Income Report
       </h1>
       <div className="flex flex-wrap gap-4 mb-4">
-        <Select
-          value={outletId}
-          onChange={(e) => setOutletId(e.target.value)}
-          className="border p-2 rounded bg-white"
-        >
-          <Option value="">All Outlets</Option>
-          {outlets.map((outlet) => (
-            <option key={outlet.outletId} value={outlet.outletId}>
-              {outlet.name}
-            </option>
-          ))}
-        </Select>
-
+        {superAdmin.role === 'superAdmin' && (
+          <Select
+            value={outletId}
+            onChange={(e) => setOutletId(e.target.value)}
+            className="border p-2 rounded bg-white"
+          >
+            <Option value="">All Outlets</Option>
+            {outlets.map((outlet) => (
+              <option key={outlet.outletId} value={outlet.outletId}>
+                {outlet.name}
+              </option>
+            ))}
+          </Select>
+        )}
         <Select
           value={rangeType}
           onChange={(e) => setRangeType(e.target.value)}
