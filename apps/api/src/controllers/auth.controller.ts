@@ -95,6 +95,7 @@ export class AuthController {
       let worker
       let driver
       let outletAdmin
+      let superAdmin
       if (!role) {
         const checkEmail = await prisma.customer.findUnique({
           where: { email: email}
@@ -138,6 +139,10 @@ export class AuthController {
               employee: true
             }
           })
+        } else if (employeeRole === 'superAdmin') {
+          superAdmin = await prisma.employee.findUnique({
+            where : {employeeId: checkEmployee?.employeeId! },
+          })
         }
 
         const isValidPassEmp = await compare(password, checkEmployee?.password!)
@@ -157,7 +162,8 @@ export class AuthController {
         },
         worker : worker,
         driver: driver,
-        outletAdmin: outletAdmin
+        outletAdmin: outletAdmin,
+        superAdmin: superAdmin,
       })
     } catch (err) {
       res.status(400).send({

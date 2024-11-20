@@ -1,4 +1,3 @@
-
 import { IOutletAdminData } from "@/type/worker";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 

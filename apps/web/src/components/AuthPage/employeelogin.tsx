@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { workerLoginAction } from "@/redux/slice/workerSlice";
 import { driverLoginAction } from "@/redux/slice/driverSlice";
 import { outletAdminLoginAction } from "@/redux/slice/outletAdminSlice";
+import { superAdminLoginAction } from "@/redux/slice/superAdminSlice";
 
 const EmployeeLoginSchema = yup.object().shape({
   email: yup.string().email().required(),
@@ -29,9 +30,11 @@ export default function EmployeeLoginPage() {
   const mutation = useMutation({
     mutationFn: async (data: IEmployeeLogin) => await employeeLogin(data),
     onSuccess: (data) => {
-      const { result, ok, worker, driver, outletAdmin } = data;
+      const { result, ok, worker, driver, outletAdmin, superAdmin } = data;
       if (!ok) throw result.msg;
       createToken(result.user.token);
+      console.log(data.employee)
+      
 
       toast.success(result.msg);
 
@@ -46,6 +49,10 @@ export default function EmployeeLoginPage() {
       if (outletAdmin) {
         dispatch(outletAdminLoginAction(result.outletAdmin));
         router.push('/workstation');
+      } 
+      if (data.employee.role === 'superAdmin') {
+        dispatch(superAdminLoginAction(data.employee))
+        router.push('/dashboard');
       }
     },
     onError: (err) => {
@@ -71,7 +78,7 @@ export default function EmployeeLoginPage() {
     formik.setFieldValue('role', value);
   };
 
-  const listrole = ['outletAdmin', 'worker', 'driver'];
+  const listrole = ['outletAdmin', 'worker', 'driver', 'superAdmin'];
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-8">
@@ -141,3 +148,5 @@ export default function EmployeeLoginPage() {
     </section>
   );
 }
+
+
