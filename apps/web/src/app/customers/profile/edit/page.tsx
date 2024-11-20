@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { deleteToken } from '@/lib/server';
 import { useAppSelector } from '@/redux/hooks';
-import { logoutAction } from '@/redux/slice/customerSlice';
+import { logoutAction, updateAction } from '@/redux/slice/customerSlice';
 import {
   changeEmail,
   editProfile,
@@ -40,7 +40,9 @@ const EditProfile = () => {
   const mutation = useMutation({
     mutationFn: async (data: IUserEdit) => await editProfile(data),
     onSuccess: (data) => {
-      toast.success(data.result);
+      dispatch(updateAction(data.result.data))
+      // console.log(data.result)
+      toast.success(data.result.message);
       router.push('/customers/profile');
     },
     onError: (err) => {
@@ -86,7 +88,6 @@ const EditProfile = () => {
     if (!ok) throw result.msg;
     setData(data);
     setPreviewUrl(data.avatar || null);
-    // Populate specific fields without overriding Formik values
     formik.setFieldValue('fullName', data.fullName);
     changeEmailFormik.setFieldValue('email', data.email)
   };

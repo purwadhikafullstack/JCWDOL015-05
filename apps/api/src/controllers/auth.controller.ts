@@ -365,6 +365,7 @@ export class AuthController {
       })
       res.status(200).send({
         status: 'ok',
+        message: "Success Edit Data",
         data: newData
       })
     } catch (err) {

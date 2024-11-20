@@ -44,7 +44,6 @@ const Profile = () => {
         customer.customerId,
       );
       if (!ok) throw result.msg;
-      console.log(orderData);
       return orderData;
     },
     onSuccess: (orderData) => {
@@ -66,7 +65,6 @@ const Profile = () => {
       toast.error(err?.message)
     }
   }) 
-  console.log(addresses)
   useEffect(() => {
     // getData()
     userData.mutate()
