@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { Select, Option } from '@/components/ui/select-report';
 import { ApexOptions } from 'apexcharts';
 import { useAppSelector } from '@/redux/hooks';
+import { Label } from '@/components/ui/label';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -129,11 +130,11 @@ const IncomeChartPage = () => {
       <h1 className="text-center text-2xl font-bold mb-4 text-white">
         Income Report
       </h1>
-      <div className="flex space-x-4">
+      <div className="flex flex-wrap gap-4 mb-4">
         <Select
           value={outletId}
           onChange={(e) => setOutletId(e.target.value)}
-          className="border p-2 rounded bg-white h-11"
+          className="border p-2 rounded bg-white"
         >
           <Option value="">All Outlets</Option>
           {outlets.map((outlet) => (
@@ -146,7 +147,7 @@ const IncomeChartPage = () => {
         <Select
           value={rangeType}
           onChange={(e) => setRangeType(e.target.value)}
-          className="mb-4 border p-2 rounded bg-white"
+          className="border p-2 rounded bg-white"
         >
           <Option value="daily">Daily</Option>
           <Option value="monthly">Monthly</Option>
@@ -155,18 +156,24 @@ const IncomeChartPage = () => {
 
         {rangeType === 'daily' && (
           <>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="mb-4 border p-2 rounded bg-white"
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="mb-4 border p-2 rounded bg-white"
-            />
+            <div className=" flex flex-col">
+              <Label>from: </Label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="border p-2 rounded bg-white"
+              />
+            </div>
+            <div className="flex flex-col">
+              <Label>to: </Label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="border p-2 rounded bg-white"
+              />
+            </div>
           </>
         )}
       </div>

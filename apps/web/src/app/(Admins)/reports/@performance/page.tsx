@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { ApexOptions } from 'apexcharts';
 import { useAppSelector } from '@/redux/hooks';
+import { Label } from '@/components/ui/label';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), {
   ssr: false,
@@ -122,53 +123,62 @@ const EmployeePerformanceReport = () => {
         Employee Performance
       </h1>
 
-      <div className="flex space-x-4 mb-4">
-        <select
-          value={outletId}
-          onChange={(e) => setOutletId(e.target.value)}
-          className="border p-2 rounded bg-white"
-        >
-          <option value="">All Outlets</option>
-          {outlets.map((outlet) => (
-            <option key={outlet.outletId} value={outlet.outletId}>
-              {outlet.name}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-wrap gap-4 mb-4">
+        <div className="md: flex flex-wrap gap-4">
+          <select
+            value={outletId}
+            onChange={(e) => setOutletId(e.target.value)}
+            className="border p-2 rounded bg-white"
+          >
+            <option value="">All Outlets</option>
+            {outlets.map((outlet) => (
+              <option key={outlet.outletId} value={outlet.outletId}>
+                {outlet.name}
+              </option>
+            ))}
+          </select>
 
-        <select
-          className="border p-2 rounded bg-white"
-          value={employeeType}
-          onChange={(e) => setEmployeeType(e.target.value)}
-        >
-          <option value="worker">Worker</option>
-          <option value="driver">Driver</option>
-        </select>
+          <select
+            className="border p-2 rounded bg-white"
+            value={employeeType}
+            onChange={(e) => setEmployeeType(e.target.value)}
+          >
+            <option value="worker">Worker</option>
+            <option value="driver">Driver</option>
+          </select>
 
-        <select
-          value={rangeType}
-          onChange={(e) => setRangeType(e.target.value)}
-          className="border p-2 rounded bg-white"
-        >
-          <option value="daily">Daily</option>
-          <option value="monthly">Monthly</option>
-          <option value="annual">Annual</option>
-        </select>
-
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border p-2 rounded bg-white"
-          placeholder="Start Date"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="border p-2 rounded bg-white"
-          placeholder="End Date"
-        />
+          <select
+            value={rangeType}
+            onChange={(e) => setRangeType(e.target.value)}
+            className="border p-2 rounded bg-white"
+          >
+            <option value="daily">Daily</option>
+            <option value="monthly">Monthly</option>
+            <option value="annual">Annual</option>
+          </select>
+        </div>
+        <div className="flex gap-4">
+          <div className=" flex flex-col">
+            <Label>from: </Label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="border p-2 rounded bg-white"
+              placeholder="Start Date"
+            />
+          </div>
+          <div className=" flex flex-col">
+            <Label>to: </Label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border p-2 rounded bg-white"
+              placeholder="End Date"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="bg-white p-4 rounded shadow">

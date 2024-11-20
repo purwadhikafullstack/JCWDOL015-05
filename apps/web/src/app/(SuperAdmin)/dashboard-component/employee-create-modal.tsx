@@ -28,7 +28,11 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
     password: Yup.string().required('Password is required'),
     fullName: Yup.string().required('Full Name is required'),
     role: Yup.string().required('Role is required'),
-    outletId: Yup.number().required('Outlet ID is required'),
+    outletId: Yup.number()
+      .nullable()
+      .transform((_, val) => (val === '' ? null : val)) // Allow null values
+      .positive('Outlet ID must be a positive number')
+      .integer('Outlet ID must be an integer'),
     station: Yup.string().nullable(),
   });
 
@@ -155,7 +159,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
             type="number"
             name="outletId"
             min={1}
-            value={formik.values.outletId}
+            value={formik.values.outletId || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="w-full border rounded p-2 mb-2 bg-gray-200"

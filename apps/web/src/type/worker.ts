@@ -39,3 +39,10 @@ export type IOutletAdminData = {
     station: string
 
 }
+
+export type ISuperAdminData = {
+    employeeId: number,
+    fullName: string,
+    role: string
+
+}

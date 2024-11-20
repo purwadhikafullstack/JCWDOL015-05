@@ -43,9 +43,10 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
     fullName: Yup.string().required('Full name is required'),
     role: Yup.string().required('Role is required'),
     outletId: Yup.number()
-      .required('Outlet ID is required')
-      .positive()
-      .integer(),
+      .nullable()
+      .transform((_, val) => (val === '' ? null : val)) // Allow null values
+      .positive('Outlet ID must be a positive number')
+      .integer('Outlet ID must be an integer'),
     station: Yup.string().nullable(),
   });
 
@@ -172,7 +173,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
           <input
             type="number"
             name="outletId"
-            value={formik.values.outletId!}
+            value={formik.values.outletId || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="w-full border rounded p-2 mb-2 bg-gray-200"

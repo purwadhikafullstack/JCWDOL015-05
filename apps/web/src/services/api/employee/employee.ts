@@ -31,6 +31,9 @@ export const employeeLogin = async (data: IEmployeeLogin) => {
     const worker = result.worker?.employee
       ? JSON.stringify(result.worker.employee)
       : null;
+    const superAdmin = result.employee
+      ? JSON.stringify(result.employee)
+      : null;
 
     return {
       result,
@@ -39,6 +42,7 @@ export const employeeLogin = async (data: IEmployeeLogin) => {
       worker,
       driver,
       outletAdmin,
+      superAdmin
     };
   } catch (error) {
     console.error("Error during login:", error);
