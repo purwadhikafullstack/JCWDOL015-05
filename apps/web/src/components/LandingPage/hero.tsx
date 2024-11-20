@@ -46,7 +46,7 @@ export default function Hero() {
         >
           <CarouselContent>
             {heroImages.map((img, index) => (
-              <CarouselItem key={index} className="relative w-full">
+              <CarouselItem key={index} className="relative hidden w-full md:block">
                 <div className="w-full h-screen">
                   <Image
                     src={img}
@@ -63,13 +63,13 @@ export default function Hero() {
         {/* Text content */}
         <div className="relative flex flex-col items-center justify-center h-full text-center text-white">
           <h1
-            className="absolute font-bold opacity-0 text-7xl top-36"
+            className="absolute font-bold opacity-0 text-4xl top-12 lg: top-40 lg:text-7xl"
             id="hero"
           >
             WASH NOW or Naked Later?
           </h1>
           <h2
-            className="absolute text-5xl font-bold opacity-0 right-72 top-56"
+            className="absolute text-2xl lg:text-5xl font-bold top-60 opacity-0 right-12 lg:right-72 lg:top-60"
             id="hero"
           >
             Your Choice
@@ -77,10 +77,10 @@ export default function Hero() {
         </div>
       </div>
       <div
-        className="flex flex-col items-center justify-center w-full h-20 opacity-0"
+        className="flex flex-col items-center justify-center w-full h-14 md:h-20 lg:h-20 opacity-0"
         id="card"
       >
-        <div className="w-48 -translate-y-32 rounded-lg h-60 bg-white border-2 border-steel-blue border-solid text-steel-blue flex flex-col items-center duration-300 justify-center cursor-pointer  hover:bg-steel-blue hover:text-white">
+        <div className="w-48 h-60 -translate-y-32 rounded-lg  bg-white border-2 border-steel-blue border-solid text-steel-blue flex flex-col items-center duration-300 justify-center cursor-pointer  hover:bg-steel-blue hover:text-white">
           {token ? (
             <Link href={'/service'}>
               <p className="text-2xl font-semibold">Order Now</p>
