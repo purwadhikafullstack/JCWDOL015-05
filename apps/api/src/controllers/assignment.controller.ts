@@ -240,10 +240,13 @@ export class AssignmentController {
           customer: true,
           items: true,
           customerAddress: { select: { detailAddress: true } },
+          drivers: true,
         },
       });
-
-      res.json(orders);
+      const filteredOrders = orders.filter(
+        (order) => order.drivers.length === 1,
+      ); // Filter orders where drivers.length === 1
+      res.json(filteredOrders);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to fetch orders' });

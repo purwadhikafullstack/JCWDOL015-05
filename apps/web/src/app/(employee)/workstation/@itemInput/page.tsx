@@ -31,6 +31,8 @@ export default function ItemInputPage() {
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
   const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState<boolean>(true); // Added loading state
+
   useEffect(() => {
     if (outletAdmin) {
       setOutletAdminId(outletAdmin.outletAdminId);
@@ -38,6 +40,10 @@ export default function ItemInputPage() {
   }, [outletAdmin]);
 
   const fetchOrders = useCallback(async () => {
+    if (!outletAdminId) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/item-input/${outletAdminId}`,
@@ -71,6 +77,8 @@ export default function ItemInputPage() {
       setWeightsByOrder(initialWeightsByOrder);
     } catch (error) {
       console.error('Orders fetching error', error);
+    } finally {
+      setLoading(false);
     }
   }, [outletAdminId]);
 
@@ -185,6 +193,11 @@ export default function ItemInputPage() {
       }
     }
   };
+
+  // Delayed rendering
+  if (loading) {
+    return <p>Loading orders...</p>;
+  }
 
   return (
     <div className="flex flex-col text-gray-800 items-center p-4 gap-4">

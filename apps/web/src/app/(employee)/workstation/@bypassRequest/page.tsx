@@ -9,6 +9,7 @@ export default function BypassRequestPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
   const [outletId, setOutletId] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Added loading state
 
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
@@ -20,6 +21,10 @@ export default function BypassRequestPage() {
   }, [outletAdmin]);
 
   const fetchOrders = useCallback(async () => {
+    if (!outletId) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/bypass-request/${outletId}`,
@@ -29,6 +34,8 @@ export default function BypassRequestPage() {
       setOrders(data);
     } catch (error) {
       console.error('Orders fetching error:', error);
+    } finally {
+      setLoading(false);
     }
   }, [outletId]);
 
