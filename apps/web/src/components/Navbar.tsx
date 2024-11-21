@@ -2,10 +2,11 @@
 
 import { useAppSelector } from "@/redux/hooks";
 import { Role } from "@/type/role";
-import EmployeeNavbarPage from "./NavbarPage/employeeNavbar";
 import { CustomerNavbar } from "./NavbarPage/customerNavbar";
+import EmployeeNavbarPage from "./NavbarPage/employeeNavbar";
 import { getToken } from "@/lib/server";
 import { useEffect, useState } from "react";
+
 
 interface TokenData {
     customerId: number | undefined
@@ -31,20 +32,6 @@ export default function Navbar() {
     getTokenData()
     
   },[])
-  
-  // const { worker, driver, outletAdmin, customer } = useAppSelector((state) => ({
-  //   worker: state.worker,
-  //   driver: state.driver,
-  //   outletAdmin: state.outletAdmin,
-  //   customer: state.customer,
-  // }))
-  // if(customer && !token){
-  //   return <CustomerNavbar/>
-  // }
-  // if(driver || outletAdmin || worker) {
-  //   return <EmployeeNavbarPage/>
-  // }
- 
   if(roleUser == 'driver' || roleUser == 'outletAdmin' || roleUser == 'worker') {
     return <EmployeeNavbarPage/>
   } 

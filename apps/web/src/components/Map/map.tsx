@@ -26,6 +26,8 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { Card } from '../ui/card';
 import { useRouter } from 'next/navigation';
+import { handleCancel } from './action';
+import LocationForm from './Component/formLocation';
 
 export default function Map() {
   const mapContainerRef = useRef<any | null>(null);
@@ -33,8 +35,8 @@ export default function Map() {
   const [map, setMap] = useState<maplibregl.Map | null>(null);
   const [marker, setMarker] = useState<maplibregl.Marker | null>(null);
   const [coordinates, setCoordinates] = useState<{
-    lng: number;
-    lat: number;
+    lng: number | null
+    lat: number | null
   } | null>(null);
   const [mapState, setMapState] = useState<{
     lng: number;
@@ -79,12 +81,10 @@ export default function Map() {
       mapRef.current.off('click', mapClick);
     }
   }
- 
-
   const handleConfirm = () => {
     setShowDialog(false);
-    const lng = coordinates?.lng;
-    const lat = coordinates?.lat;
+    const lng = coordinates?.lng!;
+    const lat = coordinates?.lat!;
     formik.setFieldValue('longitude', lng);
     formik.setFieldValue('latitude', lat);
     if (lng !== undefined && lat !== undefined && marker === null) {
@@ -136,16 +136,7 @@ export default function Map() {
       console.log(err);
     },
   });
-  const handleCancel = () => {
-    formik.setFieldValue('longitude', null);
-    formik.setFieldValue('latitude', null);
-    if (marker !== null) {
-      marker?.remove();
-      setMarker(null);
-      setShowDialog(false);
-      setCoordinates(null);
-    }
-  };
+
   const handleShowMap = () => {
     if (!showMap) setShowMap(true);
   };
@@ -249,74 +240,18 @@ export default function Map() {
       <div className="">
         {
           <div className="mt-5 ">
-            <form onSubmit={formik.handleSubmit}>
-              <Label>Provinsi</Label>
-              <LocationSelect
-                name="province"
-                placeholder="Pilih Provinsi"
-                onValueChange={handleSelectProvinsi}
-                options={provinces.map((province) => ({
-                  label: province.province,
-                  value: province.province,
-                }))}
-              />
-              <Label>Kabupaten / Kota</Label>
-              <LocationSelect
-                name="city"
-                placeholder="Pilih Kabupaten atau Kota"
-                onValueChange={handleSelectCity}
-                disabled={selectedProvince === ''}
-                options={cities.map((city) => ({
-                  label: city.city,
-                  value: city.city,
-                }))}
-              />
-              <Label>Kecamatan</Label>
-              <LocationSelect
-                name="subdistrict"
-                placeholder="Pilih Kecamatan"
-                onValueChange={handleSelectSubdistric}
-                disabled={selectedCity === ''}
-                options={subdistricts.map((subdistrict) => ({
-                  label: subdistrict.subdistrict,
-                  value: subdistrict.subdistrict,
-                }))}
-              />
-              <Input
-                name="customerId"
-                value={customers.customerId}
-                defaultValue={customers.customerId}
-                onChange={formik.handleChange}
-                type="text"
-              />
-              <Label>Alamat Lengkap</Label>
-              <Input
-                name="detailAddress"
-                value={formik.values.detailAddress}
-                placeholder="alamat lengkap"
-                onChange={formik.handleChange}
-              />
-              <Input
-                name="longitude"
-                type="hidden"
-                value={formik.values.longitude}
-                onChange={formik.handleChange}
-              />
-              <Input
-                name="latitude"
-                type="hidden"
-                value={formik.values.latitude}
-                onChange={formik.handleChange}
-              />
-              <div>
-                <Button
-                  type="submit"
-                  className={`px-4 w-full mt-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${marker != null ? '' : 'hidden'}`}
-                >
-                  {sendDataMutation.isPending ? 'loading...' : 'Send Data'}
-                </Button>
-              </div>
-            </form>
+             <LocationForm
+              formik={formik}
+              provinces={provinces}
+              cities={cities}
+              subdistricts={subdistricts}
+              customers={customers}
+              handleSelectProvinsi={handleSelectProvinsi}
+              handleSelectCity={handleSelectCity}
+              handleSelectSubdistric={handleSelectSubdistric}
+              marker={marker}
+              sendDataMutation={sendDataMutation}
+            />
           </div>
         }
         {showDialog && (
@@ -337,7 +272,9 @@ export default function Map() {
                 Confirm
               </Button>
               <Button
-                onClick={handleCancel}
+                onClick={
+                  ()=>handleCancel({formik,marker,setMarker,setShowDialog,setCoordinates})
+                }
                 className={`w-full px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 ${marker != null ? '' : 'hidden'}`}
               >
                 {marker != null ? 'Delete' : 'Cancel'}

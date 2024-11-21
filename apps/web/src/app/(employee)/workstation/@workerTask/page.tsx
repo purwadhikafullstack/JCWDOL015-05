@@ -23,15 +23,15 @@ export default function WorkerTaskPage() {
   const [allChecked, setAllChecked] = useState(false);
   const [message, setMessage] = useState('');
 
-  const worker = useAppSelector((state) => state.worker)
+  const worker = useAppSelector((state) => state.worker);
 
   useEffect(() => {
-    if(worker) {
-      setWorkerId(worker.workerId)
-      setOutletId(worker.employee?.outletId)
-      setStation(worker.station)
+    if (worker) {
+      setWorkerId(worker.workerId);
+      setOutletId(worker.employee?.outletId);
+      setStation(worker.station);
     }
-  })
+  }, [worker]);
 
   const fetchTask = useCallback(async () => {
     try {
@@ -41,7 +41,7 @@ export default function WorkerTaskPage() {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-  
+
         // Only show toast if there's a new order
         if (data?.orderId) {
           toast.success('Message: New Order'); // Toast only when orderId is present
@@ -49,7 +49,7 @@ export default function WorkerTaskPage() {
         } else {
           setOrder(null); // Clear order if no new order is available
         }
-  
+
         if (data?.items) {
           setCheckedItems(new Array(data.items.length).fill(false));
         }

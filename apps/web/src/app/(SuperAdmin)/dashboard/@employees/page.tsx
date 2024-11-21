@@ -4,12 +4,12 @@ import {
   CreateButton,
   DeleteButton,
   UpdateButton,
-} from '@/components/ui/action-button';
+} from '@/components/ui/actionButton';
 import { useCallback, useEffect, useState } from 'react';
-import { createEmployee, UpdateEmployee } from '../lib/employee-services';
-import EmployeeUpdateModal from '../../dashboard-component/employee-update-modal';
-import DeleteModal from '../../dashboard-component/delete-modal';
-import EmployeeCreateModal from '../../dashboard-component/employee-create-modal';
+import { createEmployee, UpdateEmployee } from '../lib/employeeServices';
+import EmployeeUpdateModal from '../../components/employeeUpdateModal';
+import DeleteModal from '../../components/deleteModal';
+import EmployeeCreateModal from '../../components/employeeCreateModal';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 

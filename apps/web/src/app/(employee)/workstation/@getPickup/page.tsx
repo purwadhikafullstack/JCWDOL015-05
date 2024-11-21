@@ -4,47 +4,70 @@ import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function GetPickupPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [driverId, setDriverId] = useState<number | null>(null); // Replace with actual outletAdminId
-  const [outletId, setOutletId] = useState<number | null>(null); // Replace with actual outletAdminId
-  const [isAvailable, setIsAvailable] = useState<boolean>(true); // Replace with actual outletAdminId
+  const [driverId, setDriverId] = useState<number | null>(null);
+  const [outletId, setOutletId] = useState<number | null>(null);
+  const [isAvailable, setIsAvailable] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const driver = useAppSelector((state) => state.driver)
+  const driver = useAppSelector((state) => state.driver);
 
   useEffect(() => {
     if (driver) {
-      setDriverId(driver.driverId)
-      setOutletId(driver.employee?.outletId)
+      setDriverId(driver.driverId);
+      setOutletId(driver.employee?.outletId);
     }
-  }, [driver])
+  }, [driver]);
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
   const fetchOrders = useCallback(async () => {
     try {
+      if (!outletId) return; // Skip if outletId is not set
       const response = await fetch(
         `${BASEURL}/api/assignment/get-pickup/${outletId}`,
       );
       if (response.ok) {
         const data = await response.json();
         setOrders(data);
-        if(data.length > 0) {
-          toast.success('Message: New Request PickUp')
+        if (data.length > 0) {
+          toast.success('Message: New Request PickUp');
         }
       }
-      console.log('error')
     } catch (error) {
       console.error('Orders fetching error:', error);
     }
   }, [outletId, BASEURL]);
 
-
+  const fetchDriverAvailability = useCallback(async () => {
+    try {
+      if (!driverId) return; // Skip if driverId is not set
+      const response = await fetch(
+        `${BASEURL}/api/assignment/driver-availability/${driverId}`,
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setIsAvailable(data.isAvailable);
+      }
+    } catch (error) {
+      console.error('Driver availability fetching error:', error);
+    }
+  }, [driverId, BASEURL]);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    const fetchData = async () => {
+      if (driverId === null || outletId === null) return;
+      setLoading(true); // Start loading
+      await Promise.all([fetchOrders(), fetchDriverAvailability()]);
+      setLoading(false); // Stop loading
+    };
+
+    fetchData();
+  }, [fetchOrders, fetchDriverAvailability, driverId, outletId]);
 
   const handleConfirm = async (orderId: number, driverId: number) => {
     try {
@@ -57,9 +80,10 @@ export default function GetPickupPage() {
       });
 
       if (response.ok) {
-        setIsAvailable(!isAvailable);
-        alert(`Order #${orderId} is now yours, lets go!`);
-        fetchOrders();
+        setIsAvailable(false); // Assume driver is now unavailable
+        fetchOrders(); // Refresh the orders
+        alert(`Order #${orderId} is now yours, let's go!`);
+        router.push('/employee');
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
@@ -71,9 +95,13 @@ export default function GetPickupPage() {
     }
   };
 
+  if (loading || driverId === null || outletId === null) {
+    return <p>Loading...</p>; // Display loading state until ready
+  }
+
   return (
     <div className="flex flex-col text-gray-800 items-center p-4">
-      {orders.length > 0 && isAvailable === true ? (
+      {orders.length > 0 && isAvailable ? (
         <div className="flex flex-col gap-4">
           {orders.map((order) => (
             <div
@@ -90,7 +118,9 @@ export default function GetPickupPage() {
               </p>
               <Button
                 className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                onClick={() => driverId !== null && handleConfirm(order.orderId, driverId)}
+                onClick={() =>
+                  driverId !== null && handleConfirm(order.orderId, driverId)
+                }
               >
                 Confirm
               </Button>

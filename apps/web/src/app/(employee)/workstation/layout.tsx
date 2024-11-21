@@ -1,16 +1,8 @@
-'use client'
+'use client';
 import { useAppSelector } from '@/redux/hooks';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 
-interface history {
-  orderId: number,
-  workerId: number,
-  activity?: string,
-}
-
-export default function WorkstationLayout({
+const WorkstationLayout = ({
   orderConfirmation,
   itemInput,
   bypassRequest,
@@ -19,9 +11,7 @@ export default function WorkstationLayout({
   onPickup,
   workerTask,
   driverHistory,
-  outletAdminHistory,
   workerHistory,
-  attendance
 }: {
   orderConfirmation: React.ReactNode;
   itemInput: React.ReactNode;
@@ -31,19 +21,17 @@ export default function WorkstationLayout({
   onPickup: React.ReactNode;
   workerTask: React.ReactNode;
   driverHistory: React.ReactNode;
-  outletAdminHistory: React.ReactNode;
   workerHistory: React.ReactNode;
-  attendance: React.ReactNode
-}) 
-
-{
-  const worker = useAppSelector((state) => state.worker)
-  const driver = useAppSelector((state) => state.driver)
-  const outletAdmin = useAppSelector((state) => state.outletAdmin)
+}) => {
+  const worker = useAppSelector((state) => state.worker);
+  const driver = useAppSelector((state) => state.driver);
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
   if (outletAdmin.employee?.role === 'outletAdmin') {
     return (
       <div className="flex flex-col gap-4 py-5 min-h-screen text-gray-800 ">
-        <h1 className="text-center font-bold pb-5 text-3xl">Workstation <span className='text-[#1678F3]'>OutletAdmin</span></h1>
+        <h1 className="text-center font-bold pb-5 text-3xl">
+          Workstation <span className="text-[#1678F3]">Outlet Admin</span>
+        </h1>
         <div className="border-y-2 border-gray-400 p-4 shadow-lg">
           <h1 className="text-center font-bold text-2xl mb-8">
             Incoming Orders
@@ -57,21 +45,23 @@ export default function WorkstationLayout({
           {itemInput}
         </div>
         <div className="border-y-2 border-gray-400 p-4 shadow-lg">
-          <h1 className="text-center font-bold text-2xl mb-8">Bypass Request</h1>
+          <h1 className="text-center font-bold text-2xl mb-8">
+            Bypass Request
+          </h1>
           {bypassRequest}
-        </div>
-        <div className="border-y-2 border-gray-400 p-4 shadow-lg">
-          <h1 className="text-center font-bold text-2xl mb-8">History</h1>
-          {outletAdminHistory}
         </div>
       </div>
     );
   } else if (driver.employee?.role === 'driver') {
     return (
       <div className="flex flex-col gap-4 p-5 bg-white min-h-screen text-gray-800 ">
-        <h1 className="text-center font-bold pb-5 text-3xl">Workstation <span className='text-[#1678F3]'>Driver</span></h1>
+        <h1 className="text-center font-bold pb-5 text-3xl">
+          Workstation <span className="text-[#1678F3]">Driver</span>
+        </h1>
         <div className="border-y-2 border-gray-400 p-4 shadow-lg">
-          <h1 className="text-center font-bold text-2xl mb-8">Pickup Request</h1>
+          <h1 className="text-center font-bold text-2xl mb-8">
+            Pickup Request
+          </h1>
           {getPickup}
         </div>
         <div className="border-y-2 border-gray-400 p-4 shadow-lg">
@@ -86,8 +76,8 @@ export default function WorkstationLayout({
         </div>
         <div className="border-y-2 border-gray-400 p-4 shadow-lg">
           <h1 className="text-center font-bold text-2xl mb-8">History</h1>
-          <div className='flex justify-center items-center'>
-          {driverHistory}
+          <div className="flex justify-center items-center">
+            {driverHistory}
           </div>
         </div>
       </div>
@@ -95,7 +85,11 @@ export default function WorkstationLayout({
   } else if (worker.employee?.role === 'worker') {
     return (
       <div className="flex flex-col gap-4 p-5 bg-white min-h-screen text-gray-800 ">
-        <h1 className="text-center font-bold pb-5 text-3xl">Workstation <span className='text-[#1678F3]'>Worker</span><br /><span className='text-2xl'> Station: {worker.station}</span></h1>
+        <h1 className="text-center font-bold pb-5 text-3xl">
+          Workstation <span className="text-[#1678F3]">Worker</span>
+          <br />
+          <span className="text-2xl"> Station: {worker.station}</span>
+        </h1>
         <div className="border-y-2 border-gray-400 p-4 flex flex-col items-center shadow-lg">
           <h1 className="text-center font-bold text-2xl mb-8">Worker Task</h1>
           {workerTask}
@@ -107,6 +101,12 @@ export default function WorkstationLayout({
       </div>
     );
   } else {
-    return null;
+    return (
+      <div className="h-screen bg-white flex items-center justify-center">
+        <h1>Not authorized to access</h1>
+      </div>
+    );
   }
-}
+};
+
+export default WorkstationLayout;

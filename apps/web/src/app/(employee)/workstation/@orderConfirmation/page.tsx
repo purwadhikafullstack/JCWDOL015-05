@@ -9,33 +9,39 @@ const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
 export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletId, setOutletId] = useState<number | null>(null); 
-  const [outletAdminId, setOutletAdminId] = useState<number | null>(null); 
-  
-  const outletAdmin = useAppSelector((state) => state.outletAdmin)
+  const [outletId, setOutletId] = useState<number | null>(null);
+  const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Added loading state
+
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
   useEffect(() => {
-    if(outletAdmin) {
-      setOutletAdminId(outletAdmin.outletAdminId)
-      setOutletId(outletAdmin.employee?.outletId)
+    if (outletAdmin) {
+      setOutletAdminId(outletAdmin.outletAdminId);
+      setOutletId(outletAdmin.employee?.outletId);
     }
-  })
+  }, [outletAdmin]);
 
   const fetchOrders = useCallback(async () => {
+    if (!outletId) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/order-confirmation/${outletId}`,
       );
       if (response.ok) {
-
         const data = await response.json();
         setOrders(data);
-        if(data.length > 0) {
-          toast.success('Message: New Order Confirmation')
-        } 
+        if (data.length > 0) {
+          toast.success('Message: New Order Confirmation');
+        }
       }
     } catch (error) {
       console.error('Orders fetching error:', error);
+    } finally {
+      setLoading(false);
     }
   }, [outletId]);
 
@@ -69,6 +75,11 @@ export default function OrderConfirmationPage() {
       alert(`An error occurred while confirming Order #${orderId}`);
     }
   };
+
+  // Delayed rendering
+  if (loading) {
+    return <p>Loading orders...</p>;
+  }
 
   return (
     <div className="flex flex-col text-gray-800 items-center p-4">

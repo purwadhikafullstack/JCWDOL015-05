@@ -104,7 +104,7 @@ export class EmployeeController {
       if (role === 'worker') {
         await prisma.worker.create({
           data: {
-            station,
+            station: station || 'washing',
             employeeId: newEmployeeData.employeeId,
           },
         });
@@ -135,10 +135,11 @@ export class EmployeeController {
 
   updateEmployeeById = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { email, password, fullName, role, outletId, avatar, station } =
-      req.body;
+    const { email, password, fullName, role, outletId, station } = req.body;
 
     try {
+      const salt = await genSalt(10);
+      const hashedPassword = await hash(password, salt);
       // Fetch the existing employee with its role details
       const existingEmployee = await prisma.employee.findUnique({
         where: { employeeId: Number(id) },
@@ -214,11 +215,10 @@ export class EmployeeController {
         where: { employeeId: Number(id) },
         data: {
           email,
-          password,
+          password: hashedPassword,
           fullName,
           role,
           outletId,
-          avatar,
         },
       });
 

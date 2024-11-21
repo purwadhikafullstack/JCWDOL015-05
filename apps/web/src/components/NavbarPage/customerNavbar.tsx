@@ -11,6 +11,7 @@ import { deleteToken, getToken } from '@/lib/server';
 import { logoutAction } from '@/redux/slice/customerSlice';
 import defaultProfile from '@/assets/images.webp';
 import { toast } from 'react-toastify';
+import { MenuIcon } from 'lucide-react';
 
 export const CustomerNavbar = () => {
   const [token, setToken] = useState('');
@@ -40,41 +41,33 @@ export const CustomerNavbar = () => {
   return (
     <div className="relative flex items-center h-[55px] px-[45px] bg-[#fffaf0]">
       {/* Logo */}
-      <div className="absolute left-[45px]">
+      <div className="hidden absolute left-[45px] md:block lg:block">
         <Link href={'/'}>
           <Image src={logo} alt="logo" width={45} />
         </Link>
       </div>
       {/* Navbar items */}
-      <div className="flex-grow flex justify-center items-center gap-[45px] font-semibold text-[16px] text-black">
+      <div className="flex-grow hidden justify-center items-center gap-[45px] font-semibold text-[16px] text-black md:flex lg:flex">
         {token ? (
           <>
             <Link href={'/'}>
-              <div
-                className={`relative cursor-pointer ${pathname === '/' ? 'border-b-2 py-1 border-black' : ''}`}
-              >
+              <div className={`relative cursor-pointer ${pathname === '/' ? 'border-b-2 py-1 border-black' : ''}`}>
                 <Image src={home} alt="home" width={22} height={22} />
               </div>
             </Link>
 
             <Link href={'/service'}>
-              <h1
-                className={`relative cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/service' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`}
-              >
+              <h1 className={`relative cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/service' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`}>
                 Add Address
               </h1>
             </Link>
             <Link href={'/customers/pickup'}>
-              <h1
-                className={`relative cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/service' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`}
-              >
+              <h1 className={`relative cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/service' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`} >
                 Order Pickup
               </h1>
             </Link>
             <Link href={'/customers/profile'}>
-              <h1
-                className={`relative cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/my-order' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`}
-              >
+              <h1 className={`relative cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/my-order' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`} >
                 Profile
               </h1>
             </Link>
@@ -83,9 +76,9 @@ export const CustomerNavbar = () => {
           ''
         )}
       </div>
-
+      <div className='cursor-pointer'><MenuIcon /></div>
       {/* Login / Signup buttons */}
-      <div className="absolute right-[45px] flex font-bold text-[16px] text-white gap-[24px]">
+      <div className="hidden absolute right-[45px]  font-bold text-[16px] text-white gap-[24px] md:flex lg:flex">
         {token ? (
           <>
             <div
@@ -100,9 +93,7 @@ export const CustomerNavbar = () => {
                 height={44} // specify the height
               />
             </div>
-            <div
-              className={`absolute overflow-x-hidden p-3 space-y-3 bg-blue-500 rounded-md top-20 right-5 z-30 ${isOpen ? 'block' : 'hidden'}`}
-            >
+            <div className={`absolute overflow-x-hidden p-3 space-y-3 bg-blue-500 rounded-md top-20 right-5 z-30 ${isOpen ? 'block' : 'hidden'}`} >
               <div className="flex flex-row items-center gap-3">
                 <div className="">
                   <Image
@@ -124,7 +115,7 @@ export const CustomerNavbar = () => {
                 <Link href={'/customers/profile/edit'}>Setting</Link>
               </p>
               <p className="p-2 cursor-pointer hover:bg-white hover:text-black hover:rounded-md">
-                <Link href={'/profile'}>Profile</Link>
+                <Link href={'/customers/profile'}>Profile</Link>
               </p>
               <div className="border border-gray-200 border-b-1"></div>
               <p

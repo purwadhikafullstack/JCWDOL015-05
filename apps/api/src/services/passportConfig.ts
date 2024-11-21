@@ -48,35 +48,4 @@ passport.use(
 
 
 export default passport
-// passport.use(
-//   new FacebookStrategy(
-//     {
-//       clientID: process.env.FACEBOOK_CLIENT_ID!,
-//       clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-//       callbackURL: `http://localhost:3000/api/users/auth/facebook/callback`,
-//     },
-//     async (accessToken, refreshToken, profile, done) => {
-//       try {
-//         const customer = await prisma.customer.upsert({
-//           where : {email : profile.emails![0].value},
-//           update : {fullName : profile.name?.givenName},
-//           create : {
-//             email : profile.emails![0].value,
-//             fullName : profile.name?.givenName!,
-//             isVerified: true,
-//           }
-//         })
-//         const payload = {
-//           customerId : customer.customerId,
-//           role : customer.role
-//         }
-//         const token = sign(payload, process.env.JWT_SECRET!,{
-//           expiresIn : '1d'
-//         })
-//         return done (null, {customer, token})
-//       } catch (err) {
-//         done(err)
-//       }
-//     }
-//   ),
-// );
+

@@ -1,5 +1,6 @@
 import { ICustomerEditEmail, ICustomerLogin, ICustomerNewPass, ICustomerReg, ICustomersResetPass, ICustomerVerify, ISendEmailVerification, IUserEdit } from "@/type/customers";
-
+import  {auth, provider, signInWithPopup} from '@/firebase/firebaseConfig'
+import { GoogleAuthProvider } from "firebase/auth";
 const BASEURL = process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000'
 export const customerReg = async (data: ICustomerReg) => {
   const res = await fetch(`${BASEURL}/api/users/register`, {
@@ -44,10 +45,25 @@ export const customerVerify = async (data: ICustomerVerify, token: any) => {
 
 export const googleLogin = async () => {
   try {
-    window.location.href = `${BASEURL}/api/users/auth/google
-    `
-  } catch (err) {
-    console.error("Failed to fetch:", err);
+    const result = await signInWithPopup(auth, provider);
+
+    const idToken = await result.user.getIdToken();
+    if(!idToken ) throw new Error('id token not found')
+
+    const res = await fetch(`${BASEURL}/api/users/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: idToken }),
+    });
+    console.log(res)
+    if (!res.ok) {
+      throw new Error('Failed to authenticate with backend');
+    }
+    const data = await res.json();
+    console.log('Login successful:', data);
+    return {ok: res.ok, result: data, data: data.data}
+  } catch (error) {
+    console.error('Google login failed:', error);
   }
 }
 export const resetPassword = async (data: ICustomersResetPass) => {
@@ -73,18 +89,7 @@ export const changePassword = async (data: ICustomerNewPass, token: any) => {
   console.log(result)
   return { result, ok: res.ok }
 }
-// export const editProfile = async(data: IUserEdit) =>{
-//   const url = `${BASEURL}/api/customers/edit`
-//   const res = await fetch(url, {
-//     method: "PATCH",
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(data)
-//   })
-//   const result = await res.json()
-//   return {result, ok: res.ok}
-// }
+
 export const editProfile = async (data: IUserEdit) => {
   const url = `${BASEURL}/api/users/edit`;
   const formData = new FormData();
