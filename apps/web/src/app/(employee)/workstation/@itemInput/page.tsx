@@ -1,5 +1,5 @@
 'use client';
-import { DeleteButton } from '@/components/ui/action-button';
+import { DeleteButton } from '@/components/ui/actionButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppSelector } from '@/redux/hooks';

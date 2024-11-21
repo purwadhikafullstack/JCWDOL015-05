@@ -1,8 +1,6 @@
 'use client';
 import { useAppSelector } from '@/redux/hooks';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 
 const WorkstationLayout = ({
   orderConfirmation,
@@ -32,7 +30,7 @@ const WorkstationLayout = ({
     return (
       <div className="flex flex-col gap-4 py-5 min-h-screen text-gray-800 ">
         <h1 className="text-center font-bold pb-5 text-3xl">
-          Workstation <span className="text-[#1678F3]">OutletAdmin</span>
+          Workstation <span className="text-[#1678F3]">Outlet Admin</span>
         </h1>
         <div className="border-y-2 border-gray-400 p-4 shadow-lg">
           <h1 className="text-center font-bold text-2xl mb-8">

@@ -4,12 +4,12 @@ import {
   CreateButton,
   DeleteButton,
   UpdateButton,
-} from '@/components/ui/action-button';
+} from '@/components/ui/actionButton';
 import { useEffect, useState, useCallback } from 'react';
-import DeleteModal from '../../dashboard-component/delete-modal';
-import { UpdateOutlet, createOutlet } from '../lib/outlet-services';
-import OutletUpdateModal from '../../dashboard-component/outlet-update-modal';
-import OutletCreateModal from '../../dashboard-component/outlet-create-modal';
+import DeleteModal from '../../components/deleteModal';
+import { UpdateOutlet, createOutlet } from '../lib/outletServices';
+import OutletUpdateModal from '../../components/outletUpdateModal';
+import OutletCreateModal from '../../components/outletCreateModal';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 

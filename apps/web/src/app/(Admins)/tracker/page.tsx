@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { useCallback, useEffect, useState } from 'react';
-import OrderTrackingModal from './order-list-component/tracking-modal';
+import OrderTrackingModal from './component/trackingModal';
 import { displayOrderStatus } from '../lib/formatter';
 import { useAppSelector } from '@/redux/hooks';
 
@@ -142,7 +142,7 @@ const OrdersPage = () => {
   ) {
     return (
       <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4 min-h-screen">
-        <h1>Orders</h1>
+        <h1 className="font-bold text-2xl">Order Tracker</h1>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-4">
