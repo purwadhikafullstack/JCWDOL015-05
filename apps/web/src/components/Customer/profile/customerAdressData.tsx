@@ -1,18 +1,4 @@
 'use client';
-
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
 import {
   deleteAddress,
   setPrimaryAddress,
@@ -37,11 +23,11 @@ const tableHeader = [
   'Actions',
 ];
 interface CustomerAddressProps {
-  options: ICustomerAddressProfile[];
+  options: ICustomerAddressProfile[]
 }
 export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState(0);
+  const [openDialog, setOpenDialog] = useState(false)
+  const [selectedAddressId, setSelectedAddressId] = useState(0)
   const sortedOptions = [...options].sort(
     (a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0),
   );
@@ -78,7 +64,7 @@ export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto w-full">
       <table className="w-full table-auto">
         <thead>
           <th className="text-left w-fit">Index</th>

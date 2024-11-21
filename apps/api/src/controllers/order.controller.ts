@@ -4,6 +4,7 @@ import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { getDistance } from 'geolib';
 import crypto from 'crypto';
 import { Prisma } from '@prisma/client';
+import { generateUniqueOrderId } from '@/services/helper';
 
 export class OrderController {
   async getOrders(req: Request, res: Response) {
@@ -173,9 +174,11 @@ export class OrderController {
         const existAddress = await pt.address.findUnique({
           where: { addressId: addressId },
         });
+        const uniqueOrderId = generateUniqueOrderId(customerId)
         if (!existAddress) throw 'address user not found';
         const newOrder = await pt.order.create({
           data: {
+            orderId: parseInt(uniqueOrderId),
             customerId,
             outletId,
             status: "menungguKonfirmasi",

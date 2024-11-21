@@ -8,14 +8,18 @@ export async function deleteToken() {
   return cookies().delete('token')
 }
 export async function getToken() {
-  const token = cookies().get('token')?.value
-   
-  if (token) {
-    const decodeToken = JSON.parse(atob(token.split('.')[1]))
-    const currentTime = Date.now() / 1000
-    if (decodeToken.exp < currentTime) {
-      return cookies().delete('token') 
+  try {
+    const token = cookies().get('token')?.value
+
+    if (token) {
+      const currentTime = Date.now() / 1000
+      const decodeToken = JSON.parse(atob(token!.split('.')[1]))
+      if (decodeToken.exp < currentTime) {
+        return cookies().delete('token')
+      }
     }
+    return token
+  } catch (err) {
+    console.log(`Error Get Token : ${err}`)
   }
-  return token
 }

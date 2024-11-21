@@ -4,17 +4,51 @@ import { useAppSelector } from "@/redux/hooks";
 import { Role } from "@/type/role";
 import EmployeeNavbarPage from "./NavbarPage/employeeNavbar";
 import { CustomerNavbar } from "./NavbarPage/customerNavbar";
+import { getToken } from "@/lib/server";
+import { useEffect, useState } from "react";
 
+interface TokenData {
+    customerId: number | undefined
+    role: string | undefined
+}
 export default function Navbar() {
-  const { worker, driver, outletAdmin, customer } = useAppSelector((state) => ({
-    worker: state.worker,
-    driver: state.driver,
-    outletAdmin: state.outletAdmin,
-    customer: state.customer,
-  }))
-  if(driver || outletAdmin || worker) {
+  const [roleUser, setRoleUser] = useState('')
+  const [token, setToken] = useState('');
+
+  
+  const getTokenData = async () => {
+    const resToken = await getToken()
+    if(resToken ){
+      const decodeToken: TokenData = JSON.parse(atob(`${resToken}`.split('.')[1]))
+      console.log(decodeToken)
+      const role = `${decodeToken.role}`
+      setRoleUser(role)
+    }
+    setToken(resToken as string)
+  }
+  console.log(roleUser)
+  useEffect(()=>{
+    getTokenData()
+    
+  },[])
+  
+  // const { worker, driver, outletAdmin, customer } = useAppSelector((state) => ({
+  //   worker: state.worker,
+  //   driver: state.driver,
+  //   outletAdmin: state.outletAdmin,
+  //   customer: state.customer,
+  // }))
+  // if(customer && !token){
+  //   return <CustomerNavbar/>
+  // }
+  // if(driver || outletAdmin || worker) {
+  //   return <EmployeeNavbarPage/>
+  // }
+ 
+  if(roleUser == 'driver' || roleUser == 'outletAdmin' || roleUser == 'worker') {
     return <EmployeeNavbarPage/>
-  } else if(customer) {
+  } 
+  if(roleUser == 'customer' || !token){
     return<CustomerNavbar/>
   }
 }

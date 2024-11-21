@@ -19,8 +19,12 @@ export class UserRouter {
     this.router.post('/verify/:token', this.authController.verificationUser);
     this.router.post('/reset', this.authController.sendResetPassword);
     this.router.post('/reset/:token', this.authController.resetPassword)
-    this.router.get('/auth', passport.authenticate('google', { scope: ["profile", "email"] }));
+    this.router.post('/change-email', this.authController.changeEmail)
+    this.router.get('/verify-email/:token', this.authController.verifyEmail)
+    this.router.post('/send-emailVerification',this.authController.sendEmailVerification)
+    this.router.get('/auth', passport.authenticate('google', { scope: ["profile", "email"] }))
     this.router.patch('/edit',
+      
       uploader('avatar-', '/avatar').single('avatar')
       ,this.authController.editProfile)
       this.router.get('/auth/google', (req, res, next) => {

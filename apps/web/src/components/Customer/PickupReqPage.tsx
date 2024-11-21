@@ -50,7 +50,6 @@ export const CustomerPickupPage = () => {
       outletData.mutate(values)
     }
   })
-  console.log(customerAddress)
   const pickupFormik = useFormik({
     initialValues: {
       addressId: 0,
@@ -82,6 +81,7 @@ export const CustomerPickupPage = () => {
   const userAddress = useMutation({
     mutationFn: async (customerId: number) => {
       const {result, ok , address } = await getCustomerAddress(customerId)
+      console.log(`pickup result address: ${result}`)
       return address
     },
     onSuccess: (address)=>{
@@ -132,9 +132,8 @@ export const CustomerPickupPage = () => {
     (a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0),
   );
   useEffect(() => {
-    
     userAddress.mutate(customer.customerId)
-  }, [customer.customerId, userAddress])
+  }, [])
   return (
     <section className="flex flex-col items-center w-full h-screen gap-10">
       <Card className="w-3/4 p-5 mt-32">

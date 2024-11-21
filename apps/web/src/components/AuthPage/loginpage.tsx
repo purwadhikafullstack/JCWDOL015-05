@@ -36,9 +36,13 @@ export const LoginPage = () => {
     mutationFn: async (data: ICustomerLogin) => await customerLogin(data),
     onSuccess: (data) => {
       const { result, ok, user } = data;
-      if (!ok) throw result.msg;
-
-      dispatch(loginAction(user))
+      // if (!ok) throw result.msg;
+      // console.log()
+      if(result.user.data.isVerified === false) {
+        throw new Error ('Email not verified')
+        router.push('/customers/verify-email')
+      }
+      dispatch(loginAction(data.user))
       createToken(result.user.token)
 
       toast.success(result.msg)
@@ -101,9 +105,15 @@ export const LoginPage = () => {
             </div>
           </div>
         </form>
+        <div className="flex flex-row justify-between">
         <Link href={'/customers/reset-password'}>
           <span className="text-blue-500">Forgot your password ?</span>
         </Link>
+        <Link href={'/customers/verify-email'}>
+          <span className="text-blue-500">Resend Verification Email
+          </span>
+        </Link>
+        </div>
         <Button onClick={googleLogin} className="w-full">
           Sign In With Google
         </Button>

@@ -1,5 +1,6 @@
 'use client';
 
+import { BASEURL } from '@/services/api/address/address';
 import { useEffect, useState } from 'react';
 
 interface ListAttendance {
@@ -19,7 +20,7 @@ export default function ListAttendance() {
     useEffect(() => {
         async function fetchAttendanceLogs() {
             try {
-                const response = await fetch('http://localhost:8000/api/submit/attendance'); // Update with your actual API route
+                const response = await fetch(`${BASEURL}/api/submit/attendance`); // Update with your actual API route
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.error || 'Failed to fetch attendance logs');

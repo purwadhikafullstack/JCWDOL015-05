@@ -16,12 +16,15 @@ import { ICustomerData } from '@/redux/slice/customerSlice';
 import { toast } from 'react-toastify';
 import { getCustomerAddress } from '@/services/api/address/address';
 import { CustomerAddressData } from '@/components/Customer/profile/customerAdressData';
+import defaultProfile from '@/assets/images.webp'
+
 
 const Profile = () => {
   const [orderList, setOrderList] = useState<ICustomerOrderData[]>([]);
   const [customerData, setCustomerData] = useState<ICustomerData | null>(null)
   const [addresses, setAdresses] = useState<ICustomerAddressProfile[]>([]);
   const customer = useAppSelector((state) => state.customer);
+  const profilePict = customerData?.avatar || defaultProfile
   const userData = useMutation({
     mutationFn: async() => {
       const {result, ok ,data} = await getCustomerData(customer.customerId)
@@ -63,6 +66,7 @@ const Profile = () => {
       toast.error(err?.message)
     }
   }) 
+  console.log(addresses)
   useEffect(() => {
     // getData()
     userData.mutate()
@@ -84,7 +88,7 @@ const Profile = () => {
           <Card className="w-3/4 h-fit p-5 space-y-3 flex flex-col items-center">
             <div className="rounded-full w-44 h-44">
               <Image
-                src={customerData?.avatar|| '/default-avatar.png'}
+                src={profilePict}
                 alt="Profile Picture"
                 width={176}
                 height={176}
@@ -103,21 +107,30 @@ const Profile = () => {
           </Card>
           <Card className="w-3/4 h-fit p-5 space-y-3 flex flex-col items-center">
               <h1 className='text-left text-2xl font-semibolds w-full'>Customer Address</h1>
-              {userAddress.isPending ? (
+              {
+              userAddress.isPending ? (
                 <p>is loading ...</p>
-              ):
+              ): addresses && addresses.length > 0 ?             
               (
-                <CustomerAddressData options={addresses} />
-              )}
+                <CustomerAddressData options={addresses || []} />
+              ): 
+              (
+                <p className='text-gray-400'>Alamat Tidak Ditemukan</p>
+              )
+              }
+              
           </Card>
-          <Card className="w-3/4 h-[60vh] p-5">
-            <h1 className="text-2xl">My Orders</h1>
+          <Card className="w-3/4 h-fit p-5 space-y-3 flex flex-col items-center">
+            <h1 className="text-2xl w-full text-left">My Orders</h1>
             {mutation.isPending ? (
               <p>is loading ...</p>
-            ) : (
+            ) : orderList && orderList.length > 0 ?(
               <OrderListComponent options={orderList} />
-            )}
-
+            ):
+            (
+              <p className='text-gray-400'>Order Tidak Ditemukan</p>
+            )
+            }
             <p className="my-3">Page 1</p>
           </Card>
         </div>

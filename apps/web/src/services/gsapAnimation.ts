@@ -15,7 +15,6 @@ export function GsapAnimation() {
     scrollTrigger: {
       trigger: cardIcon[0],
       start: "0% center",
-      markers: true
     }
   })
   var tl = gsap.timeline({ repeat: 0 });
@@ -86,7 +85,6 @@ export function GsapAnimation() {
       scrollTrigger: {
         trigger: TextFromLeft,
         start: "350% center",
-        markers: true,
       },
     }
   )
