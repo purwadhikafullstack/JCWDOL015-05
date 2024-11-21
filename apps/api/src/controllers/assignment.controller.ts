@@ -343,12 +343,18 @@ export class AssignmentController {
   }
 
   async completeDelivery(req: Request, res: Response) {
-    const { driverId } = req.body;
+    const { driverId, orderId } = req.body;
     try {
-      await prisma.driver.update({
-        where: { driverId: driverId },
-        data: { isAvailable: true },
-      });
+      await prisma.$transaction([
+        prisma.order.update({
+          where: { orderId: orderId },
+          data: { status: 'terkirim' },
+        }),
+        prisma.driver.update({
+          where: { driverId: driverId },
+          data: { isAvailable: true },
+        }),
+      ]);
       return res.status(200).json({ message: 'Delivered to customer' });
     } catch (error) {
       res.status(500).json({ error: 'Delivery completion failed' });

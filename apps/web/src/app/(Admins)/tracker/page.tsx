@@ -142,10 +142,10 @@ const OrdersPage = () => {
   ) {
     return (
       <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4 min-h-screen">
-        <h1 className="font-bold text-2xl">Order Tracker</h1>
+        <h1 className="font-bold text-2xl mb-4">Order Tracker</h1>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-4">
+        <div className="flex flex-wrap gap-2">
           <input
             type="text"
             placeholder="Order ID"
@@ -171,6 +171,9 @@ const OrdersPage = () => {
             className="mb-4 border p-2 rounded bg-white"
           >
             <option value="">All Order Status</option>
+            <option value="menungguKonfirmasi">
+              menunggu konfirmasi admin
+            </option>
             <option value="menungguPenjemputanDriver">
               menunggu penjemputan driver
             </option>
@@ -182,6 +185,7 @@ const OrdersPage = () => {
             <option value="menungguPembayaran">menunggu pembayaran</option>
             <option value="siapDiantar">siap diantar</option>
             <option value="sedangDikirim">sedang dikirim</option>
+            <option value="terkirim">terkirim</option>
             <option value="selesai">selesai</option>
           </select>
           <select

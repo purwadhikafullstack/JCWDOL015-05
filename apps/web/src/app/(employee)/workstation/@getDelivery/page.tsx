@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function GetDeliveryPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [driverId, setDriverId] = useState<number | null>(null);
   const [outletId, setOutletId] = useState<number | null>(null);
@@ -82,8 +84,9 @@ export default function GetDeliveryPage() {
 
       if (response.ok) {
         setIsAvailable(false); // Assume driver is now unavailable
-        alert(`Order #${orderId} is now yours, let's go!`);
         fetchOrders(); // Refresh the orders
+        alert(`Order #${orderId} is now yours, let's go!`);
+        router.push('/employee');
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);

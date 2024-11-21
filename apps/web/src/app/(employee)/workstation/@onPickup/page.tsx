@@ -108,7 +108,7 @@ export default function OnPickupPage() {
     }
   };
 
-  const handleCompleteDelivery = async (driverId: number) => {
+  const handleCompleteDelivery = async (driverId: number, orderId: number) => {
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/complete-delivery`,
@@ -117,7 +117,7 @@ export default function OnPickupPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ driverId }),
+          body: JSON.stringify({ driverId, orderId }),
         },
       );
 
@@ -171,7 +171,8 @@ export default function OnPickupPage() {
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
                   onClick={() =>
-                    driverId !== null && handleCompleteDelivery(driverId)
+                    driverId !== null &&
+                    handleCompleteDelivery(driverId, order.orderId)
                   }
                 >
                   Complete Delivery

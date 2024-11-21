@@ -135,8 +135,7 @@ export class EmployeeController {
 
   updateEmployeeById = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { email, password, fullName, role, outletId, avatar, station } =
-      req.body;
+    const { email, password, fullName, role, outletId, station } = req.body;
 
     try {
       const salt = await genSalt(10);
@@ -220,7 +219,6 @@ export class EmployeeController {
           fullName,
           role,
           outletId,
-          avatar,
         },
       });
 
