@@ -330,7 +330,11 @@ export class OrderController {
       ) {
         await prisma.order.update({
           where: { orderId: +order_id },
-          data: { paymentStatus: 'paid' },
+          data: { 
+            paymentStatus: 'paid',
+            status: "siapDiantar",
+            deliverDate : new Date()
+           },
         });
       }
 
