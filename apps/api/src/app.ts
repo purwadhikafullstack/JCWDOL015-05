@@ -30,6 +30,7 @@ import '@/services/passportConfig'
 import cron from 'node-cron'
 import prisma from './prisma';
 import path from 'path'
+import admin from 'firebase-admin'
 export default class App {
   private app: Express;
 
@@ -42,17 +43,18 @@ export default class App {
   }
 
   private configure(): void {
-    
+   
     this.app.use(cors());
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
 
-    this.app.use(passport.initialize());
+    // this.app.use(passport.initialize());
+ 
     this.app.use('/api/public',
       express.static(path.join(__dirname, "../public/"))
     )
   }
-
+    
   private handleError(): void {
     // not found
     this.app.use((req: Request, res: Response, next: NextFunction) => {

@@ -115,7 +115,7 @@ export const CustomerNavbar = () => {
                 <Link href={'/customers/profile/edit'}>Setting</Link>
               </p>
               <p className="p-2 cursor-pointer hover:bg-white hover:text-black hover:rounded-md">
-                <Link href={'/profile'}>Profile</Link>
+                <Link href={'/customers/profile'}>Profile</Link>
               </p>
               <div className="border border-gray-200 border-b-1"></div>
               <p

@@ -1,14 +1,17 @@
 import { AuthController } from "@/controllers/auth.controller";
 import { uploader } from "@/middleware/multer";
+import { FirebaseAuth } from "@/services/firebase";
 import { Router } from "express";
 import passport from "passport";
-// import passport from "../services/passportConfig";
+
 export class UserRouter {
   private router: Router
   private authController: AuthController
+  private fireBaseAuth : FirebaseAuth
 
   constructor() {
     this.authController = new AuthController();
+    this.fireBaseAuth = new FirebaseAuth()
     this.router = Router();
     this.initializeRoutes();
   }
@@ -22,22 +25,22 @@ export class UserRouter {
     this.router.post('/change-email', this.authController.changeEmail)
     this.router.get('/verify-email/:token', this.authController.verifyEmail)
     this.router.post('/send-emailVerification',this.authController.sendEmailVerification)
-    this.router.get('/auth', passport.authenticate('google', { scope: ["profile", "email"] }))
+    // this.router.get('/auth', passport.authenticate('google', { scope: ["profile", "email"] }))
+    this.router.post('/auth/google', this.fireBaseAuth.googleAuthHandler );
     this.router.patch('/edit',
-      
       uploader('avatar-', '/avatar').single('avatar')
       ,this.authController.editProfile)
-      this.router.get('/auth/google', (req, res, next) => {
-        console.log('Google login route hit');
-        next();
-      }, passport.authenticate('google', { scope: ['profile', 'email'] }));
+      // this.router.get('/auth/google', (req, res, next) => {
+      //   console.log('Google login route hit');
+      //   next();
+      // }, passport.authenticate('google', { scope: ['profile', 'email'] }));
  
-    this.router.get('/auth/google/callback', (req, res, next) => {
-      console.log('Callback route hit');
-      next();
-    }, passport.authenticate('google', { session: false }), (req, res) => {
-      res.send('Authentication successful');
-    });
+    // this.router.get('/auth/google/callback', (req, res, next) => {
+    //   console.log('Callback route hit');
+    //   next();
+    // }, passport.authenticate('google', { session: false }), (req, res) => {
+    //   res.send('Authentication successful');
+    // });
     
     
     

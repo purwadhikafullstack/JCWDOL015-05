@@ -30,7 +30,6 @@ export const LoginPage = () => {
   const [token, setToken] = useState('')
 
   const router = useRouter()
-  const queryClient = useQueryClient()
   const dispatch = useDispatch()
   const mutation = useMutation({
     mutationFn: async (data: ICustomerLogin) => await customerLogin(data),
@@ -39,8 +38,8 @@ export const LoginPage = () => {
       // if (!ok) throw result.msg;
       // console.log()
       if(result.user.data.isVerified === false) {
-        throw new Error ('Email not verified')
         router.push('/customers/verify-email')
+        throw new Error ('Email not verified')
       }
       dispatch(loginAction(data.user))
       createToken(result.user.token)
@@ -52,7 +51,8 @@ export const LoginPage = () => {
       console.log(err);
       toast.error(err?.message);
     },
-  });
+  })
+
   const formik = useFormik({
     validationSchema: loginSchema,
     initialValues: initialValues,
@@ -62,10 +62,22 @@ export const LoginPage = () => {
       action.resetForm()
     }
   })
-  const socialLogin = () => {
-
+  const socialLogin = useMutation({
+    mutationFn: async() => await googleLogin(),
+    onSuccess: (result)=>{
+      console.log(result?.result.data)
+      createToken(result?.result.tokenData)
+      dispatch(loginAction(result?.result.data))
+      router.push('/')
+      toast.success('Login Google Success')
+    },
+    onError: (err)=>{
+      toast.error(err?.message)
+    }
+  })
+  const handleGoogle = ()=>{
+    socialLogin.mutate()
   }
-
   
   return (
     <section className="flex flex-col items-center justify-center w-full h-screen">
@@ -114,7 +126,7 @@ export const LoginPage = () => {
           </span>
         </Link>
         </div>
-        <Button onClick={googleLogin} className="w-full">
+        <Button onClick={handleGoogle} className="w-full">
           Sign In With Google
         </Button>
       </Card>
