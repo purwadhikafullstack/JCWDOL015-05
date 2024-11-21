@@ -1,6 +1,7 @@
 'use client'
 
 import { useAppSelector } from "@/redux/hooks";
+import { Role } from "@/type/role";
 import { CustomerNavbar } from "./NavbarPage/customerNavbar";
 import EmployeeNavbarPage from "./NavbarPage/employeeNavbar";
 import { getToken } from "@/lib/server";

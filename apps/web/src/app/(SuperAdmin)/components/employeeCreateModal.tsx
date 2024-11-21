@@ -2,7 +2,7 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-interface UpdateModalProps {
+interface EmployeeCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (values: {
@@ -10,59 +10,45 @@ interface UpdateModalProps {
     password: string;
     fullName: string;
     role: string;
-    outletId: number | null;
-    station: string | null;
+    outletId: number;
+    station: string;
   }) => void;
-  initialEmail: string;
-  initialPassword: string;
-  initialFullName: string;
-  initialRole: string;
-  initialOutletId: number | null;
-  InitialStation: string | 'washing';
 }
 
-const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
+const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  initialEmail,
-  initialPassword,
-  initialFullName,
-  initialRole,
-  initialOutletId,
-  InitialStation,
 }) => {
   // Validation Schema
   const validationSchema = Yup.object({
     email: Yup.string()
-      .email('Invalid email address')
+      .email('Invalid email format')
       .required('Email is required'),
-    password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .required('Password is required'),
-    fullName: Yup.string().required('Full name is required'),
+    password: Yup.string().required('Password is required'),
+    fullName: Yup.string().required('Full Name is required'),
     role: Yup.string().required('Role is required'),
     outletId: Yup.number()
-      .required('Outlet ID is required')
-      .positive()
-      .integer(),
+      .nullable()
+      .transform((_, val) => (val === '' ? null : val)) // Allow null values
+      .positive('Outlet ID must be a positive number')
+      .integer('Outlet ID must be an integer'),
     station: Yup.string().nullable(),
   });
 
   // Initialize Formik
   const formik = useFormik({
     initialValues: {
-      email: initialEmail || '',
-      password: initialPassword || '',
-      fullName: initialFullName || '',
-      role: initialRole || '',
-      outletId: initialOutletId || null,
-      station: InitialStation || 'washing',
+      email: '',
+      password: '',
+      fullName: '',
+      role: 'outletAdmin',
+      outletId: 1,
+      station: '', // station will be handled based on the selected role
     },
-    enableReinitialize: true, // Reinitialize Formik values when props change
     validationSchema,
     onSubmit: (values) => {
-      onConfirm(values); // Pass updated data to parent
+      onConfirm(values); // Pass data to parent
       onClose(); // Close modal after submission
     },
   });
@@ -72,7 +58,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
-        <h2 className="text-xl font-semibold mb-4">Update Employee</h2>
+        <h2 className="text-xl font-semibold mb-4">Create Data</h2>
 
         <form onSubmit={formik.handleSubmit}>
           {/* Email Input */}
@@ -82,6 +68,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
           <input
             type="text"
             name="email"
+            defaultValue={''}
             value={formik.values.email}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -98,6 +85,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
           <input
             type="text"
             name="password"
+            defaultValue={''}
             value={formik.values.password}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -114,6 +102,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
           <input
             type="text"
             name="fullName"
+            defaultValue={''}
             value={formik.values.fullName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -123,7 +112,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
             <p className="text-red-500 text-sm">{formik.errors.fullName}</p>
           )}
 
-          {/* Role Input */}
+          {/* Role Select */}
           <label className="block text-left text-sm font-medium mb-1">
             Role
           </label>
@@ -132,7 +121,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
             value={formik.values.role}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="w-full border rounded p-2 mb-2 bg-gray-200"
+            className="w-full border rounded p-2 mb-4 bg-gray-200"
           >
             <option value="outletAdmin">Outlet Admin</option>
             <option value="worker">Worker</option>
@@ -142,7 +131,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
             <p className="text-red-500 text-sm">{formik.errors.role}</p>
           )}
 
-          {/* Station Input (only for 'worker' role) */}
+          {/* Station Select */}
           {formik.values.role === 'worker' && (
             <>
               <label className="block text-left text-sm font-medium mb-1">
@@ -150,7 +139,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
               </label>
               <select
                 name="station"
-                value={formik.values.station || ''}
+                value={formik.values.station}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="w-full border rounded p-2 mb-2 bg-gray-200"
@@ -172,7 +161,8 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
           <input
             type="number"
             name="outletId"
-            value={formik.values.outletId!}
+            min={1}
+            value={formik.values.outletId || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="w-full border rounded p-2 mb-2 bg-gray-200"
@@ -186,7 +176,7 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
             >
-              Save
+              Create
             </button>
             <button
               type="button"
@@ -202,4 +192,4 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
   );
 };
 
-export default EmployeeUpdateModal;
+export default EmployeeCreateModal;

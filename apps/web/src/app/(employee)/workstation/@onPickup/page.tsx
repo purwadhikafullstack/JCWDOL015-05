@@ -10,14 +10,14 @@ export default function OnPickupPage() {
   const [outletId, setOutletId] = useState<number | null>(null);
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
 
-  const driver = useAppSelector((state) => state.driver)
+  const driver = useAppSelector((state) => state.driver);
 
   useEffect(() => {
     if (driver) {
-      setDriverId(driver.driverId)
-      setOutletId(driver.employee?.outletId)
+      setDriverId(driver.driverId);
+      setOutletId(driver.employee?.outletId);
     }
-  }, [driver])
+  }, [driver]);
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -34,9 +34,25 @@ export default function OnPickupPage() {
     }
   }, [driverId, BASEURL]);
 
+  const fetchDriverAvailability = useCallback(async () => {
+    try {
+      if (!driverId) return; // Skip if driverId is not set
+      const response = await fetch(
+        `${BASEURL}/api/assignment/driver-availability/${driverId}`,
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setIsAvailable(data.isAvailable);
+      }
+    } catch (error) {
+      console.error('Driver availability fetching error:', error);
+    }
+  }, [driverId, BASEURL]);
+
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    fetchDriverAvailability();
+  }, [fetchOrders, fetchDriverAvailability]);
 
   const handleReceive = async (orderId: number) => {
     try {
@@ -80,6 +96,7 @@ export default function OnPickupPage() {
       if (response.ok) {
         alert(`Items sent to outlet successfuly`);
         fetchOrders();
+        fetchDriverAvailability();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
@@ -91,7 +108,7 @@ export default function OnPickupPage() {
     }
   };
 
-  const handleCompleteDelivery = async (driverId: number) => {
+  const handleCompleteDelivery = async (driverId: number, orderId: number) => {
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/complete-delivery`,
@@ -100,13 +117,14 @@ export default function OnPickupPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ driverId }),
+          body: JSON.stringify({ driverId, orderId }),
         },
       );
 
       if (response.ok) {
-        alert(`Items sent to outlet successfuly`);
+        alert(`Items sent to customer successfuly`);
         fetchOrders();
+        fetchDriverAvailability();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
@@ -141,7 +159,10 @@ export default function OnPickupPage() {
               {order.status === 'laundryMenujuOutlet' && (
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  onClick={() => driverId !== null && handleCompletePickup(order.orderId, driverId)}
+                  onClick={() =>
+                    driverId !== null &&
+                    handleCompletePickup(order.orderId, driverId)
+                  }
                 >
                   Complete Pickup
                 </Button>
@@ -149,7 +170,10 @@ export default function OnPickupPage() {
               {order.status === 'sedangDikirim' && (
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  onClick={() => driverId !== null && handleCompleteDelivery(driverId)}
+                  onClick={() =>
+                    driverId !== null &&
+                    handleCompleteDelivery(driverId, order.orderId)
+                  }
                 >
                   Complete Delivery
                 </Button>

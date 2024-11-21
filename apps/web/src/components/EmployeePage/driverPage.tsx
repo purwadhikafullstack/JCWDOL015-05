@@ -8,6 +8,7 @@ import { IAttendance } from "@/type/employee"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
+import { BASEURL } from "@/services/api/address/address"
 
 interface Attendance {
     attendanceId: number;
@@ -36,7 +37,7 @@ export default function DriverPage() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance/${employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance log');
             }
@@ -57,7 +58,7 @@ export default function DriverPage() {
 
     const handleClockIn = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ employeeId })
@@ -77,7 +78,7 @@ export default function DriverPage() {
 
     const handleClockOut = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ employeeId })
@@ -99,7 +100,7 @@ export default function DriverPage() {
         setLoading(true);
         setError(null); // Reset error before fetch
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance/${driver.employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${driver.employeeId}`);
             console.log('Response:', response); // Log response
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance history');

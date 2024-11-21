@@ -39,7 +39,7 @@ export const CustomerNavbar = () => {
   }, []);
 
   return (
-    <div className="relative flex items-center h-[60px] px-[45px] bg-[#fffaf0] justify-end">
+    <div className="relative flex items-center h-[55px] px-[45px] bg-[#fffaf0]">
       {/* Logo */}
       <div className="hidden absolute left-[45px] md:block lg:block">
         <Link href={'/'}>

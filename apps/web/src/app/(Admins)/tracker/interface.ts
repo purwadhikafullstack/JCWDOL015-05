@@ -12,7 +12,7 @@ interface Order {
   status: string;
   bypassMessage: string | null;
   createdAt: string;
-  updatedaAt: string | null;
+  updatedAt: string;
   workers: {
     worker: {
       workerId: number;

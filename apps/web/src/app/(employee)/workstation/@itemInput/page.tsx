@@ -1,5 +1,5 @@
 'use client';
-import { DeleteButton } from '@/components/ui/action-button';
+import { DeleteButton } from '@/components/ui/actionButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppSelector } from '@/redux/hooks';
@@ -27,30 +27,34 @@ export default function ItemInputPage() {
     [orderId: number]: number;
   }>({});
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number | null>(null); 
+
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
+  const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const outletAdmin = useAppSelector((state) => state.outletAdmin)
+  const [loading, setLoading] = useState<boolean>(true); // Added loading state
 
   useEffect(() => {
-    if(outletAdmin) {
-      setOutletAdminId(outletAdmin.outletAdminId)
+    if (outletAdmin) {
+      setOutletAdminId(outletAdmin.outletAdminId);
     }
-  },[outletAdmin])
-
-
+  }, [outletAdmin]);
 
   const fetchOrders = useCallback(async () => {
+    if (!outletAdminId) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/item-input/${outletAdminId}`,
       );
-       
-        const data = await response.json();
-        setOrders(data);
 
-        if(data.length > 0) {
-          toast.success('Message: Request Item Input')
-        }
+      const data = await response.json();
+      setOrders(data);
+
+      if (data.length > 0) {
+        toast.success('Message: Request Item Input');
+      }
 
       const initialItemsByOrder = data.reduce(
         (acc: { [orderId: number]: Item[] }, order: Order) => {
@@ -73,6 +77,8 @@ export default function ItemInputPage() {
       setWeightsByOrder(initialWeightsByOrder);
     } catch (error) {
       console.error('Orders fetching error', error);
+    } finally {
+      setLoading(false);
     }
   }, [outletAdminId]);
 
@@ -187,6 +193,11 @@ export default function ItemInputPage() {
       }
     }
   };
+
+  // Delayed rendering
+  if (loading) {
+    return <p>Loading orders...</p>;
+  }
 
   return (
     <div className="flex flex-col text-gray-800 items-center p-4 gap-4">

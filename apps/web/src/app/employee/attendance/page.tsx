@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { toast } from "react-toastify"
+import { BASEURL } from "@/services/api/address/address"
 
 export default function Attendance() {
     const driver = useAppSelector((state) => state.driver)
@@ -35,7 +36,7 @@ export default function Attendance() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance/${employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance log');
             }
@@ -56,7 +57,7 @@ export default function Attendance() {
 
     const handleClockIn = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ employeeId })
@@ -75,7 +76,7 @@ export default function Attendance() {
 
     const handleClockOut = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ employeeId })

@@ -1,5 +1,6 @@
 'use client'
 import { useAppSelector } from "@/redux/hooks";
+import { BASEURL } from "@/services/api/address/address";
 import { IAttendance } from "@/type/employee";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -32,7 +33,7 @@ export default function Attendance() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance/${employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance log');
             }
@@ -53,7 +54,7 @@ export default function Attendance() {
 
     const handleClockIn = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ employeeId }),
@@ -72,7 +73,7 @@ export default function Attendance() {
 
     const handleClockOut = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/submit/attendance`, {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ employeeId }),

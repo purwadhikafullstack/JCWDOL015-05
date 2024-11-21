@@ -1,4 +1,5 @@
 // /pages/washing.tsx
+import { BASEURL } from "@/services/api/address/address";
 import { GetServerSideProps, NextPage } from "next";
 import React from "react";
 
@@ -26,7 +27,7 @@ const WashingPage: NextPage<WashingPageProps> = ({ orders }) => {
     const handleProcessOrder = async (orderId: number) => {
         
         try {
-            const response = await fetch('http://localhost:8000/api/process/process-order', {
+            const response = await fetch(`${BASEURL}/api/process/process-order`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -87,7 +88,7 @@ const WashingPage: NextPage<WashingPageProps> = ({ orders }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-    const res = await fetch("http://localhost:8000/api/orders?status=pencucian");
+    const res = await fetch(`${BASEURL}/api/orders?status=pencucian`);
     const orders = await res.json();
 
     return {

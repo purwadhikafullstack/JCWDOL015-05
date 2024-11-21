@@ -36,6 +36,7 @@ enum OrderStatus {
   menungguPembayaran
   siapDiantar
   sedangDikirim
+  terkirim
   selesai
 }
 
@@ -86,7 +87,6 @@ model Employee {
   password String
   isVerified Boolean @default(false)
   fullName String 
-  avatar String?
   role Role
   outletId Int?
   attendance Attendance[]

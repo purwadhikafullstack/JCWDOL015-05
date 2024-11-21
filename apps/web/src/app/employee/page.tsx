@@ -1,12 +1,12 @@
 'use client';
-import DriverPage from "@/components/EmployeePage/driverPage";
-import WorkerPage from "@/components/EmployeePage/workerPage";
-import { useAppSelector } from "@/redux/hooks";
-import { driverLogoutAction } from "@/redux/slice/driverSlice";
-import { workerLogoutAction } from "@/redux/slice/workerSlice";
-import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import ListAttendance from "../list-attendance/page";
+import DriverPage from '@/components/EmployeePage/driverPage';
+import WorkerPage from '@/components/EmployeePage/workerPage';
+import { useAppSelector } from '@/redux/hooks';
+import { driverLogoutAction } from '@/redux/slice/driverSlice';
+import { workerLogoutAction } from '@/redux/slice/workerSlice';
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import ListAttendance from '../list-attendance/page';
 
 export default function Employee() {
   const router = useRouter();
@@ -26,7 +26,10 @@ export default function Employee() {
     router.push('/');
   };
 
-  const role = worker?.employee?.role || driver?.employee?.role || outletAdmin?.employee?.role;
+  const role =
+    worker?.employee?.role ||
+    driver?.employee?.role ||
+    outletAdmin?.employee?.role;
 
   const renderPage = () => {
     switch (role) {
