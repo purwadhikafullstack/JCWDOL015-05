@@ -10,12 +10,10 @@ export function GsapAnimation() {
 
   let cardIconId = ["icon1", "icon2", "icon3", "icon4", "icon5", "icon6", "icon7", "icon8"];
   let cardIcon = cardIconId.map((id) => document.querySelector(`#${id}`))
-  console.log(cardIcon[0]?.id)
   var iconTl = gsap.timeline({
     scrollTrigger: {
       trigger: cardIcon[0],
       start: "0% center",
-      markers: true
     }
   })
   var tl = gsap.timeline({ repeat: 0 });
@@ -39,7 +37,18 @@ export function GsapAnimation() {
     }
   });
 
-
+  const getResponsiveStart = () => {
+    if (window.innerWidth < 768) {
+      // Mobile
+      return "top 80%";
+    } else if (window.innerWidth < 1024) {
+      // Tablet
+      return "top 70%";
+    } else {
+      // Desktop
+      return "350% center";
+    }
+  };
   tl.fromTo(TextFromLeft,
     { rotation: 0, x: -200, duration: 1, delay: 0.5, opacity: 0 },
     { x: 0, opacity: 1, duration: 1, delay: 0.5 }
@@ -78,15 +87,15 @@ export function GsapAnimation() {
     { x: -100, duration: 0, opacity: 0, immediateRender: false },
     { x: 0, opacity: 1, duration: 0.3 }
   )
+  const isMobile = window.innerWidth < 768;
   gsap.fromTo(
     FromBottom,
-    { opacity: 0, y: 200, },
+    { opacity: 0, y: isMobile ? 900 : 500 },
     {
       y: 0, opacity: 1,
       scrollTrigger: {
         trigger: TextFromLeft,
-        start: "350% center",
-        markers: true,
+        start: getResponsiveStart(),
       },
     }
   )

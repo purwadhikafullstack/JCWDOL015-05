@@ -4,9 +4,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Footer } from '@/components/Footer';
 import { usePathname } from 'next/navigation';
-import { SessionProvider } from 'next-auth/react'
 const inter = Inter({ subsets: ['latin'] });
-const disabledNavbar = ['/login', '/register', '/:token', '/employeeLogin']
+const disabledNavbar = ['/login', '/register', '/:token', '/employeeLogin','/unauthorized']
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import StoreProvider from '@/components/StoreProvider';
@@ -31,10 +30,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryClientProvider client={queryClient}>
           <StoreProvider>
-            <SessionProvider>
+            {/* <SessionProvider> */}
               {!disabledNavbar.includes(pathName) && <Navbar/>}
               {children}
-            </SessionProvider>
+            {/* </SessionProvider> */}
           </StoreProvider>
           <ToastContainer
             position='bottom-right'
