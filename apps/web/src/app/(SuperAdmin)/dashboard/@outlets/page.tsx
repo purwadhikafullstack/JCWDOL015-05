@@ -213,10 +213,10 @@ export default function OutletManagement() {
   };
 
   return (
-    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4">
+    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 px-2 py-4 gap-4">
       <h1>OUTLET MANAGEMENT</h1>
       {/* Filter inputs */}
-      <div className="flex space-x-4 mt-4">
+      <div className="flex flex-wrap gap-4 mt-4">
         <CreateButton onClick={() => openCreateModal()} />
         <input
           type="text"
@@ -233,59 +233,56 @@ export default function OutletManagement() {
           className="border border-gray-300 rounded p-1 bg-white h-10"
         />
       </div>
-
-      <table className="w-4/5 border-slate-700">
-        <thead className="border-b bg-blue-300">
-          <tr>
-            <th className="py-3 px-1 border-slate-700">ID</th>
-            <th className="py-3 px-1 border-slate-700">Outlet Name</th>
-            {/* <th className="py-3 px-1 border-slate-700">Longitude</th>
-            <th className="py-3 px-1 border-slate-700">Latitude</th> */}
-            <th className="py-3 px-1 border-slate-700">Kota</th>
-            <th className="py-3 px-1 border-slate-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {outlets.length > 0 &&
-            outlets.map((outlet: Outlet) => (
-              <tr key={outlet.outletId} className="text-center border-b">
-                <td className="py-3 px-1 border-slate-700">
-                  {outlet.outletId}
-                </td>
-                <td className="py-3 px-1 border-slate-700">{outlet.name}</td>
-                {/* <td className="py-3 px-1 border-slate-700">
-                  {outlet.longitude}
-                </td>
-                <td className="py-3 px-1 border-slate-700">
-                  {outlet.latitude}
-                </td> */}
-                <td className="py-3 px-1 border-slate-700">{outlet.kota}</td>
-                <td>
-                  <div className="flex gap-1 justify-center">
-                    <UpdateButton
-                      onClick={() =>
-                        openUpdateModal(
-                          outlet.outletId,
-                          outlet.name!,
-                          outlet.provinsi!,
-                          outlet.kota!,
-                          outlet.kecamatan!,
-                          outlet.longitude!,
-                          outlet.latitude!,
-                        )
-                      }
-                    />
-                    <DeleteButton
-                      onClick={() =>
-                        openDeleteModal(outlet.outletId, outlet.name!)
-                      }
-                    />
-                  </div>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full text-sm text-left text-gray-800">
+          <thead className="bg-blue-300 border-b">
+            <tr>
+              <th className="py-3 px-4 text-center border-slate-700">ID</th>
+              <th className="py-3 px-4 text-center border-slate-700">
+                Outlet Name
+              </th>
+              <th className="py-3 px-4 text-center border-slate-700">Kota</th>
+              <th className="py-3 px-4 text-center border-slate-700">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {outlets.length > 0 &&
+              outlets.map((outlet: Outlet) => (
+                <tr key={outlet.outletId} className="text-center border-b">
+                  <td className="py-3 px-4 border-slate-700">
+                    {outlet.outletId}
+                  </td>
+                  <td className="py-3 px-4 border-slate-700">{outlet.name}</td>
+                  <td className="py-3 px-4 border-slate-700">{outlet.kota}</td>
+                  <td>
+                    <div className="flex gap-2 justify-center">
+                      <UpdateButton
+                        onClick={() =>
+                          openUpdateModal(
+                            outlet.outletId,
+                            outlet.name!,
+                            outlet.provinsi!,
+                            outlet.kota!,
+                            outlet.kecamatan!,
+                            outlet.longitude!,
+                            outlet.latitude!,
+                          )
+                        }
+                      />
+                      <DeleteButton
+                        onClick={() =>
+                          openDeleteModal(outlet.outletId, outlet.name!)
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination controls */}
       <div className="flex justify-between items-center gap-10 my-4">

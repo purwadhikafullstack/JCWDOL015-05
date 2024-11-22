@@ -205,10 +205,10 @@ export default function ItemManagement() {
   };
 
   return (
-    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4">
+    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 px-2 py-4 gap-4">
       <h1>LAUNDRY ITEMS</h1>
       {/* Filters */}
-      <div className="flex gap-4 mt-4">
+      <div className="flex flex-wrap gap-4 mt-4">
         <CreateButton onClick={openCreateModal} />
         <input
           type="text"
@@ -225,46 +225,47 @@ export default function ItemManagement() {
           className="border p-2 rounded bg-white h-10"
         />
       </div>
-      {/* Items Table */}
-      <table className="w-4/5 border-slate-700">
-        <thead className="text-center border-b bg-blue-300">
-          <tr>
-            <th className="py-3 px-1 border-slate-700">Order ID</th>
-            <th className="py-3 px-1 border-slate-700">Item Name</th>
-            <th className="py-3 px-1 border-slate-700">
-              Qty{' '}
-              <Button
-                onClick={handleSortChange}
-                className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
-              >
-                {sortOrder === 'asc' ? '▲' : '▼'}
-              </Button>
-            </th>
-            <th className="py-3 px-1 border-slate-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item: Item) => (
-            <tr key={item.itemId} className="text-center border-b">
-              <td className="py-3 px-1 border-slate-700">{item.orderId}</td>
-              <td className="py-3 px-1 border-slate-700">{item.item}</td>
-              <td className="py-3 px-1 border-slate-700">{item.quantity}</td>
-              <td>
-                <div className="flex gap-1 justify-center">
-                  <UpdateButton
-                    onClick={() =>
-                      openUpdateModal(item.itemId, item.item!, item.quantity!)
-                    }
-                  />
-                  <DeleteButton
-                    onClick={() => openDeleteModal(item.itemId, item.item!)}
-                  />
-                </div>
-              </td>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full text-sm text-left text-gray-800">
+          <thead className="text-center bg-blue-300 border-b">
+            <tr>
+              <th className="py-3 px-4 border-b text-center">Order ID</th>
+              <th className="py-3 px-4 border-b text-center">Item Name</th>
+              <th className="py-3 px-4 border-b text-center">
+                Qty{' '}
+                <Button
+                  onClick={handleSortChange}
+                  className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
+                >
+                  {sortOrder === 'asc' ? '▲' : '▼'}
+                </Button>
+              </th>
+              <th className="py-3 px-4 border-b text-center">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map((item: Item) => (
+              <tr key={item.itemId} className="text-center border-b">
+                <td className="py-3 px-4 border-b">{item.orderId}</td>
+                <td className="py-3 px-4 border-b">{item.item}</td>
+                <td className="py-3 px-4 border-b">{item.quantity}</td>
+                <td>
+                  <div className="flex gap-1 justify-center">
+                    <UpdateButton
+                      onClick={() =>
+                        openUpdateModal(item.itemId, item.item!, item.quantity!)
+                      }
+                    />
+                    <DeleteButton
+                      onClick={() => openDeleteModal(item.itemId, item.item!)}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Pagination Controls */}
       <div className="flex justify-between gap-10 items-center my-4">
         <button

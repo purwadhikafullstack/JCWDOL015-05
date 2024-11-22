@@ -223,9 +223,9 @@ export default function EmployeeManagement() {
   }, [fetchEmployees]);
 
   return (
-    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4">
+    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 px-2 py-4 gap-4">
       <h1>EMPLOYEE MANAGEMENT</h1>
-      <div className="flex space-x-4">
+      <div className="flex flex-wrap gap-4 mt-4">
         <CreateButton onClick={openCreateModal} />
         <select
           onChange={(e) => setRoleFilter(e.target.value)}
@@ -248,58 +248,59 @@ export default function EmployeeManagement() {
           ))}
         </select>
       </div>
-      <table className="w-4/5 border-slate-700">
-        <thead className="bg-blue-300 border-b">
-          <tr>
-            <th className="py-3 px-1 border-slate-700">ID</th>
-            <th className="py-3 px-1 border-slate-700">Name</th>
-            <th className="py-3 px-1 border-slate-700">Email</th>
-            <th className="py-3 px-1 border-slate-700">Role</th>
-            <th className="py-3 px-1 border-slate-700">Outlet</th>
-            <th className="py-3 px-1 border-slate-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map((employee) => (
-            <tr key={employee.employeeId} className="text-center border-b">
-              <td className="py-3 px-1 border-slate-700">
-                {employee.employeeId}
-              </td>
-              <td className="py-3 px-1 border-slate-700">
-                {employee.fullName}
-              </td>
-              <td className="py-3 px-1 border-slate-700">{employee.email}</td>
-              <td className="py-3 px-1 border-slate-700">{employee.role}</td>
-              <td className="py-3 px-1 border-slate-700">
-                {employee.outlet?.name || 'Not Assigned'}
-              </td>
-              <td>
-                <div className="flex gap-1 justify-center">
-                  <UpdateButton
-                    onClick={() =>
-                      openUpdateModal(
-                        employee.employeeId,
-                        employee.email,
-                        employee.password,
-                        employee.fullName,
-                        employee.role,
-                        employee.outletId,
-                        employee.worker?.station!,
-                      )
-                    }
-                  />
-                  <DeleteButton
-                    onClick={() =>
-                      openDeleteModal(employee.employeeId, employee.fullName)
-                    }
-                  />
-                </div>
-              </td>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full text-sm text-left text-gray-800">
+          <thead className="bg-blue-300 border-b">
+            <tr>
+              <th className="py-3 px-4 border-b text-center">ID</th>
+              <th className="py-3 px-4 border-b text-center">Name</th>
+              <th className="py-3 px-4 border-b text-center sm:table-cell">
+                Email
+              </th>
+              <th className="py-3 px-4 border-b text-center">Role</th>
+              <th className="py-3 px-4 border-b text-center md:table-cell">
+                Outlet
+              </th>
+              <th className="py-3 px-4 border-b text-center">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
+          </thead>
+          <tbody>
+            {employees.map((employee) => (
+              <tr key={employee.employeeId} className="text-center border-b">
+                <td className="py-2 px-4">{employee.employeeId}</td>
+                <td className="py-2 px-4">{employee.fullName}</td>
+                <td className="py-2 px-4 sm:table-cell">{employee.email}</td>
+                <td className="py-2 px-4">{employee.role}</td>
+                <td className="py-2 px-4 md:table-cell">
+                  {employee.outlet?.name || 'Not Assigned'}
+                </td>
+                <td className="py-2 px-4">
+                  <div className="flex gap-1 justify-center">
+                    <UpdateButton
+                      onClick={() =>
+                        openUpdateModal(
+                          employee.employeeId,
+                          employee.email,
+                          employee.password,
+                          employee.fullName,
+                          employee.role,
+                          employee.outletId,
+                          employee.worker?.station!,
+                        )
+                      }
+                    />
+                    <DeleteButton
+                      onClick={() =>
+                        openDeleteModal(employee.employeeId, employee.fullName)
+                      }
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-between items-center gap-4 mt-4">
         <button
           onClick={prevPage}
