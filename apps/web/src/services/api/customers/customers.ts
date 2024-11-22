@@ -148,3 +148,26 @@ export const changeEmail = async(data: ICustomerEditEmail) =>{
   const result = await res.json()
   return {result, ok :res.ok}
 }
+export const updateOrderStatus = async (
+  order_id:  string | string[] | undefined, 
+  transaction_status: string | string[] | undefined, 
+  status_code: string | string[] | undefined
+) => {
+  const url = `${BASEURL}/api/orders/completed-order`
+  const data = {
+    order_id : order_id,
+    transaction_status: transaction_status,
+    status_code: status_code
+  }
+  console.log(data)
+  const res = await fetch(url,{
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+
+  })
+  const result = res.json()
+  return {result, ok : res.ok}
+}

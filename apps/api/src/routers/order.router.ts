@@ -22,7 +22,7 @@ export class OrderRouter {
       this.orderController.generatePaymentLink,
     );
     this.router.post('/order', this.orderController.updatePaymentOrder);
-    this.router.get(
+    this.router.post(
       '/completed-order',
       this.orderController.updatePaymentOrder,
     );

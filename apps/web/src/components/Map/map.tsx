@@ -133,6 +133,7 @@ export default function Map() {
     },
     onError: (err) => {
       toast.error(err?.message || 'Gagal Mengirim Data');
+      router.refresh()
       console.log(err);
     },
   });

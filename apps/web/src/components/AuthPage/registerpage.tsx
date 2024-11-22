@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { FormikHelpers, useFormik } from "formik"
 import { customerReg } from "@/services/api/customers/customers"
 import { toast } from "react-toastify"
+import { useMutation } from "@tanstack/react-query"
 const registerSchema = yup.object().shape({
   email: yup.string().email().required(),
   fullName: yup.string().required(),
@@ -23,21 +24,39 @@ export const RegisterPage = () => {
     initialValues: initialValues,
     validationSchema: registerSchema,
     onSubmit: (values, action) => {
-      handleRegister(values, action)
+      // handleRegister(values, action)
+      registerMutation.mutate(values)
     }
   })
-  const handleRegister = async (data: ICustomerReg, action: FormikHelpers<ICustomerReg>) => {
-    try {
-      const { result, ok } = await customerReg(data)
+  // const handleRegister = async (data: ICustomerReg, action: FormikHelpers<ICustomerReg>) => {
+  //   try {
+  //     const { result, ok } = await customerReg(data)
+  //     console.log(result)
+  //     if (!ok) throw result.msg
+  //     router.push('/register/success')
+  //     action.resetForm()
+  //     toast.success(result.msg)
+  //   } catch (err) {
+  //     console.log(err)
+  //   }
+  // }
+  const registerMutation = useMutation({
+    mutationFn: async(data: ICustomerReg) => await customerReg(data),
+    onSuccess: (result)=>{
       console.log(result)
-      if (!ok) throw result.msg
-      router.push('/register/success')
-      action.resetForm()
-      toast.success(result.msg)
-    } catch (err) {
+      if(result.ok){
+        router.push('/register/success')
+        toast.success(`${result.result.msg} please check your email and verify account`)
+      }else{
+        throw Error ('Register Failed or Email Already exist')
+      }
+    },
+    onError: (err)=>{
       console.log(err)
+      toast.error(err?.message)
     }
-  }
+
+  })
   return (
     <section className="flex flex-col items-center justify-center w-full h-screen">
       <Card className="p-5 space-y-4 shadow-none px-7">
@@ -62,7 +81,7 @@ export const RegisterPage = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              <button type="submit" className="w-full p-1 bg-blue-500 rounded-2xl">Register</button>
+              <button type="submit" className="w-full p-1 bg-blue-500 rounded-2xl">{registerMutation.isPending ? "loading...": "Register"}</button>
             </div>
           </div>
         </form>

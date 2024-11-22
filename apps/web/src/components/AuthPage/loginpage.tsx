@@ -86,7 +86,9 @@ export const LoginPage = () => {
         <form onSubmit={formik.handleSubmit}>
           <h1 className="text-5xl font-light">Get Started</h1>
           <h1 className="text-3xl font-light">
-            Do not Have Account ? <span className="text-blue-500">Sign Up</span>
+            Do not Have Account ? <span className="text-blue-500">
+              <Link href='/register'>Sign Up</Link>
+            </span>
           </h1>
           <div className="shadow-none ">
             <div className="flex flex-col w-full gap-5">

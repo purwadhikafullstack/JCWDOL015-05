@@ -315,8 +315,8 @@ export class OrderController {
   }
   async updatePaymentOrder(req: Request, res: Response) {
     try {
-      const { order_id, transaction_status, status_code } = req.query;
-
+      const { order_id, transaction_status, status_code } = req.body;
+      console.log(order_id,transaction_status,status_code)
       if (!order_id || !transaction_status || !status_code)
         throw 'invalid query';
       const checkOrder = await prisma.order.findUnique({

@@ -21,7 +21,7 @@ export class AuthController {
         const checkEmail = await prisma.customer.findUnique({
           where: { email: email }
         })
-        if (checkEmail) throw ('Email already exists')
+        if (checkEmail) throw Error ('Email already exists')
       }
       const payload = { email: email, fullName: fullName, role: role }
       const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1h' })
@@ -46,6 +46,7 @@ export class AuthController {
       })
     } catch (err) {
       res.status(400).send({
+        status: 'failed',
         err: err,
       })
       console.log(err);

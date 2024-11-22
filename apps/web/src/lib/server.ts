@@ -23,3 +23,11 @@ export async function getToken() {
     console.log(`Error Get Token : ${err}`)
   }
 }
+export async function decodeToken(token: string){
+  try {
+    const decodeToken = JSON.parse(atob(token!.split('.')[1]))
+    return decodeToken
+  } catch (err) {
+    console.log(`Error Decode Token : ${err}`)
+  }
+}
