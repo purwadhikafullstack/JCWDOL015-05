@@ -63,16 +63,16 @@ export default function OrderConfirmationPage() {
       );
 
       if (response.ok) {
-        alert(`Order #${orderId} has been assigned to driver`);
+        toast.success(`Order #${orderId} has been assigned to driver`);
         fetchOrders();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to confirm Order #${orderId}`);
+        toast.error(`Failed to confirm Order #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while confirming Order #${orderId}`);
+      toast.error(`An error occurred while confirming Order #${orderId}`);
     }
   };
 

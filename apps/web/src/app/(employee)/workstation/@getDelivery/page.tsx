@@ -85,16 +85,16 @@ export default function GetDeliveryPage() {
       if (response.ok) {
         setIsAvailable(false); // Assume driver is now unavailable
         fetchOrders(); // Refresh the orders
-        alert(`Order #${orderId} is now yours, let's go!`);
+        toast.success(`Order #${orderId} is now yours, let's go!`);
         router.push('/employee');
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to confirm Order #${orderId}`);
+        toast.error(`Failed to confirm Order #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while confirming Order #${orderId}`);
+      toast.error(`An error occurred while confirming Order #${orderId}`);
     }
   };
 

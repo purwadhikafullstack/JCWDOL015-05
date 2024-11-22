@@ -10,6 +10,7 @@ import DeleteModal from '../../components/deleteModal';
 import { UpdateOutlet, createOutlet } from '../lib/outletServices';
 import OutletUpdateModal from '../../components/outletUpdateModal';
 import OutletCreateModal from '../../components/outletCreateModal';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -89,9 +90,10 @@ export default function OutletManagement() {
       setOutlets((prevoutlets) =>
         prevoutlets.filter((outlet: Outlet) => outlet.outletId !== outletId),
       );
+      toast.success('Outlet deleted');
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error('Error deleting outlet:', error);
+      toast.error('Outlet failed to be deleted');
     }
   };
 

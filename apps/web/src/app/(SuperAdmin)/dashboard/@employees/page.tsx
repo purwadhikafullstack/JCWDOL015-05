@@ -10,6 +10,7 @@ import { createEmployee, UpdateEmployee } from '../lib/employeeServices';
 import EmployeeUpdateModal from '../../components/employeeUpdateModal';
 import DeleteModal from '../../components/deleteModal';
 import EmployeeCreateModal from '../../components/employeeCreateModal';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -109,9 +110,10 @@ export default function EmployeeManagement() {
       );
       setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
       await fetchEmployees();
+      toast.success('Employee created');
       closeCreateModal();
     } catch (error) {
-      console.error('Error creating employee:', error);
+      toast.error('Failed to create employee');
     }
   };
 
@@ -137,9 +139,10 @@ export default function EmployeeManagement() {
           (employee: Employee) => employee.employeeId !== employeeId,
         ),
       );
+      toast.success('Deletion success');
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error('Error deleting employee:', error);
+      toast.error('Deletion failed');
     }
   };
 
@@ -199,9 +202,10 @@ export default function EmployeeManagement() {
         ),
       );
       await fetchEmployees();
+      toast.success('Employee updated');
       closeUpdateModal();
     } catch (error) {
-      console.error('Error updating employee:', error);
+      toast.error('update failed');
     }
   };
 

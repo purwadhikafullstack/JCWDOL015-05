@@ -11,6 +11,7 @@ import { createItem, UpdateItem } from '../lib/itemsServices';
 import ItemCreateModal from '../../components/itemCreateModal';
 import ItemUpdateModal from '../../components/itemUpdateModal';
 import { Button } from '@/components/ui/button';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -94,9 +95,10 @@ export default function ItemManagement() {
       setItems((prevItems) =>
         prevItems.filter((item: Item) => item.itemId !== itemId),
       );
+      toast.success('Item deleted');
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error('Error deleting item:', error);
+      toast.error('Item deletion failed');
     }
   };
 
@@ -137,9 +139,10 @@ export default function ItemManagement() {
         ),
       );
       fetchItems(currentPage);
+      toast.success('Item updated');
       closeUpdateModal();
     } catch (error) {
-      console.error('Error updating item:', error);
+      toast.error('update failed');
     }
   };
 
@@ -170,9 +173,10 @@ export default function ItemManagement() {
       );
       setItems((prevItems) => [...prevItems, newItem]);
       fetchItems(currentPage);
+      toast.success('Item created');
       closeCreateModal();
     } catch (error) {
-      console.error('Error creating item:', error);
+      toast.error('failed to create item');
     }
   };
 

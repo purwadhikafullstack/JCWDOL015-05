@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 export default function OnPickupPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -65,18 +66,18 @@ export default function OnPickupPage() {
       });
 
       if (response.ok) {
-        alert(
+        toast.success(
           `You have pickup items from order #${orderId}, lets go back to outlet!`,
         );
         fetchOrders();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to pickup Order #${orderId}`);
+        toast.error(`Failed to pickup Order #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while pickuping Order #${orderId}`);
+      toast.error(`An error occurred while pickuping Order #${orderId}`);
     }
   };
 
@@ -94,17 +95,19 @@ export default function OnPickupPage() {
       );
 
       if (response.ok) {
-        alert(`Items sent to outlet successfuly`);
+        toast.success(`Items sent to outlet successfuly`);
         fetchOrders();
         fetchDriverAvailability();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed complete pickup #${orderId}`);
+        toast.error(`Failed complete pickup #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while completing pickup order #${orderId}`);
+      toast.error(
+        `An error occurred while completing pickup order #${orderId}`,
+      );
     }
   };
 
@@ -122,17 +125,17 @@ export default function OnPickupPage() {
       );
 
       if (response.ok) {
-        alert(`Items sent to customer successfuly`);
+        toast.success(`Items sent to customer successfuly`);
         fetchOrders();
         fetchDriverAvailability();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed complete delivery`);
+        toast.error(`Failed complete delivery`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while completing delivery`);
+      toast.error(`An error occurred while completing delivery`);
     }
   };
 

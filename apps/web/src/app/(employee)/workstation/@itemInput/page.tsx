@@ -180,16 +180,16 @@ export default function ItemInputPage() {
         if (response.ok) {
           const data = await response.json();
           console.log('Response:', data);
-          alert(`Items for Order #${orderId} submitted successfully`);
+          toast.success(`Items for Order #${orderId} submitted successfully`);
           fetchOrders();
         } else {
           const errorData = await response.json();
           console.error('Error:', errorData);
-          alert(`Failed to submit items for Order #${orderId}`);
+          toast.error(`Failed to submit items for Order #${orderId}`);
         }
       } catch (error) {
         console.error('Error submitting items:', error);
-        alert(`Failed to submit items for Order #${orderId}`);
+        toast.error(`Failed to submit items for Order #${orderId}`);
       }
     }
   };

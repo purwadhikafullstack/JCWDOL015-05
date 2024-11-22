@@ -92,16 +92,16 @@ export default function WorkerTaskPage() {
       );
 
       if (response.ok) {
-        alert(`Bypass message has been sent`);
+        toast.success(`Bypass message has been sent`);
         fetchTask();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to send bypass message`);
+        toast.error(`Failed to send bypass message`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while submitting bypass message`);
+      toast.error(`An error occurred while submitting bypass message`);
     }
   };
 
@@ -124,16 +124,16 @@ export default function WorkerTaskPage() {
       );
 
       if (response.ok) {
-        alert(`Task completed`);
+        toast.success(`Task completed`);
         fetchTask();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to complete task`);
+        toast.error(`Failed to complete task`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while completing task`);
+      toast.error(`An error occurred while completing task`);
     }
   };
 
