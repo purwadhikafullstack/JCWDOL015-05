@@ -106,7 +106,6 @@ export class OrderController {
       res.status(500).json({ error: 'Failed to fetch orders' });
     }
   }
-
   async getNearOutlets(req: Request, res: Response) {
     try {
       const { addressId, customerId } = req.body;
@@ -313,9 +312,40 @@ export class OrderController {
       });
     }
   }
+  async getMidtransStatus (req: Request, res: Response){
+    try {
+      const orderId = req.params.orderId
+      const url = `https://api.sandbox.midtrans.com/v2/${orderId}/status`
+      console.log(url)
+      const secret = process.env.MIDTRANS_SECRET_KEY!;
+      const encodedKey = Buffer.from(secret).toString('base64');
+      const midtransRes = await fetch(url, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${encodedKey}`,
+          Accept: 'application/json',
+        }
+      })
+      // console.log(midtransRes)
+      const resultMidtrans = await midtransRes.json()
+      console.log(resultMidtrans)
+      res.status(200).send({
+        status : 'ok',
+        data: resultMidtrans,
+        message: "Pembayaran Sukses"
+      })
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err,
+      });
+    }
+  }
   async updatePaymentOrder(req: Request, res: Response) {
     try {
       const { order_id, transaction_status, status_code } = req.body;
+      const url = `https://app.sandbox.midtrans.com`
       console.log(order_id,transaction_status,status_code)
       if (!order_id || !transaction_status || !status_code)
         throw 'invalid query';
@@ -352,18 +382,27 @@ export class OrderController {
   async getOrderListCustomer(req: Request, res: Response) {
     try {
       const { customerId } = req.body;
-      const { search } = req.query;
+      const { q } = req.query;
       let filter: Prisma.OrderWhereInput = {};
-      if (search) {
-        filter.orderId = { equals: filter as number };
+      if (q) {
+        const orderId = Number(q); // Convert `q` to a number
+        if (!isNaN(orderId)) {
+          filter.orderId = { equals: orderId }; // Assign only if `q` is a valid number
+        } else {
+          throw new Error("Invalid query parameter: `q` must be a number.");
+        }
       }
-      const sortBy = (req.query.sortBy as string) || 'orderId';
+      console.log(filter)
+      
+      const sortBy = (req.query.sortBy as string) || 'createdAt';
       const sortOrder = (req.query.sortOrder as string) || 'desc';
       const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string) || 5;
       const skip = (page - 1) * limit;
       const listOrder = await prisma.order.findMany({
-        where: { customerId: customerId, ...filter },
+        where: { 
+          customerId: customerId,
+           ...filter },
         skip: skip,
         take: limit,
         orderBy: {
@@ -376,6 +415,7 @@ export class OrderController {
           outletAdmin: true,
         },
       });
+      
       const totalOrder = await prisma.order.count({
         where: { customerId: customerId, ...filter },
       });
@@ -389,7 +429,7 @@ export class OrderController {
       });
     } catch (err) {
       res.status(400).send({
-        status: 'ok',
+        status: 'failed',
         err: err,
       });
     }

@@ -25,9 +25,9 @@ const RoleProtection = (WrappedComponent: React.ComponentType<any>, allowedRoles
         console.log(`role : ${decodeData.role}`)
         if (!token) {
           if(currentRole !== "customer") {
-            router.push('/employeeLogin')
+            // router.push('/employeeLogin')
           } else {
-            router.push('/login');
+            // router.push('/login');
           }
         } else if (!allowedRoles.includes(currentRole)) {
           router.push('/unauthorized');

@@ -14,8 +14,16 @@ import { CheckCircleIcon } from 'lucide-react';
 import { FC, useState } from 'react';
 import { toast } from 'react-toastify';
 import AddressDropdownMenu from '../../../components/Customer/profile/addressTableAction';
-
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 const tableHeader = [
+  'No',
   'Alamat Lengkap',
   'Lokasi',
   'LatLng',
@@ -65,39 +73,40 @@ export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
 
   return (
     <div className="overflow-x-auto w-full">
-      <table className="w-full table-auto">
-        <thead>
-          <th className="text-left w-fit">Index</th>
-          {tableHeader.map((title) => (
-            <th key={title} className="text-left">{title}</th>
-          ))}
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {sortedOptions.map((address, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{address.detailAddress}</td>
-              <td>
+       <Table>
+        <TableHeader className='text-left '>
+          <TableRow className='text-left '>
+            {tableHeader.map((title)=> (
+              <TableHead className="px-4 py-2 text-left whitespace-normal" key={title}>{title}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody >
+          {sortedOptions.map((address,index)=> (
+            <TableRow key={index} >
+            <TableCell>{index + 1}</TableCell>
+              <TableCell>{address.detailAddress}</TableCell>
+              <TableCell>
                 <div className="flex flex-col text-sm">
                   <p> {address.kecamatan}</p>
                   <p>{address.kota}</p>
                   <p>{address.provinsi}</p>
                 </div>
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 <div className="flex flex-col text-sm">
                   <p>{address.latitude}</p>
                   <p>{address.longitude}</p>
                 </div>
-              </td>
-              <td className="text-center">
+              </TableCell>
+              <TableCell className="text-center flex flex-col h-20 items-center justify-center">
                 {address.isPrimary === true ? (
                   <CheckCircleIcon></CheckCircleIcon>
                 ) : (
                   ''
                 )}
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 <div className="flex flex-row gap-1">
                   <AddressDropdownMenu
                     addressId={address.addressId}
@@ -107,11 +116,13 @@ export const CustomerAddressData: FC<CustomerAddressProps> = ({ options }) => {
                     onDelete={handleDeleteAddress}
                   />
                 </div>
-              </td>
-            </tr>
+              </TableCell>
+          </TableRow>
           ))}
-        </tbody>
-      </table>
+          
+        </TableBody>
+      </Table>
+     
     </div>
   );
 };

@@ -8,7 +8,7 @@ import { ICustomerOrderData } from '@/type/customers';
 import { useMutation } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { OrderListComponent } from '../../../components/Customer/profile/orderListComponent';
 import { ICustomerAddressData, ICustomerAddressProfile } from '@/type/address';
 import { getCustomerData } from '../../../services/api/customers/customers';
@@ -17,11 +17,27 @@ import { toast } from 'react-toastify';
 import { getCustomerAddress } from '@/services/api/address/address';
 import { CustomerAddressData } from '@/components/Customer/profile/customerAdressData';
 import defaultProfile from '@/assets/images.webp';
+import { useSearchParams } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 const Profile = () => {
   const [orderList, setOrderList] = useState<ICustomerOrderData[]>([]);
   const [customerData, setCustomerData] = useState<ICustomerData | null>(null);
   const [addresses, setAdresses] = useState<ICustomerAddressProfile[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const querySearch = useSearchParams().get('search');
+  const [search, setSearch] = useState<string | any>('');
+  const searchRef = useRef<HTMLInputElement | null>(null);
+
   const customer = useAppSelector((state) => state.customer);
   const profilePict = customerData?.avatar || defaultProfile;
 
@@ -40,9 +56,11 @@ const Profile = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (currentPage:number, qSearch?: any) => {
       const { result, ok, orderData } = await customerOrderData(
         customer.customerId,
+        currentPage,
+        qSearch = search
       );
       if (!ok) throw result.msg;
       return orderData;
@@ -54,7 +72,6 @@ const Profile = () => {
       console.log(err);
     },
   });
-
   const userAddress = useMutation({
     mutationFn: async () => {
       const { result, ok, address } = await getCustomerAddress(
@@ -69,11 +86,30 @@ const Profile = () => {
       toast.error(err?.message);
     },
   });
-
+ 
+  const handlePagination = (cmd: string) => {
+    if (cmd == 'plus') {
+      setCurrentPage((currentPage) => {
+        const nextPage = currentPage + 1
+        mutation.mutate(nextPage)
+        return nextPage;
+      })
+    } else if (cmd == 'minus') {
+      setCurrentPage((prevPage) => {
+        const prevPageValue = Math.max(1, prevPage - 1)
+        mutation.mutate(prevPageValue)
+        return prevPageValue;
+      })
+    }
+  }
+  const handleSearch = () =>{
+    console.log(typeof search)
+    mutation.mutate(1, search)
+  }
   useEffect(() => {
     userData.mutate();
     userAddress.mutate();
-    mutation.mutate();
+    mutation.mutate(currentPage);
   }, []);
 
   return (
@@ -120,15 +156,33 @@ const Profile = () => {
             </Card>
 
             <Card className="w-3/4 h-fit p-5 space-y-3 flex flex-col items-center">
-              <h1 className="text-2xl w-full text-left">My Orders</h1>
+              <div className="w-full flex justify-between">
+                <h1 className="text-2xl w-full text-left">My Orders</h1>
+                <div className="flex flex-row gap-3 justify-between">
+                  <Input name='search' onChange={(e)=>setSearch(e.target.value)} className="" placeholder="Cari No Order" />
+                  <Button onClick={handleSearch }>Search</Button>
+                </div>
+              </div>
               {mutation.isPending ? (
                 <p>is loading ...</p>
               ) : orderList && orderList.length > 0 ? (
-                <OrderListComponent options={orderList} />
+                <OrderListComponent options={orderList} currentPage={currentPage} />
               ) : (
                 <p className="text-gray-400">Order Tidak Ditemukan</p>
               )}
-              <p className="my-3">Page 1</p>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious className='cursor-pointer' onClick={()=> handlePagination('minus')} />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink href="#">{currentPage}</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext className='cursor-pointer' onClick={()=> handlePagination('plus')}/>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </Card>
           </div>
         </div>

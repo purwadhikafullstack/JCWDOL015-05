@@ -27,6 +27,7 @@ export class OrderRouter {
       this.orderController.updatePaymentOrder,
     );
     this.router.get('/:customerId', this.orderController.getOrderListCustomer);
+    this.router.get('/order-data/:orderId', this.orderController.getMidtransStatus)
   }
 
   getRouter(): Router {

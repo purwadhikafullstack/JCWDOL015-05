@@ -153,21 +153,33 @@ export const updateOrderStatus = async (
   transaction_status: string | string[] | undefined, 
   status_code: string | string[] | undefined
 ) => {
-  const url = `${BASEURL}/api/orders/completed-order`
-  const data = {
-    order_id : order_id,
-    transaction_status: transaction_status,
-    status_code: status_code
+  const midtransUrl = `${BASEURL}/api/orders/order-data/${order_id}`
+  const midtransRes = await fetch(midtransUrl)
+  const midtransResult = await midtransRes.json()
+  let result 
+  if(!midtransRes.ok) throw Error ('Failed Payment')
+  console.log(midtransResult.data)
+  const midtrans = midtransResult.data
+  console.log(midtrans.transaction_status)
+  
+  if(midtrans.status_code == "200" && midtrans.transaction_status == "settlement"){
+    const url = `${BASEURL}/api/orders/completed-order`
+    const data = {
+        order_id : order_id,
+        transaction_status: transaction_status,
+        status_code: status_code
+      }
+      const res = await fetch(url,{
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+    // 
+    result = res.json()
+  }else{
+    throw Error('Silahkan Lakukan Pembayaran')
   }
-  console.log(data)
-  const res = await fetch(url,{
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-
-  })
-  const result = res.json()
-  return {result, ok : res.ok}
+  return {result, midtransResult: midtrans , midtransOk: midtransRes.ok}
 }

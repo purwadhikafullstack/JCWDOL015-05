@@ -68,7 +68,7 @@ const LocationForm: React.FC<LocationFormProps> = ({
       value={customers.customerId}
       defaultValue={customers.customerId}
       onChange={formik.handleChange}
-      type="text"
+      type="hidden"
     />
     <Label>Alamat Lengkap</Label>
     <Input

@@ -11,9 +11,16 @@ export const successOrder = async () => {
         body : JSON.stringify({})
     })
 }
-
-export const customerOrderData = async (customerId : number) => {
-    const url = `${BASEURL}/api/orders/:${customerId}`
+interface customerOrderData {
+    
+}
+export const customerOrderData = async (
+    customerId : number,
+    page: number,
+    qSearch?: string | ''
+) => {
+    console.log(qSearch)
+    const url = `${BASEURL}/api/orders/:${customerId}?page=${page}&q=${qSearch ? qSearch : ''}`
     const res = await fetch (url)
     const result = await res.json()
     return {ok: res.ok, result, orderData: result.data} 

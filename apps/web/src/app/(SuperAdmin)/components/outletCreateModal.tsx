@@ -49,7 +49,8 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
     initialValues,
     validationSchema,
     onSubmit: (values) => {
-      onConfirm(values);
+      // onConfirm(values);
+      console.log(values)
     },
   });
 
@@ -60,9 +61,9 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
       <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
         <h2 className="text-xl font-semibold mb-4">Create Data</h2>
 
-        <form onSubmit={formik.handleSubmit}>
+        {/* <form onSubmit={formik.handleSubmit}> */}
           {/* Outlet Name */}
-          <div>
+          {/* <div>
             <label className="block text-left text-sm font-medium mb-1">
               Outlet Name
             </label>
@@ -77,10 +78,10 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
             {formik.touched.name && formik.errors.name && (
               <div className="text-red-500 text-sm">{formik.errors.name}</div>
             )}
-          </div>
+          </div> */}
 
           {/* Provinsi */}
-          <div>
+          {/* <div>
             <label className="block text-left text-sm font-medium mb-1">
               Provinsi
             </label>
@@ -97,10 +98,10 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
                 {formik.errors.provinsi}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Kota */}
-          <div>
+          {/* <div>
             <label className="block text-left text-sm font-medium mb-1">
               Kota
             </label>
@@ -115,10 +116,10 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
             {formik.touched.kota && formik.errors.kota && (
               <div className="text-red-500 text-sm">{formik.errors.kota}</div>
             )}
-          </div>
+          </div> */}
 
           {/* Kecamatan */}
-          <div>
+          {/* <div>
             <label className="block text-left text-sm font-medium mb-1">
               Kecamatan
             </label>
@@ -135,10 +136,10 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
                 {formik.errors.kecamatan}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Longitude */}
-          <div>
+          {/* <div>
             <label className="block text-left text-sm font-medium mb-1">
               Longitude
             </label>
@@ -155,10 +156,10 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
                 {formik.errors.longitude}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Latitude */}
-          <div>
+          {/* <div>
             <label className="block text-left text-sm font-medium mb-1">
               Latitude
             </label>
@@ -175,8 +176,7 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
                 {formik.errors.latitude}
               </div>
             )}
-          </div>
-
+          </div> */}
           <div className="flex justify-between mt-6">
             <button
               type="submit"
@@ -192,7 +192,7 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
               Cancel
             </button>
           </div>
-        </form>
+        {/* </form> */}
       </div>
     </div>
   );

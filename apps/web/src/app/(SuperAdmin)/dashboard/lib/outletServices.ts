@@ -35,6 +35,39 @@ export async function createOutlet(
     throw error; // rethrow the error to handle it in the calling function
   }
 }
+export interface ICreateOutlet {
+  name: string;
+  provinsi: string;
+  kota: string;
+  kecamatan: string;
+  longitude: number;
+  latitude: number;
+}
+
+export async function createNewOutlet(data: ICreateOutlet) {
+  try {
+    const response = await fetch(`${BASEURL}/api/outlet`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+
+    if (!response.ok) {
+      throw new Error('Failed to create outlet');
+    }
+
+
+    const newOutlet = await response.json();
+    return newOutlet;
+  } catch (error) {
+    console.error('Error creating outlet:', error);
+    throw error; // rethrow the error to handle it in the calling function
+  }
+}
+
 
 export async function UpdateOutlet(
   outletId: number,
