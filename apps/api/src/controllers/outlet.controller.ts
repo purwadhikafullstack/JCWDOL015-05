@@ -124,8 +124,13 @@ export class OutletController {
           kecamatan:
             kecamatan !== undefined ? kecamatan : existingOutlet.kecamatan,
           longitude:
-            longitude !== undefined ? longitude : existingOutlet.longitude,
-          latitude: latitude !== undefined ? latitude : existingOutlet.latitude,
+            longitude !== undefined
+              ? parseFloat(longitude)
+              : existingOutlet.longitude,
+          latitude:
+            latitude !== undefined
+              ? parseFloat(latitude)
+              : existingOutlet.latitude,
         },
       });
 

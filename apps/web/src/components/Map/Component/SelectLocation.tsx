@@ -1,17 +1,24 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { FC } from 'react';
 
 interface LocationOption {
-  value: string; 
-  label: string; 
+  value: string;
+  label: string;
 }
 
 interface LocationSelectProps {
-  options: LocationOption[]; 
-  placeholder: string; 
+  options: LocationOption[];
+  placeholder: string;
   onValueChange: (value: string) => void;
-  name: string; 
+  name: string;
   disabled?: boolean;
+  defaultValue?: string;
 }
 
 export const LocationSelect: FC<LocationSelectProps> = ({

@@ -23,7 +23,7 @@ export const mapSchema = yup.object().shape({
 });
 
 export const OutletSchema = yup.object().shape({
-  name: yup.string().required(),
+  name: yup.string().required('Outlet name is required'),
   provinsi: yup.string().required(),
   kota: yup.string().required(),
   kecamatan: yup.string().required(),

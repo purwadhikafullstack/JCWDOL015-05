@@ -14,11 +14,30 @@ import { handleCancel } from '@/components/Map/action';
 import OutletLocationForm from './outletLocationForm';
 import {
   createNewOutlet,
-  ICreateOutlet,
+  IUpdateOutlet,
+  UpdateOutlet,
 } from '../dashboard/lib/outletServices';
 import { OutletSchema } from '@/schemaData/schemaData';
 
-export default function MapGenerator() {
+interface UpdateMapProps {
+  outletId: number;
+  initialName: string;
+  initialProvinsi: string;
+  initialKota: string;
+  initialKecamatan: string;
+  initialLongitude: number;
+  initialLatitude: number;
+}
+
+export default function UpdateMap({
+  outletId,
+  initialName,
+  initialKecamatan,
+  initialKota,
+  initialProvinsi,
+  initialLongitude,
+  initialLatitude,
+}: UpdateMapProps) {
   const mapContainerRef = useRef<any | null>(null);
   const mapRef = useRef<any | null>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
@@ -87,39 +106,42 @@ export default function MapGenerator() {
     }
   };
 
-  const formik = useFormik<ICreateOutlet>({
+  const formik = useFormik<IUpdateOutlet>({
     initialValues: {
-      name: '',
-      provinsi: '',
-      kota: '',
-      kecamatan: '',
-      longitude: 0,
-      latitude: 0,
+      outletId: outletId,
+      name: initialName,
+      provinsi: initialKecamatan,
+      kota: initialKota,
+      kecamatan: initialKecamatan,
+      longitude: initialLongitude,
+      latitude: initialLatitude,
     },
     validationSchema: OutletSchema,
     validateOnBlur: true,
     validateOnChange: true,
     onSubmit: (values, action) => {
-      console.log('SUBMITTING VALUES:', values);
       sendDataMutation.mutate(values);
       action.resetForm();
     },
   });
   const sendDataMutation = useMutation({
-    mutationFn: async (data: ICreateOutlet) => await createNewOutlet(data),
+    mutationFn: async (data: IUpdateOutlet) => await UpdateOutlet(data),
     onSuccess: (data) => {
-      const { newOutlet, ok } = data;
-      if (!ok) throw newOutlet.msg;
-      toast.success('Outlet Created');
-      marker?.remove();
-      setMarker(null);
-      setSelectedProvince('');
-      setSelectedCity('');
-      setSelectedSubdistrict('');
+      if (data && data.ok && data.updatedItem) {
+        const { updatedItem, ok } = data;
+        if (!ok) throw updatedItem.msg;
+        toast.success('Outlet updated');
+        marker?.remove();
+        setMarker(null);
+        setSelectedProvince('');
+        setSelectedCity('');
+        setSelectedSubdistrict('');
+      } else {
+        toast.error('Data is not in the expected format');
+      }
     },
-    onError: (err) => {
+    onError: () => {
       toast.error('Gagal Mengirim Data');
-      console.log(err);
     },
   });
 
@@ -164,7 +186,6 @@ export default function MapGenerator() {
     let city = selectedCity.replace(/^(KAB\.|KOTA)\s*/, '');
     let address = `${value},${city}`;
     const { result, ok, resLng, resLat } = await getLngLat(address);
-    console.log(result);
     if (!ok) throw result.msg;
     setCoordinates({
       lat: parseFloat(resLat),
@@ -237,6 +258,8 @@ export default function MapGenerator() {
                   handleSelectSubdistric={handleSelectSubdistric}
                   marker={marker}
                   sendDataMutation={sendDataMutation}
+                  initialName={initialName}
+                  initialProvinsi={initialProvinsi}
                 />
               </form>
             </div>

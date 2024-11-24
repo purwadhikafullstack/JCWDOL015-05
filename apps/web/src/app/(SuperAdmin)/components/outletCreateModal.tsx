@@ -10,16 +10,6 @@ const OutletCreateModal: React.FC<OutletCreateModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  // Initial form values
-  const initialValues = {
-    name: '',
-    provinsi: '',
-    kota: '',
-    kecamatan: '',
-    longitude: 0,
-    latitude: 0,
-  };
-
   const handleCancel = () => {
     onClose();
   };

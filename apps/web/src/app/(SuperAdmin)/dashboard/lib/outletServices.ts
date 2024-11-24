@@ -11,6 +11,16 @@ export interface ICreateOutlet {
   latitude: number;
 }
 
+export interface IUpdateOutlet {
+  outletId: number;
+  name: string;
+  provinsi: string;
+  kota: string;
+  kecamatan: string;
+  longitude: number;
+  latitude: number;
+}
+
 export async function createNewOutlet(data: ICreateOutlet) {
   try {
     const response = await fetch(`${BASEURL}/api/outlet`, {
@@ -33,37 +43,22 @@ export async function createNewOutlet(data: ICreateOutlet) {
   }
 }
 
-export async function UpdateOutlet(
-  outletId: number,
-  name: string,
-  provinsi: string,
-  kota: string,
-  kecamatan: string,
-  longitude: number,
-  latitude: number,
-) {
-  if (outletId === null) return;
+export async function UpdateOutlet(data: IUpdateOutlet) {
+  if (data.outletId === null) return;
 
   try {
-    const response = await fetch(`${BASEURL}/api/outlet/${outletId}`, {
+    const response = await fetch(`${BASEURL}/api/outlet/${data.outletId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        name,
-        provinsi,
-        kota,
-        kecamatan,
-        longitude,
-        latitude,
-      }),
+      body: JSON.stringify(data),
     });
     if (!response.ok) {
       throw new Error('Failed to create outlet');
     }
     const updatedItem = await response.json();
-    return updatedItem;
+    return { updatedItem, ok: response.ok };
   } catch (error) {
     console.error('Error updating outlet:', error);
   }

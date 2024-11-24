@@ -15,6 +15,8 @@ interface OutletLocationForm {
   handleSelectSubdistric: (value: string) => void;
   marker: any;
   sendDataMutation: { isPending: boolean };
+  initialName?: string;
+  initialProvinsi?: string;
 }
 
 const OutletLocationForm: React.FC<OutletLocationForm> = ({
@@ -27,6 +29,8 @@ const OutletLocationForm: React.FC<OutletLocationForm> = ({
   handleSelectSubdistric,
   marker,
   sendDataMutation,
+  initialName,
+  initialProvinsi,
 }) => {
   return (
     <>
@@ -37,11 +41,17 @@ const OutletLocationForm: React.FC<OutletLocationForm> = ({
         placeholder="Nama Outlet"
         value={formik.values.name}
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
       />
+      <div>
+        {formik.touched.name && typeof formik.errors.name === 'string' && (
+          <p className="text-red-500 text-sm">{formik.errors.name}</p>
+        )}
+      </div>
       <Label>Provinsi</Label>
       <LocationSelect
         name="provinsi"
-        placeholder="Pilih Provinsi"
+        placeholder={initialProvinsi || 'Pilih Provinsi'}
         onValueChange={handleSelectProvinsi}
         options={provinces.map((province) => ({
           label: province.province,
@@ -89,7 +99,7 @@ const OutletLocationForm: React.FC<OutletLocationForm> = ({
             marker != null ? '' : 'hidden'
           }`}
         >
-          {sendDataMutation.isPending ? 'loading...' : 'Create oultet'}
+          {sendDataMutation.isPending ? 'loading...' : 'Submit'}
         </Button>
       </div>
     </>

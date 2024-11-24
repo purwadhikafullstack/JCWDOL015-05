@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/actionButton';
 import { useEffect, useState, useCallback } from 'react';
 import DeleteModal from '../../components/deleteModal';
-import { UpdateOutlet } from '../lib/outletServices';
 import OutletUpdateModal from '../../components/outletUpdateModal';
 import OutletCreateModal from '../../components/outletCreateModal';
 import { toast } from 'react-toastify';
@@ -124,47 +123,8 @@ export default function OutletManagement() {
     setOutleKecamatan(null);
     setOutletLongitude(null);
     setOutletLatitude(null);
+    fetchOutlets();
     setIsUpdateModalOpen(false);
-  };
-
-  const handleUpdateOutlet = async (values: {
-    name: string;
-    provinsi: string;
-    kota: string;
-    kecamatan: string;
-    longitude: number;
-    latitude: number;
-  }) => {
-    try {
-      const updatedOutlet = await UpdateOutlet(
-        outletId!,
-        values.name,
-        values.provinsi,
-        values.kota,
-        values.kecamatan,
-        values.longitude,
-        values.latitude,
-      );
-      setOutlets((prevoutlets) =>
-        prevoutlets.map((outlet: Outlet) =>
-          outlet.outletId === updatedOutlet.outletId
-            ? {
-                ...outlet,
-                name: updatedOutlet.name,
-                provinsi: updatedOutlet.provinsi,
-                kota: updatedOutlet.kota,
-                kecamatan: updatedOutlet.kecamatan,
-                longitude: updatedOutlet.longitude,
-                latitude: updatedOutlet.latitude,
-              }
-            : outlet,
-        ),
-      );
-      await fetchOutlets();
-      closeUpdateModal();
-    } catch (error) {
-      console.error('Error updating outlet:', error);
-    }
   };
 
   const openCreateModal = () => {
@@ -294,8 +254,8 @@ export default function OutletManagement() {
       />
       <OutletUpdateModal
         isOpen={isUpdateModalOpen}
+        outletId={outletId!}
         onClose={closeUpdateModal}
-        onConfirm={handleUpdateOutlet}
         initialName={outletName!}
         initialProvinsi={outletProvinsi!}
         initialKota={outletKota!}
