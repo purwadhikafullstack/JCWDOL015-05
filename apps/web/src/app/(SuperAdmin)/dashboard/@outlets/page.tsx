@@ -7,14 +7,14 @@ import {
 } from '@/components/ui/actionButton';
 import { useEffect, useState, useCallback } from 'react';
 import DeleteModal from '../../components/deleteModal';
-import { UpdateOutlet, createOutlet } from '../lib/outletServices';
+import { UpdateOutlet } from '../lib/outletServices';
 import OutletUpdateModal from '../../components/outletUpdateModal';
 import OutletCreateModal from '../../components/outletCreateModal';
 import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
-type Outlet = {
+export type Outlet = {
   outletId: number;
   name: string | null;
   provinsi: string | null;
@@ -168,37 +168,12 @@ export default function OutletManagement() {
   };
 
   const openCreateModal = () => {
-    setOutletName('');
     setIsCreateModalOpen(true);
   };
 
   const closeCreateModal = () => {
+    fetchOutlets();
     setIsCreateModalOpen(false);
-  };
-
-  const handleCreateOutlet = async (values: {
-    name: string;
-    provinsi: string;
-    kota: string;
-    kecamatan: string;
-    longitude: number;
-    latitude: number;
-  }) => {
-    try {
-      const newOutlet = await createOutlet(
-        values.name,
-        values.provinsi,
-        values.kota,
-        values.kecamatan,
-        values.longitude,
-        values.latitude,
-      );
-      setOutlets((prevItems) => [...prevItems, newOutlet]);
-      await fetchOutlets();
-      closeCreateModal();
-    } catch (error) {
-      console.error('Error creating outlet:', error);
-    }
   };
 
   // Pagination handlers
@@ -245,6 +220,9 @@ export default function OutletManagement() {
               </th>
               <th className="py-3 px-4 text-center border-slate-700">Kota</th>
               <th className="py-3 px-4 text-center border-slate-700">
+                Kecamatan
+              </th>
+              <th className="py-3 px-4 text-center border-slate-700">
                 Actions
               </th>
             </tr>
@@ -258,6 +236,9 @@ export default function OutletManagement() {
                   </td>
                   <td className="py-3 px-4 border-slate-700">{outlet.name}</td>
                   <td className="py-3 px-4 border-slate-700">{outlet.kota}</td>
+                  <td className="py-3 px-4 border-slate-700">
+                    {outlet.kecamatan}
+                  </td>
                   <td>
                     <div className="flex gap-2 justify-center">
                       <UpdateButton
@@ -295,7 +276,7 @@ export default function OutletManagement() {
         >
           Previous
         </button>
-        <span>
+        <span className="text-sm">
           Page {page} of {totalPages}
         </span>
         <button
@@ -310,7 +291,6 @@ export default function OutletManagement() {
       <OutletCreateModal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
-        onConfirm={handleCreateOutlet}
       />
       <OutletUpdateModal
         isOpen={isUpdateModalOpen}

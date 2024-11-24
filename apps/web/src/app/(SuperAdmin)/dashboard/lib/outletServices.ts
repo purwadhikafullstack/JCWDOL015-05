@@ -1,27 +1,24 @@
+import { Outlet } from '../@outlets/page';
+
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
-export async function createOutlet(
-  name: string,
-  provinsi: string,
-  kota: string,
-  kecamatan: string,
-  longitude: number,
-  latitude: number,
-) {
+export interface ICreateOutlet {
+  name: string;
+  provinsi: string;
+  kota: string;
+  kecamatan: string;
+  longitude: number;
+  latitude: number;
+}
+
+export async function createNewOutlet(data: ICreateOutlet) {
   try {
     const response = await fetch(`${BASEURL}/api/outlet`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        name,
-        provinsi,
-        kota,
-        kecamatan,
-        longitude,
-        latitude,
-      }),
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -29,7 +26,7 @@ export async function createOutlet(
     }
 
     const newOutlet = await response.json();
-    return newOutlet;
+    return { newOutlet, ok: response.ok };
   } catch (error) {
     console.error('Error creating outlet:', error);
     throw error; // rethrow the error to handle it in the calling function

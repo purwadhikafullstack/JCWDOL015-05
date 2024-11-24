@@ -53,6 +53,11 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
     },
   });
 
+  const handleCancel = () => {
+    formik.resetForm();
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -180,7 +185,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleCancel}
               className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded-md"
             >
               Cancel

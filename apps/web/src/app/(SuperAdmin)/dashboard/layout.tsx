@@ -20,7 +20,7 @@ const Layout = ({
         </h1>
         <div className="w-full">{employees}</div>
         <div className="w-full">{outlets}</div>
-        <div className="w-full">{items}</div>
+        <div className="w-full pb-28 md:pb-10">{items}</div>
       </div>
     );
   } else {

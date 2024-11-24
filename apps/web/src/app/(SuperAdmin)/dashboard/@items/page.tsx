@@ -279,7 +279,7 @@ export default function ItemManagement() {
         >
           Previous
         </button>
-        <span>
+        <span className="text-sm">
           Page {currentPage} of {lastPage}
         </span>
         <button

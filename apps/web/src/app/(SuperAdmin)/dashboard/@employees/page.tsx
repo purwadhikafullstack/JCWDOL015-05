@@ -313,7 +313,7 @@ export default function EmployeeManagement() {
         >
           Previous
         </button>
-        <span>
+        <span className="text-sm">
           Page {page} of {totalPages}
         </span>
         <button

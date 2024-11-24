@@ -77,13 +77,28 @@ export class OutletController {
   }
 
   async createOutlet(req: Request, res: Response) {
-    const { name, provinsi, kota, kecamatan, longitude, latitude } = req.body;
-
-    const newOutletData = await prisma.outlet.create({
-      data: { name, provinsi, kota, kecamatan, longitude, latitude },
-    });
-
-    return res.status(201).send(newOutletData);
+    try {
+      const { name, provinsi, kota, kecamatan, longitude, latitude } = req.body;
+      const newOutletData = await prisma.outlet.create({
+        data: {
+          name,
+          provinsi,
+          kota,
+          kecamatan,
+          longitude: parseFloat(longitude),
+          latitude: parseFloat(latitude),
+        },
+      });
+      res.status(200).send({
+        status: 'ok',
+        data: newOutletData,
+      });
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err,
+      });
+    }
   }
 
   async updateOutletyId(req: Request, res: Response) {
