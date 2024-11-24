@@ -69,7 +69,6 @@ const EmployeePerformanceReport = () => {
 
       setChartData(data);
 
-      // Collect unique dates across all employee data
       const allDates = Array.from(
         new Set(data.flatMap((employee) => employee.counts.map((c) => c.date))),
       ).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
@@ -81,7 +80,6 @@ const EmployeePerformanceReport = () => {
   }, [startDate, endDate, rangeType, outletId, BASEURL, employeeType]);
 
   useEffect(() => {
-    // Set initial outletId based on the logged-in user
     if (outletAdmin && loggedInOutletId) {
       setOutletId(loggedInOutletId.toString());
     }

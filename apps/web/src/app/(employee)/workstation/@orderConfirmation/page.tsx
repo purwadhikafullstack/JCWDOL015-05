@@ -11,7 +11,7 @@ export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [outletId, setOutletId] = useState<number | null>(null);
   const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Added loading state
+  const [loading, setLoading] = useState<boolean>(true);
 
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
@@ -76,7 +76,6 @@ export default function OrderConfirmationPage() {
     }
   };
 
-  // Delayed rendering
   if (loading) {
     return <p>Loading orders...</p>;
   }

@@ -1,6 +1,4 @@
 import React from 'react';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import UpdateMap from './updateMap';
 
 interface UpdateModalProps {

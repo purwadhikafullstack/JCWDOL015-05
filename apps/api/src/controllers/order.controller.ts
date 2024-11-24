@@ -2,22 +2,16 @@ import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
 import { getDistance } from 'geolib';
-import crypto from 'crypto';
 import { Prisma } from '@prisma/client';
 import { generateUniqueOrderId } from '@/services/helper';
 
 export class OrderController {
   async getOrders(req: Request, res: Response) {
     try {
-      // Pagination parameters
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
-
-      // Sorting parameter for Created Date
       const sortOrder = req.query.sortBy === 'desc' ? 'desc' : 'asc';
-
-      // Filtering parameters
       const orderIdFilter = req.query.orderId
         ? parseInt(req.query.orderId as string)
         : undefined;
@@ -30,7 +24,6 @@ export class OrderController {
         ? parseInt(req.query.customerId as string)
         : undefined;
 
-      // Prisma query with filters
       const orders = await prisma.order.findMany({
         skip,
         take: limit,
@@ -39,10 +32,10 @@ export class OrderController {
           ...(outletIdFilter && { outletId: outletIdFilter }),
           ...(statusFilter && {
             status: statusFilter as keyof typeof OrderStatus,
-          }), // Ensure the status matches the enum values
+          }),
           ...(paymentStatusFilter && {
             paymentStatus: paymentStatusFilter as keyof typeof PaymentStatus,
-          }), // Ensure paymentStatus matches the enum
+          }),
           ...(customerIdFilter && { customerId: customerIdFilter }),
         },
         include: {
@@ -70,28 +63,26 @@ export class OrderController {
           items: true,
         },
         orderBy: {
-          createdAt: sortOrder, // Sort by Created Date
+          createdAt: sortOrder,
         },
       });
 
-      // Total count for pagination
       const totalOrders = await prisma.order.count({
         where: {
           ...(orderIdFilter && { orderId: orderIdFilter }),
           ...(outletIdFilter && { outletId: outletIdFilter }),
           ...(statusFilter && {
             status: statusFilter as keyof typeof OrderStatus,
-          }), // Ensure status filter is applied correctly
+          }),
           ...(paymentStatusFilter && {
             paymentStatus: paymentStatusFilter as keyof typeof PaymentStatus,
-          }), // Ensure paymentStatus filter is applied
+          }),
           ...(customerIdFilter && { customerId: customerIdFilter }),
         },
       });
 
       const totalPages = Math.ceil(totalOrders / limit);
 
-      // Response with data and pagination metadata
       return res.status(200).json({
         data: orders,
         pagination: {
@@ -137,7 +128,6 @@ export class OrderController {
       const totalNearOutlet = nearOutlet.length;
       res.status(200).send({
         status: 'ok',
-        // allOutlets: getOutlets,
         totalFoundOutlet: totalNearOutlet,
         data: filterOutlet,
       });
@@ -160,28 +150,27 @@ export class OrderController {
       } = req.body;
 
       const prismaTransaction = await prisma.$transaction(async (pt) => {
-        // check customerid
         const existCustomer = await pt.customer.findUnique({
           where: { customerId: customerId },
         });
         if (!existCustomer) throw 'customer not found';
-        // check outletid
+
         const existOutlet = await pt.outlet.findUnique({
           where: { outletId: outletId },
         });
         if (!existOutlet) throw 'outlet not found';
-        // check addressid
+
         const existAddress = await pt.address.findUnique({
           where: { addressId: addressId },
         });
-        const uniqueOrderId = generateUniqueOrderId(customerId)
+        const uniqueOrderId = generateUniqueOrderId(customerId);
         if (!existAddress) throw 'address user not found';
         const newOrder = await pt.order.create({
           data: {
             orderId: parseInt(uniqueOrderId),
             customerId,
             outletId,
-            status: "menungguKonfirmasi",
+            status: 'menungguKonfirmasi',
             customerAddressId: addressId,
             pickupDate: new Date(pickupDate),
             pickupTime,
@@ -253,7 +242,6 @@ export class OrderController {
       const filter = listOrder.filter((order) => order.outletAdminId !== null);
       res.status(200).send({
         status: 'ok',
-        // orderOutlet: listOrder,
         data: filter,
       });
     } catch (err) {

@@ -27,7 +27,7 @@ export default function GetPickupPage() {
 
   const fetchOrders = useCallback(async () => {
     try {
-      if (!outletId) return; // Skip if outletId is not set
+      if (!outletId) return;
       const response = await fetch(
         `${BASEURL}/api/assignment/get-pickup/${outletId}`,
       );
@@ -45,7 +45,7 @@ export default function GetPickupPage() {
 
   const fetchDriverAvailability = useCallback(async () => {
     try {
-      if (!driverId) return; // Skip if driverId is not set
+      if (!driverId) return;
       const response = await fetch(
         `${BASEURL}/api/assignment/driver-availability/${driverId}`,
       );
@@ -61,9 +61,9 @@ export default function GetPickupPage() {
   useEffect(() => {
     const fetchData = async () => {
       if (driverId === null || outletId === null) return;
-      setLoading(true); // Start loading
+      setLoading(true);
       await Promise.all([fetchOrders(), fetchDriverAvailability()]);
-      setLoading(false); // Stop loading
+      setLoading(false);
     };
 
     fetchData();
@@ -80,8 +80,8 @@ export default function GetPickupPage() {
       });
 
       if (response.ok) {
-        setIsAvailable(false); // Assume driver is now unavailable
-        fetchOrders(); // Refresh the orders
+        setIsAvailable(false);
+        fetchOrders();
         toast.success(`Order #${orderId} is now yours, let's go!`);
         router.push('/employee');
       } else {
@@ -96,7 +96,7 @@ export default function GetPickupPage() {
   };
 
   if (loading || driverId === null || outletId === null) {
-    return <p>Loading...</p>; // Display loading state until ready
+    return <p>Loading...</p>;
   }
 
   return (

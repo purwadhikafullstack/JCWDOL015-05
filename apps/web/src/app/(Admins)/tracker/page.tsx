@@ -17,7 +17,6 @@ const OrdersPage = () => {
   const [drivers, setDrivers] = useState<Drivers[]>([]);
   const [workers, setWorkers] = useState<Workers[]>([]);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -25,7 +24,6 @@ const OrdersPage = () => {
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
   const loggedInOutletId = outletAdmin.employee?.outletId;
 
-  // Filters
   const [orderIdFilter, setOrderIdFilter] = useState('');
   const [outletFilter, setOutletFilter] = useState(
     outletAdmin.employee?.role === 'outletAdmin' && loggedInOutletId
@@ -36,7 +34,6 @@ const OrdersPage = () => {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
   const [customerIdFilter, setCustomerIdFilter] = useState('');
 
-  // Sorting
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const limit = 5;
@@ -53,7 +50,7 @@ const OrdersPage = () => {
 
   const fetchOrders = useCallback(async () => {
     try {
-      if (outletFilter === null) return; // Skip fetch until outletFilter is set
+      if (outletFilter === null) return;
 
       const query = new URLSearchParams({
         page: page.toString(),
@@ -144,7 +141,6 @@ const OrdersPage = () => {
       <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4 min-h-screen">
         <h1 className="font-bold text-2xl mb-4">Order Tracker</h1>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-2">
           <input
             type="text"
@@ -277,7 +273,6 @@ const OrdersPage = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="flex justify-between items-center gap-4 mt-4">
           <button
             onClick={prevPage}

@@ -29,8 +29,6 @@ const OutletLocationForm: React.FC<OutletLocationForm> = ({
   handleSelectSubdistric,
   marker,
   sendDataMutation,
-  initialName,
-  initialProvinsi,
 }) => {
   return (
     <>
@@ -51,7 +49,7 @@ const OutletLocationForm: React.FC<OutletLocationForm> = ({
       <Label>Provinsi</Label>
       <LocationSelect
         name="provinsi"
-        placeholder={initialProvinsi || 'Pilih Provinsi'}
+        placeholder={`Pilih provinsi`}
         onValueChange={handleSelectProvinsi}
         options={provinces.map((province) => ({
           label: province.province,

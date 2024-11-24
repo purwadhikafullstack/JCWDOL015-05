@@ -20,7 +20,6 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-  // Validation Schema
   const validationSchema = Yup.object({
     email: Yup.string()
       .email('Invalid email format')
@@ -30,13 +29,12 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
     role: Yup.string().required('Role is required'),
     outletId: Yup.number()
       .nullable()
-      .transform((_, val) => (val === '' ? null : val)) // Allow null values
+      .transform((_, val) => (val === '' ? null : val))
       .positive('Outlet ID must be a positive number')
       .integer('Outlet ID must be an integer'),
     station: Yup.string().nullable(),
   });
 
-  // Initialize Formik
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -44,12 +42,12 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
       fullName: '',
       role: 'outletAdmin',
       outletId: 1,
-      station: '', // station will be handled based on the selected role
+      station: '',
     },
     validationSchema,
     onSubmit: (values) => {
-      onConfirm(values); // Pass data to parent
-      onClose(); // Close modal after submission
+      onConfirm(values);
+      onClose();
     },
   });
 
@@ -66,7 +64,6 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
         <h2 className="text-xl font-semibold mb-4">Create Data</h2>
 
         <form onSubmit={formik.handleSubmit}>
-          {/* Email Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Email
           </label>
@@ -83,7 +80,6 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
             <p className="text-red-500 text-sm">{formik.errors.email}</p>
           )}
 
-          {/* Password Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Password
           </label>
@@ -99,8 +95,6 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
           {formik.touched.password && formik.errors.password && (
             <p className="text-red-500 text-sm">{formik.errors.password}</p>
           )}
-
-          {/* Full Name Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Full Name
           </label>
@@ -116,8 +110,6 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
           {formik.touched.fullName && formik.errors.fullName && (
             <p className="text-red-500 text-sm">{formik.errors.fullName}</p>
           )}
-
-          {/* Role Select */}
           <label className="block text-left text-sm font-medium mb-1">
             Role
           </label>
@@ -135,8 +127,6 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
           {formik.touched.role && formik.errors.role && (
             <p className="text-red-500 text-sm">{formik.errors.role}</p>
           )}
-
-          {/* Station Select */}
           {formik.values.role === 'worker' && (
             <>
               <label className="block text-left text-sm font-medium mb-1">
@@ -158,8 +148,6 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
               )}
             </>
           )}
-
-          {/* Outlet ID Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Outlet ID
           </label>

@@ -8,12 +8,6 @@ import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
-type Item = {
-  itemId: number;
-  item: string;
-  quantity: number;
-};
-
 export default function WorkerTaskPage() {
   const [workerId, setWorkerId] = useState<number | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
@@ -42,12 +36,11 @@ export default function WorkerTaskPage() {
         const data = await response.json();
         console.log(data);
 
-        // Only show toast if there's a new order
         if (data?.orderId) {
-          toast.success('Message: New Order'); // Toast only when orderId is present
+          toast.success('Message: New Order');
           setOrder(data);
         } else {
-          setOrder(null); // Clear order if no new order is available
+          setOrder(null);
         }
 
         if (data?.items) {
@@ -63,7 +56,6 @@ export default function WorkerTaskPage() {
     fetchTask();
   }, [fetchTask]);
 
-  // Update `allChecked` whenever `checkedItems` changes
   useEffect(() => {
     setAllChecked(checkedItems.every((isChecked) => isChecked));
   }, [checkedItems]);

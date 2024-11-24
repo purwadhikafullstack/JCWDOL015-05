@@ -11,11 +11,9 @@ export class ItemsController {
       ? parseInt(req.query.orderId as string)
       : undefined;
     const itemName = (req.query.item as string) || undefined;
-
-    // Build the filter object
     const filter = {
-      ...(orderId && { orderId }), // Filter by orderId if provided
-      ...(itemName && { item: { contains: itemName.toLowerCase() } }), // Partial match on item name
+      ...(orderId && { orderId }),
+      ...(itemName && { item: { contains: itemName.toLowerCase() } }),
     };
 
     try {

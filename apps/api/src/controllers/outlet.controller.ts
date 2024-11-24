@@ -4,19 +4,15 @@ import prisma from '@/prisma';
 export class OutletController {
   async getOutlet(req: Request, res: Response) {
     try {
-      // Pagination parameters
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
 
-      // Sorting parameter
       const sortBy = req.query.sortBy === 'desc' ? 'desc' : 'asc';
 
-      // Filtering parameters
       const nameFilter = req.query.name ? String(req.query.name) : undefined;
       const kotaFilter = req.query.kota ? String(req.query.kota) : undefined;
 
-      // Prisma query
       const outletData = await prisma.outlet.findMany({
         skip,
         take: limit,
@@ -33,7 +29,6 @@ export class OutletController {
         },
       });
 
-      // Total count for pagination metadata
       const totalOutlets = await prisma.outlet.count({
         where: {
           ...(nameFilter && {

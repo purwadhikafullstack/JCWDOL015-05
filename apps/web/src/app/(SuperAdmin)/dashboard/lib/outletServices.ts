@@ -39,7 +39,7 @@ export async function createNewOutlet(data: ICreateOutlet) {
     return { newOutlet, ok: response.ok };
   } catch (error) {
     console.error('Error creating outlet:', error);
-    throw error; // rethrow the error to handle it in the calling function
+    throw error;
   }
 }
 

@@ -37,7 +37,7 @@ export default function OnPickupPage() {
 
   const fetchDriverAvailability = useCallback(async () => {
     try {
-      if (!driverId) return; // Skip if driverId is not set
+      if (!driverId) return;
       const response = await fetch(
         `${BASEURL}/api/assignment/driver-availability/${driverId}`,
       );

@@ -27,6 +27,7 @@ export const LocationSelect: FC<LocationSelectProps> = ({
   onValueChange,
   name,
   disabled = false,
+  defaultValue,
 }) => {
   return (
     <Select onValueChange={onValueChange} name={name} disabled={disabled}>

@@ -13,21 +13,14 @@ enum Role {
 export class EmployeeController {
   async getEmployee(req: Request, res: Response) {
     try {
-      // Pagination parameters
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
-
-      // Sorting parameter
       const sortBy = req.query.sortBy === 'desc' ? 'desc' : 'asc';
-
-      // Filtering parameters
       const roleFilter = req.query.role ? (req.query.role as Role) : undefined;
       const outletIdFilter = req.query.outletId
         ? parseInt(req.query.outletId as string)
         : undefined;
-
-      // Prisma query for employee data
       const employeeData = await prisma.employee.findMany({
         skip,
         take: limit,
@@ -48,7 +41,6 @@ export class EmployeeController {
         },
       });
 
-      // Total count for pagination metadata
       const totalEmployees = await prisma.employee.count({
         where: {
           ...(roleFilter && {
@@ -62,7 +54,6 @@ export class EmployeeController {
 
       const totalPages = Math.ceil(totalEmployees / limit);
 
-      // Response with data and pagination metadata
       return res.status(200).json({
         data: employeeData,
         pagination: {
@@ -140,7 +131,6 @@ export class EmployeeController {
     try {
       const salt = await genSalt(10);
       const hashedPassword = await hash(password, salt);
-      // Fetch the existing employee with its role details
       const existingEmployee = await prisma.employee.findUnique({
         where: { employeeId: Number(id) },
         include: { worker: true, driver: true, outletAdmin: true },
@@ -150,7 +140,6 @@ export class EmployeeController {
         return res.status(404).json({ message: 'Employee not found' });
       }
 
-      // Role has changed: remove old role record and create new role record if necessary
       if (role !== existingEmployee.role) {
         if (existingEmployee.role === 'worker' && existingEmployee.worker) {
           await prisma.worker.delete({
@@ -174,7 +163,6 @@ export class EmployeeController {
           });
         }
 
-        // Create new Worker or Driver based on the updated role
         if (role === 'worker') {
           if (!station) {
             return res
@@ -203,14 +191,12 @@ export class EmployeeController {
           });
         }
       } else if (role === 'worker' && station && existingEmployee.worker) {
-        // Update station if the role is still worker and station is provided
         await prisma.worker.update({
           where: { workerId: existingEmployee.worker.workerId },
           data: { station },
         });
       }
 
-      // Update the Employee record
       const updatedEmployee = await prisma.employee.update({
         where: { employeeId: Number(id) },
         data: {
@@ -236,17 +222,15 @@ export class EmployeeController {
     const { id } = req.params;
 
     try {
-      // Check if the employee exists
       const employee = await prisma.employee.findUnique({
         where: { employeeId: Number(id) },
-        include: { worker: true, driver: true }, // Include related Worker/Driver records to verify their existence
+        include: { worker: true, driver: true },
       });
 
       if (!employee) {
         return res.status(404).json({ message: 'Employee not found' });
       }
 
-      // Explicitly delete the associated Worker or Driver based on the role, if needed
       if (employee.role === 'worker' && employee.worker) {
         await prisma.worker.delete({
           where: { workerId: employee.worker.workerId },
@@ -257,7 +241,6 @@ export class EmployeeController {
         });
       }
 
-      // Delete the Employee record
       await prisma.employee.delete({
         where: { employeeId: Number(id) },
       });

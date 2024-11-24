@@ -34,8 +34,6 @@ export class AssignmentRouter {
       this.assignmentController.confirmBypass,
     );
 
-    // DRIVER SECTION
-
     this.router.get(
       '/get-pickup/:outletId',
       this.assignmentController.getPickup,
@@ -69,7 +67,6 @@ export class AssignmentRouter {
       '/driver-availability/:driverId',
       this.assignmentController.getDriverAvailability,
     );
-    // WORKER SECTION
 
     this.router.get(
       '/get-task/:status/:outletId',

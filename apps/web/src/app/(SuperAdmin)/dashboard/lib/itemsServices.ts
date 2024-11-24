@@ -22,7 +22,7 @@ export async function createItem(
     return newItem;
   } catch (error) {
     console.error('Error creating post:', error);
-    throw error; // rethrow the error to handle it in the calling function
+    throw error;
   }
 }
 

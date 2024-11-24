@@ -36,13 +36,11 @@ export default function OutletManagement() {
   const [outletLongitude, setOutletLongitude] = useState<number | null>(null);
   const [outletLatitude, setOutletLatitude] = useState<number | null>(null);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
   const [nameFilter, setNameFilter] = useState<string>('');
   const [kotaFilter, setKotaFilter] = useState<string>('');
 
-  // Fetch outlets with useCallback
   const limit = 5;
   const fetchOutlets = useCallback(async () => {
     try {
@@ -60,13 +58,12 @@ export default function OutletManagement() {
     } catch (error) {
       console.error('Fetching error:', error);
     }
-  }, [page, limit, nameFilter, kotaFilter]); // Dependencies for the useCallback
+  }, [page, limit, nameFilter, kotaFilter]);
 
   useEffect(() => {
     fetchOutlets();
-  }, [fetchOutlets]); // Dependency on fetchOutlets
+  }, [fetchOutlets]);
 
-  // Open confirmation modal and set outlet ID to delete
   const openDeleteModal = (id: number, name: string) => {
     setOutletId(id);
     setOutletName(name);
@@ -79,13 +76,11 @@ export default function OutletManagement() {
     setIsDeleteModalOpen(false);
   };
 
-  // Function to delete an outlet by ID
   const deleteOutlet = async () => {
     try {
       await fetch(`${BASEURL}/api/outlet/${outletId}`, {
         method: 'DELETE',
       });
-      // Refresh outlets list after deletion
       setOutlets((prevoutlets) =>
         prevoutlets.filter((outlet: Outlet) => outlet.outletId !== outletId),
       );
@@ -136,7 +131,6 @@ export default function OutletManagement() {
     setIsCreateModalOpen(false);
   };
 
-  // Pagination handlers
   const nextPage = () => {
     if (page < totalPages) {
       setPage((prev) => prev + 1);
@@ -152,7 +146,6 @@ export default function OutletManagement() {
   return (
     <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 px-2 py-4 gap-4">
       <h1>OUTLET MANAGEMENT</h1>
-      {/* Filter inputs */}
       <div className="flex flex-wrap gap-4 mt-4">
         <CreateButton onClick={() => openCreateModal()} />
         <input
@@ -227,7 +220,6 @@ export default function OutletManagement() {
         </table>
       </div>
 
-      {/* Pagination controls */}
       <div className="flex justify-between items-center gap-10 my-4">
         <button
           onClick={prevPage}
@@ -247,7 +239,6 @@ export default function OutletManagement() {
           Next
         </button>
       </div>
-      {/* Modals */}
       <OutletCreateModal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}

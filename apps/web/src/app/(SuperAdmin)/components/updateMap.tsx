@@ -12,11 +12,7 @@ import { toast } from 'react-toastify';
 import { Card } from '@/components/ui/card';
 import { handleCancel } from '@/components/Map/action';
 import OutletLocationForm from './outletLocationForm';
-import {
-  createNewOutlet,
-  IUpdateOutlet,
-  UpdateOutlet,
-} from '../dashboard/lib/outletServices';
+import { IUpdateOutlet, UpdateOutlet } from '../dashboard/lib/outletServices';
 import { OutletSchema } from '@/schemaData/schemaData';
 
 interface UpdateMapProps {
@@ -110,7 +106,7 @@ export default function UpdateMap({
     initialValues: {
       outletId: outletId,
       name: initialName,
-      provinsi: initialKecamatan,
+      provinsi: initialProvinsi,
       kota: initialKota,
       kecamatan: initialKecamatan,
       longitude: initialLongitude,

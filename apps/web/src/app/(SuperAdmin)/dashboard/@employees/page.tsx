@@ -21,8 +21,8 @@ type Employee = {
   fullName: string;
   role: string;
   outletId: number;
-  outlet?: { name: string }; // To include outlet's name for display
-  worker?: { station: string }; // Assuming employee has a worker relation
+  outlet?: { name: string };
+  worker?: { station: string };
 };
 
 export default function EmployeeManagement() {
@@ -39,7 +39,6 @@ export default function EmployeeManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [roleFilter, setRoleFilter] = useState<string>('');
@@ -57,7 +56,6 @@ export default function EmployeeManagement() {
     }
   };
 
-  // Fetch employees
   const fetchEmployees = useCallback(async () => {
     try {
       const query = new URLSearchParams({

@@ -35,7 +35,6 @@ export default function ItemManagement() {
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 5;
 
-  // Sorting and Filtering
   const [sortBy, setSortBy] = useState<string>('itemId');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [filterOrderId, setFilterOrderId] = useState<string>('');
@@ -55,7 +54,7 @@ export default function ItemManagement() {
 
         const response = await fetch(`${BASEURL}/api/items?${query}`);
         const data = await response.json();
-        const itemsArray = data.data || data; // Adjust based on actual API structure
+        const itemsArray = data.data || data;
         setTotalItems(data.pagination.totalItems);
         setItems(itemsArray);
       } catch (error) {
@@ -126,7 +125,7 @@ export default function ItemManagement() {
         values.item,
         values.quantity,
       );
-      // const updatedItem = await UpdateItem(itemId, itemName, itemQuantity);
+
       setItems((prevItems) =>
         prevItems.map((item: Item) =>
           item.itemId === itemId
@@ -180,12 +179,10 @@ export default function ItemManagement() {
     }
   };
 
-  // Fetch items when page or relevant filter/sort options change
   useEffect(() => {
     fetchItems(currentPage);
   }, [currentPage, fetchItems]);
 
-  // Filter and sort handlers
   const handleFilterOrderIdChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -211,7 +208,6 @@ export default function ItemManagement() {
   return (
     <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 px-2 py-4 gap-4">
       <h1>LAUNDRY ITEMS</h1>
-      {/* Filters */}
       <div className="flex flex-wrap gap-4 mt-4">
         <CreateButton onClick={openCreateModal} />
         <input
@@ -270,7 +266,6 @@ export default function ItemManagement() {
           </tbody>
         </table>
       </div>
-      {/* Pagination Controls */}
       <div className="flex justify-between gap-10 items-center my-4">
         <button
           onClick={handlePreviousPage}
@@ -291,7 +286,6 @@ export default function ItemManagement() {
         </button>
       </div>
 
-      {/* Modals */}
       <ItemCreateModal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
@@ -301,8 +295,8 @@ export default function ItemManagement() {
         isOpen={isUpdateModalOpen}
         onClose={closeUpdateModal}
         onConfirm={handleUpdateItem}
-        initialItem={itemName!} // Current item name
-        initialQuantity={itemQuantity!} // Current quantity
+        initialItem={itemName!}
+        initialQuantity={itemQuantity!}
       />
       <DeleteModal
         isOpen={isDeleteModalOpen}
