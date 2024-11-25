@@ -9,6 +9,7 @@ import { driverLogoutAction } from '@/redux/slice/driverSlice';
 import { outletAdminLogoutAction } from '@/redux/slice/outletAdminSlice';
 import { useRouter } from 'next/navigation';
 import { superAdminLogoutAction } from '@/redux/slice/superAdminSlice';
+import { deleteToken } from '@/lib/server';
 
 export default function EmployeeNavbarPage() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function EmployeeNavbarPage() {
       if (outletAdmin) dispatch(outletAdminLogoutAction());
       if (superAdmin) dispatch(superAdminLogoutAction());
     }
+    deleteToken()
     router.push('/employeeLogin');
   };
 

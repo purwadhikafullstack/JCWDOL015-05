@@ -95,7 +95,7 @@ const Profile = () => {
         return nextPage;
       })
     } else if (cmd == 'minus') {
-      setCurrentPage((prevPage) => {
+    setCurrentPage((prevPage) => {
         const prevPageValue = Math.max(1, prevPage - 1)
         mutation.mutate(prevPageValue)
         return prevPageValue;

@@ -17,12 +17,13 @@ export class AuthController {
     } = req.body
     // check email 
     try {
-      if (email) {
-        const checkEmail = await prisma.customer.findUnique({
-          where: { email: email }
-        })
-        if (checkEmail) throw Error ('Email already exists')
-      }
+      // if (email) {
+        
+      // }
+      const checkEmail = await prisma.customer.findUnique({
+        where: { email: email }
+      })
+      if (checkEmail) throw Error ('Email already exists')
       const payload = { email: email, fullName: fullName, role: role }
       const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1h' })
       const templatePath = path.join(__dirname, '../template/verification.hbs')
