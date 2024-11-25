@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -9,7 +10,7 @@ export default function BypassRequestPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
   const [outletId, setOutletId] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Added loading state
+  const [loading, setLoading] = useState<boolean>(true);
 
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
@@ -63,17 +64,17 @@ export default function BypassRequestPage() {
 
       if (response.ok) {
         action === 'confirm'
-          ? alert(`process has been bypassed`)
-          : alert('bypass rejected & returned');
+          ? toast.success(`process has been bypassed`)
+          : toast.success('bypass rejected & returned');
         fetchOrders();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to submit`);
+        toast.error(`Failed to submit`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while confirming Order #${orderId}`);
+      toast.error(`An error occurred while confirming Order #${orderId}`);
     }
   };
 

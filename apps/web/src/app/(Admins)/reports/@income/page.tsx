@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
-// Dynamically import ApexCharts with SSR disabled
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface IncomeData {
@@ -91,16 +90,15 @@ const IncomeChartPage = () => {
           if (incomeData.length === 0) return 'N/A';
           const date = new Date(value);
 
-          // Set formatting options based on rangeType
           let options: Intl.DateTimeFormatOptions;
           if (rangeType === 'daily') {
-            options = { year: 'numeric', month: 'short', day: '2-digit' }; // dd-MMM-yyyy
+            options = { year: 'numeric', month: 'short', day: '2-digit' };
           } else if (rangeType === 'monthly') {
-            options = { month: 'short' }; // MMM
+            options = { month: 'short' };
           } else if (rangeType === 'annual') {
-            options = { year: 'numeric' }; // yyyy
+            options = { year: 'numeric' };
           } else {
-            options = {}; // Default empty options if rangeType is not recognized
+            options = {};
           }
 
           return date.toLocaleDateString('en-GB', options);
@@ -125,7 +123,7 @@ const IncomeChartPage = () => {
     },
     tooltip: {
       y: {
-        formatter: (val: number) => `Rp ${val.toLocaleString()}`, // Customize currency display if needed
+        formatter: (val: number) => `Rp ${val.toLocaleString()}`,
       },
     },
   };
@@ -191,7 +189,6 @@ const IncomeChartPage = () => {
         )}
       </div>
       <div className="bg-white p-4 rounded shadow">
-        {/* Render ApexCharts dynamically */}
         {ApexCharts && (
           <ApexCharts options={chartOptions} series={chartSeries} type="bar" />
         )}

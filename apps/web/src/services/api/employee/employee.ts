@@ -5,13 +5,15 @@ export type IEmployeeLogin = {
 }
 
 export const employeeLogin = async (data: IEmployeeLogin) => {
-  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+  // const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
+  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL;
+  console.log(BASEURL)
   
   try {
     const res = await fetch(`${BASEURL}/api/users/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });

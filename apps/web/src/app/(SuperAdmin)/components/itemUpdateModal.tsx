@@ -17,7 +17,6 @@ const ItemUpdateModal: React.FC<UpdateModalProps> = ({
   initialItem,
   initialQuantity,
 }) => {
-  // Validation Schema
   const validationSchema = Yup.object({
     item: Yup.string()
       .required('Item name is required')
@@ -27,17 +26,16 @@ const ItemUpdateModal: React.FC<UpdateModalProps> = ({
       .min(1, 'Quantity must be at least 1'),
   });
 
-  // Initialize Formik
   const formik = useFormik({
     initialValues: {
-      item: initialItem || '', // Default to empty if not provided
-      quantity: initialQuantity || 0, // Default to 0 if not provided
+      item: initialItem || '',
+      quantity: initialQuantity || 0,
     },
-    enableReinitialize: true, // Reinitialize Formik values when props change
+    enableReinitialize: true,
     validationSchema,
     onSubmit: (values) => {
-      onConfirm(values); // Pass updated data to parent
-      onClose(); // Close modal after submission
+      onConfirm(values);
+      onClose();
     },
   });
 
@@ -49,7 +47,6 @@ const ItemUpdateModal: React.FC<UpdateModalProps> = ({
         <h2 className="text-xl font-semibold mb-4">Update Item</h2>
 
         <form onSubmit={formik.handleSubmit}>
-          {/* Item Name Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Item Name
           </label>
@@ -64,8 +61,6 @@ const ItemUpdateModal: React.FC<UpdateModalProps> = ({
           {formik.touched.item && formik.errors.item && (
             <p className="text-red-500 text-sm">{formik.errors.item}</p>
           )}
-
-          {/* Quantity Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Quantity
           </label>

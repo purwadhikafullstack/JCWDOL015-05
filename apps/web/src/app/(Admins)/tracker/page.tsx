@@ -17,7 +17,6 @@ const OrdersPage = () => {
   const [drivers, setDrivers] = useState<Drivers[]>([]);
   const [workers, setWorkers] = useState<Workers[]>([]);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -25,7 +24,6 @@ const OrdersPage = () => {
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
   const loggedInOutletId = outletAdmin.employee?.outletId;
 
-  // Filters
   const [orderIdFilter, setOrderIdFilter] = useState('');
   const [outletFilter, setOutletFilter] = useState(
     outletAdmin.employee?.role === 'outletAdmin' && loggedInOutletId
@@ -36,7 +34,6 @@ const OrdersPage = () => {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
   const [customerIdFilter, setCustomerIdFilter] = useState('');
 
-  // Sorting
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const limit = 5;
@@ -53,7 +50,7 @@ const OrdersPage = () => {
 
   const fetchOrders = useCallback(async () => {
     try {
-      if (outletFilter === null) return; // Skip fetch until outletFilter is set
+      if (outletFilter === null) return;
 
       const query = new URLSearchParams({
         page: page.toString(),
@@ -144,7 +141,6 @@ const OrdersPage = () => {
       <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4 min-h-screen">
         <h1 className="font-bold text-2xl mb-4">Order Tracker</h1>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-2">
           <input
             type="text"
@@ -205,61 +201,78 @@ const OrdersPage = () => {
             className="border p-2 rounded bg-white h-10"
           />
         </div>
-
-        {/* Table */}
-        <table className="w-4/5 border-slate-700">
-          <thead className="border-b bg-blue-300">
-            <tr>
-              <th className="py-3 px-1 border-slate-700">No</th>
-              <th className="py-3 px-1 border-slate-700">Outlet</th>
-              <th className="py-3 px-1 border-slate-700">Order ID</th>
-              <th className="py-3 px-1 border-slate-700">Status</th>
-              <th className="py-3 px-1 border-slate-700">Payment Status</th>
-              <th className="py-3 px-1 border-slate-700">Customer ID</th>
-              <th className="py-3 px-1 border-slate-700">
-                Created Date
-                <Button
-                  onClick={handleSortChange}
-                  className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
-                >
-                  {sortOrder === 'asc' ? '▲' : '▼'}
-                </Button>
-              </th>
-              <th className="py-3 px-1 border-slate-700">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order, index) => (
-              <tr key={order.orderId} className="text-center border-b">
-                <td>{index + 1}</td>
-                <td>{order.outlet ? order.outlet.name : 'Closed'}</td>
-                <td>{order.orderId}</td>
-                <td>{displayOrderStatus(order.status)}</td>
-                <td>{order.paymentStatus}</td>
-                <td>{order.customerId}</td>
-                <td>{new Date(order.createdAt).toLocaleString()}</td>
-                <td>
+        <div className="w-full overflow-x-auto p-2">
+          <table className="min-w-full text-sm text-left text-gray-800">
+            <thead className="bg-blue-300 border-b">
+              <tr>
+                <th className="py-3 px-4 text-center border-slate-700">No</th>
+                <th className="py-3 px-4 text-center border-slate-700">
+                  Outlet
+                </th>
+                <th className="py-3 px-4 text-center border-slate-700">
+                  Order ID
+                </th>
+                <th className="py-3 px-4 text-center border-slate-700">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-center border-slate-700">
+                  Payment Status
+                </th>
+                <th className="py-3 px-4 text-center border-slate-700">
+                  Customer ID
+                </th>
+                <th className="py-3 px-4 text-center border-slate-700">
+                  Created Date
                   <Button
-                    onClick={() =>
-                      openTrackingModal(
-                        order.orderId,
-                        new Date(order.updatedAt).toLocaleString(),
-                        order.status,
-                        order.drivers,
-                        order.workers,
-                      )
-                    }
-                    className="hover:bg-orange-300"
+                    onClick={handleSortChange}
+                    className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
                   >
-                    Track
+                    {sortOrder === 'asc' ? '▲' : '▼'}
                   </Button>
-                </td>
+                </th>
+                <th className="py-3 px-4 text-center border-slate-700">
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {orders.map((order, index) => (
+                <tr key={order.orderId} className="text-center border-b">
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <td className="py-3 px-4">
+                    {order.outlet ? order.outlet.name : 'Closed'}
+                  </td>
+                  <td className="py-3 px-4">{order.orderId}</td>
+                  <td className="py-3 px-4">
+                    {displayOrderStatus(order.status)}
+                  </td>
+                  <td className="py-3 px-4">{order.paymentStatus}</td>
+                  <td className="py-3 px-4">{order.customerId}</td>
+                  <td className="py-3 px-4">
+                    {new Date(order.createdAt).toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4">
+                    <Button
+                      onClick={() =>
+                        openTrackingModal(
+                          order.orderId,
+                          new Date(order.updatedAt).toLocaleString(),
+                          order.status,
+                          order.drivers,
+                          order.workers,
+                        )
+                      }
+                      className="hover:bg-orange-300"
+                    >
+                      Track
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-        {/* Pagination */}
         <div className="flex justify-between items-center gap-4 mt-4">
           <button
             onClick={prevPage}

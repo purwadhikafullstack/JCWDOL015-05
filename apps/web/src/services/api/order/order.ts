@@ -21,7 +21,13 @@ export const customerOrderData = async (
 ) => {
     console.log(qSearch)
     const url = `${BASEURL}/api/orders/:${customerId}?page=${page}&q=${qSearch ? qSearch : ''}`
-    const res = await fetch (url)
+    const res = await fetch (url,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true', 
+        },
+      })
     const result = await res.json()
     return {ok: res.ok, result, orderData: result.data} 
 }

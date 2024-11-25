@@ -11,7 +11,7 @@ export default function OrderConfirmationPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [outletId, setOutletId] = useState<number | null>(null);
   const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Added loading state
+  const [loading, setLoading] = useState<boolean>(true);
 
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
 
@@ -29,7 +29,13 @@ export default function OrderConfirmationPage() {
     }
     try {
       const response = await fetch(
-        `${BASEURL}/api/assignment/order-confirmation/${outletId}`,
+        `${BASEURL}/api/assignment/order-confirmation/${outletId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -63,20 +69,19 @@ export default function OrderConfirmationPage() {
       );
 
       if (response.ok) {
-        alert(`Order #${orderId} has been assigned to driver`);
+        toast.success(`Order #${orderId} has been assigned to driver`);
         fetchOrders();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to confirm Order #${orderId}`);
+        toast.error(`Failed to confirm Order #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while confirming Order #${orderId}`);
+      toast.error(`An error occurred while confirming Order #${orderId}`);
     }
   };
 
-  // Delayed rendering
   if (loading) {
     return <p>Loading orders...</p>;
   }
