@@ -93,13 +93,10 @@ export class AssignmentController {
     }
 
     try {
-      // Update the weight field in the order table for the specified orderId
       await prisma.order.update({
         where: { orderId },
         data: { weight, status: 'pencucian', totalPrice },
       });
-
-      // Create multiple items associated with the orderId
       const createdItems = await Promise.all(
         items.map(async (item: { item: string; quantity: number }) => {
           const { item: itemName, quantity } = item;
@@ -150,7 +147,6 @@ export class AssignmentController {
     const { orderId } = req.params;
     const { status, action, paymentStatus } = req.body;
 
-    // Determine newStatus based on the values of action and status
     let newStatus;
     if (action === 'reject') {
       newStatus = status;
@@ -161,9 +157,9 @@ export class AssignmentController {
         newStatus = 'packing';
       } else if (status === 'packing') {
         if (paymentStatus === 'paid') {
-          newStatus = 'siapDiantar'; // Ready for delivery
+          newStatus = 'siapDiantar';
         } else {
-          newStatus = 'menungguPembayaran'; // Waiting for payment
+          newStatus = 'menungguPembayaran';
         }
       }
     }
@@ -180,8 +176,6 @@ export class AssignmentController {
     }
   }
 
-  // DRIVER SECTION
-
   async getPickup(req: Request, res: Response) {
     const { outletId } = req.params;
     try {
@@ -189,6 +183,9 @@ export class AssignmentController {
         where: {
           outletId: parseInt(outletId),
           status: 'menungguPenjemputanDriver',
+          drivers: {
+            none: {},
+          },
         },
         include: {
           customerAddress: { select: { detailAddress: true } },
@@ -237,10 +234,13 @@ export class AssignmentController {
           customer: true,
           items: true,
           customerAddress: { select: { detailAddress: true } },
+          drivers: true,
         },
       });
-
-      res.json(orders);
+      const filteredOrders = orders.filter(
+        (order) => order.drivers.length === 1,
+      );
+      res.json(filteredOrders);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to fetch orders' });
@@ -257,7 +257,7 @@ export class AssignmentController {
         }),
         prisma.order.update({
           where: { orderId },
-          data: { status: 'sedangDikirim' }, // Adjust status as needed
+          data: { status: 'sedangDikirim' },
         }),
         prisma.driver.update({
           where: { driverId: driverId },
@@ -331,27 +331,46 @@ export class AssignmentController {
         }),
       ]);
       return res.status(200).json({ message: 'Laundry arrived at outlet' });
-    } catch (error) { }
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to complete pickup' });
+    }
   }
 
   async completeDelivery(req: Request, res: Response) {
-    const { driverId } = req.body;
+    const { driverId, orderId } = req.body;
     try {
-      await prisma.driver.update({
-        where: { driverId: driverId },
-        data: { isAvailable: true },
-      });
+      await prisma.$transaction([
+        prisma.order.update({
+          where: { orderId: orderId },
+          data: { status: 'terkirim' },
+        }),
+        prisma.driver.update({
+          where: { driverId: driverId },
+          data: { isAvailable: true },
+        }),
+      ]);
       return res.status(200).json({ message: 'Delivered to customer' });
-    } catch (error) { }
+    } catch (error) {
+      res.status(500).json({ error: 'Delivery completion failed' });
+    }
   }
 
-  // WORKER SECTION
+  async getDriverAvailability(req: Request, res: Response) {
+    const { driverId } = req.params;
+    try {
+      const data = await prisma.driver.findUnique({
+        where: { driverId: parseInt(driverId) },
+      });
+      return res.status(200).send(data);
+    } catch (error) {
+      res.status(500).json({ error: 'GET driver availability failed' });
+    }
+  }
 
   async getTask(req: Request, res: Response) {
     try {
       const { status, outletId } = req.params;
 
-      // Determine the order status based on the passed value
       let orderStatus: OrderStatus | undefined;
       if (status === 'washing') orderStatus = 'pencucian' as OrderStatus;
       else if (status === 'ironing')
@@ -362,13 +381,11 @@ export class AssignmentController {
         return res.status(400).json({ error: 'Invalid status value' });
       }
 
-      // Parse outletId to integer
       const outletIdInt = parseInt(outletId, 10);
       if (isNaN(outletIdInt)) {
         return res.status(400).json({ error: 'Invalid outletId value' });
       }
 
-      // Fetch orders with specified status and outletId, and include items
       const order = await prisma.order.findFirst({
         where: {
           status: orderStatus,
@@ -376,7 +393,7 @@ export class AssignmentController {
           bypassMessage: null,
         },
         include: {
-          items: true, // Include items to get item name and quantity
+          items: true,
         },
         orderBy: { orderId: 'asc' },
       });
@@ -414,12 +431,10 @@ export class AssignmentController {
     const { orderId } = req.params;
     const { workerId, status, paymentStatus } = req.body;
 
-    // Validate `orderId` and `workerId` are numbers
     const parsedOrderId = parseInt(orderId);
     const parsedWorkerId = parseInt(workerId);
 
     try {
-      // Determine the next status based on current status
       let newStatus: OrderStatus | undefined;
       switch (status) {
         case 'pencucian':
@@ -430,16 +445,15 @@ export class AssignmentController {
           break;
         case 'packing':
           if (paymentStatus === 'paid') {
-            newStatus = 'siapDiantar'; // Ready for delivery
+            newStatus = 'siapDiantar';
           } else {
-            newStatus = 'menungguPembayaran'; // Waiting for payment
+            newStatus = 'menungguPembayaran';
           }
           break;
         default:
           return res.status(400).json({ error: 'Invalid status value' });
       }
 
-      // Attempt to create worker-on-order association
       try {
         await prisma.workersOnOrders.create({
           data: { workerId: parsedWorkerId, orderId: parsedOrderId },
@@ -449,10 +463,8 @@ export class AssignmentController {
           'Failed to create worker-on-order association (possibly already exists):',
           checker,
         );
-        // treated as non-critical, proceed to update the order status
       }
 
-      // Update the order status
       await prisma.order.update({
         where: { orderId: parsedOrderId },
         data: { status: newStatus },
@@ -472,13 +484,12 @@ export class AssignmentController {
   async getDriverJobHistory(req: Request, res: Response) {
     const { driverId } = req.params;
     try {
-      // Fetching the job history for the driver based on completed pickup or delivery status
       const jobHistory = await prisma.driversOnOrders.findMany({
         where: {
           driverId: parseInt(driverId),
           OR: [
-            { order: { status: 'laundrySampaiOutlet' } },  // Completed pickup status
-            { order: { status: 'selesai' } }, 
+            { order: { status: 'laundrySampaiOutlet' } },
+            { order: { status: 'selesai' } },
           ],
         },
         include: {
@@ -497,27 +508,25 @@ export class AssignmentController {
         },
         orderBy: {
           order: {
-            createdAt: 'desc', // To get the most recent jobs first
+            createdAt: 'desc',
           },
         },
       });
-  
+
       res.status(200).json(jobHistory);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to fetch driver job history' });
     }
   }
-  
 
-  // OUTLET ADMIN JOB HISTORY
   async getOutletAdminJobHistory(req: Request, res: Response) {
     const { outletAdminId } = req.params;
     try {
       const jobHistory = await prisma.order.findMany({
         where: {
           outletAdminId: parseInt(outletAdminId),
-          status: 'selesai', // Filter for completed status
+          status: 'selesai',
         },
         include: {
           customer: {
@@ -529,18 +538,19 @@ export class AssignmentController {
           items: true,
         },
         orderBy: {
-          createdAt: 'desc', // To get the most recent jobs first
+          createdAt: 'desc',
         },
       });
-  
+
       res.status(200).json(jobHistory);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Failed to fetch outlet admin job history' });
+      res
+        .status(500)
+        .json({ error: 'Failed to fetch outlet admin job history' });
     }
   }
 
-  // WORKER JOB HISTORY
   async getWorkerJobHistory(req: Request, res: Response) {
     const { workerId } = req.params;
     try {
@@ -555,18 +565,17 @@ export class AssignmentController {
               customer: {
                 select: { fullName: true },
               },
-  
             },
           },
-          worker : {
+          worker: {
             select: {
               station: true,
-              workerId: true
-            }
-          }
+              workerId: true,
+            },
+          },
         },
         orderBy: {
-          createdAt: 'desc', // To get the most recent jobs first
+          createdAt: 'desc',
         },
       });
 

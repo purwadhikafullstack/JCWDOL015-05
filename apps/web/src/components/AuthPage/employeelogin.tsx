@@ -1,21 +1,30 @@
 'use client';
 
-import { createToken } from "@/lib/server";
-import { employeeLogin, IEmployeeLogin } from "@/services/api/employee/employee";
-import { useMutation } from "@tanstack/react-query";
-import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { Card } from "../ui/card";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { createToken } from '@/lib/server';
+import {
+  employeeLogin,
+  IEmployeeLogin,
+} from '@/services/api/employee/employee';
+import { useMutation } from '@tanstack/react-query';
+import { useFormik } from 'formik';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { Card } from '../ui/card';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import * as yup from 'yup';
-import { useDispatch } from "react-redux";
-import { workerLoginAction } from "@/redux/slice/workerSlice";
-import { driverLoginAction } from "@/redux/slice/driverSlice";
-import { outletAdminLoginAction } from "@/redux/slice/outletAdminSlice";
-import { superAdminLoginAction } from "@/redux/slice/superAdminSlice";
+import { useDispatch } from 'react-redux';
+import { workerLoginAction } from '@/redux/slice/workerSlice';
+import { driverLoginAction } from '@/redux/slice/driverSlice';
+import { outletAdminLoginAction } from '@/redux/slice/outletAdminSlice';
+import { superAdminLoginAction } from '@/redux/slice/superAdminSlice';
 
 const EmployeeLoginSchema = yup.object().shape({
   email: yup.string().email().required(),
@@ -33,8 +42,6 @@ export default function EmployeeLoginPage() {
       const { result, ok, worker, driver, outletAdmin, superAdmin } = data;
       if (!ok) throw result.msg;
       createToken(result.user.token);
-      console.log(data.employee)
-      
 
       toast.success(result.msg);
 
@@ -49,9 +56,9 @@ export default function EmployeeLoginPage() {
       if (outletAdmin) {
         dispatch(outletAdminLoginAction(result.outletAdmin));
         router.push('/workstation');
-      } 
+      }
       if (data.employee.role === 'superAdmin') {
-        dispatch(superAdminLoginAction(data.employee))
+        dispatch(superAdminLoginAction(data.employee));
         router.push('/dashboard');
       }
     },
@@ -69,6 +76,7 @@ export default function EmployeeLoginPage() {
     },
     validationSchema: EmployeeLoginSchema,
     onSubmit: (values, action) => {
+      console.log('Submitting form', values);
       mutation.mutate(values);
       action.resetForm();
     },
@@ -84,7 +92,9 @@ export default function EmployeeLoginPage() {
     <section className="flex items-center justify-center min-h-screen bg-gray-100 p-4 sm:p-8">
       <Card className="w-full max-w-md p-6 space-y-4 shadow-md bg-white">
         <form onSubmit={formik.handleSubmit}>
-          <h1 className="text-3xl font-semibold text-center text-gray-800 sm:text-2xl mb-4">Login</h1>
+          <h1 className="text-3xl font-semibold text-center text-gray-800 sm:text-2xl mb-4">
+            Login
+          </h1>
           <div className="flex flex-col gap-6">
             <div>
               <Label htmlFor="email">Email</Label>
@@ -99,7 +109,9 @@ export default function EmployeeLoginPage() {
                 className="mt-2 shadow-sm"
               />
               {formik.touched.email && formik.errors.email && (
-                <p className="mt-1 text-sm text-red-500">{formik.errors.email}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {formik.errors.email}
+                </p>
               )}
             </div>
             <div>
@@ -115,7 +127,9 @@ export default function EmployeeLoginPage() {
                 className="mt-2 shadow-sm"
               />
               {formik.touched.password && formik.errors.password && (
-                <p className="mt-1 text-sm text-red-500">{formik.errors.password}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {formik.errors.password}
+                </p>
               )}
             </div>
             <div>
@@ -133,7 +147,9 @@ export default function EmployeeLoginPage() {
                 </SelectContent>
               </Select>
               {formik.touched.role && formik.errors.role && (
-                <p className="mt-1 text-sm text-red-500">{formik.errors.role}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {formik.errors.role}
+                </p>
               )}
             </div>
             <button
@@ -148,5 +164,3 @@ export default function EmployeeLoginPage() {
     </section>
   );
 }
-
-

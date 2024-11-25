@@ -1,5 +1,7 @@
 export const displayOrderStatus = (status: string) => {
   switch (status) {
+    case 'menungguKonfirmasi':
+      return 'menunggu konfirmasi';
     case 'menungguPenjemputanDriver':
       return 'menunggu penjemputan driver';
     case 'laundryMenujuOutlet':
@@ -18,6 +20,8 @@ export const displayOrderStatus = (status: string) => {
       return 'siap diantar';
     case 'sedangDikirim':
       return 'sedang dikirim';
+    case 'terkirim':
+      return 'terkirim';
     case 'selesai':
       return 'selesai';
     default:

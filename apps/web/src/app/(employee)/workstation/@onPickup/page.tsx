@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/redux/hooks';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 export default function OnPickupPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -10,21 +11,27 @@ export default function OnPickupPage() {
   const [outletId, setOutletId] = useState<number | null>(null);
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
 
-  const driver = useAppSelector((state) => state.driver)
+  const driver = useAppSelector((state) => state.driver);
 
   useEffect(() => {
     if (driver) {
-      setDriverId(driver.driverId)
-      setOutletId(driver.employee?.outletId)
+      setDriverId(driver.driverId);
+      setOutletId(driver.employee?.outletId);
     }
-  }, [driver])
+  }, [driver]);
 
   const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(
-        `${BASEURL}/api/assignment/on-the-way/${driverId}`,
+        `${BASEURL}/api/assignment/on-the-way/${driverId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        }
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
@@ -34,9 +41,31 @@ export default function OnPickupPage() {
     }
   }, [driverId, BASEURL]);
 
+  const fetchDriverAvailability = useCallback(async () => {
+    try {
+      if (!driverId) return;
+      const response = await fetch(
+        `${BASEURL}/api/assignment/driver-availability/${driverId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setIsAvailable(data.isAvailable);
+      }
+    } catch (error) {
+      console.error('Driver availability fetching error:', error);
+    }
+  }, [driverId, BASEURL]);
+
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    fetchDriverAvailability();
+  }, [fetchOrders, fetchDriverAvailability]);
 
   const handleReceive = async (orderId: number) => {
     try {
@@ -49,18 +78,18 @@ export default function OnPickupPage() {
       });
 
       if (response.ok) {
-        alert(
+        toast.success(
           `You have pickup items from order #${orderId}, lets go back to outlet!`,
         );
         fetchOrders();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to pickup Order #${orderId}`);
+        toast.error(`Failed to pickup Order #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while pickuping Order #${orderId}`);
+      toast.error(`An error occurred while pickuping Order #${orderId}`);
     }
   };
 
@@ -78,20 +107,23 @@ export default function OnPickupPage() {
       );
 
       if (response.ok) {
-        alert(`Items sent to outlet successfuly`);
+        toast.success(`Items sent to outlet successfuly`);
         fetchOrders();
+        fetchDriverAvailability();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed complete pickup #${orderId}`);
+        toast.error(`Failed complete pickup #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while completing pickup order #${orderId}`);
+      toast.error(
+        `An error occurred while completing pickup order #${orderId}`,
+      );
     }
   };
 
-  const handleCompleteDelivery = async (driverId: number) => {
+  const handleCompleteDelivery = async (driverId: number, orderId: number) => {
     try {
       const response = await fetch(
         `${BASEURL}/api/assignment/complete-delivery`,
@@ -100,21 +132,22 @@ export default function OnPickupPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ driverId }),
+          body: JSON.stringify({ driverId, orderId }),
         },
       );
 
       if (response.ok) {
-        alert(`Items sent to outlet successfuly`);
+        toast.success(`Items sent to customer successfuly`);
         fetchOrders();
+        fetchDriverAvailability();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed complete delivery`);
+        toast.error(`Failed complete delivery`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while completing delivery`);
+      toast.error(`An error occurred while completing delivery`);
     }
   };
 
@@ -141,7 +174,10 @@ export default function OnPickupPage() {
               {order.status === 'laundryMenujuOutlet' && (
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  onClick={() => driverId !== null && handleCompletePickup(order.orderId, driverId)}
+                  onClick={() =>
+                    driverId !== null &&
+                    handleCompletePickup(order.orderId, driverId)
+                  }
                 >
                   Complete Pickup
                 </Button>
@@ -149,7 +185,10 @@ export default function OnPickupPage() {
               {order.status === 'sedangDikirim' && (
                 <Button
                   className="w-32 p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  onClick={() => driverId !== null && handleCompleteDelivery(driverId)}
+                  onClick={() =>
+                    driverId !== null &&
+                    handleCompleteDelivery(driverId, order.orderId)
+                  }
                 >
                   Complete Delivery
                 </Button>

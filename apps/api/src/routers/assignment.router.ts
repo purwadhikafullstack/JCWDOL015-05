@@ -34,8 +34,6 @@ export class AssignmentRouter {
       this.assignmentController.confirmBypass,
     );
 
-    // DRIVER SECTION
-
     this.router.get(
       '/get-pickup/:outletId',
       this.assignmentController.getPickup,
@@ -66,6 +64,11 @@ export class AssignmentRouter {
       this.assignmentController.completeDelivery,
     );
     this.router.get(
+      '/driver-availability/:driverId',
+      this.assignmentController.getDriverAvailability,
+    );
+
+    this.router.get(
       '/get-task/:status/:outletId',
       this.assignmentController.getTask,
     );
@@ -79,14 +82,17 @@ export class AssignmentRouter {
     );
 
     this.router.get(
-      '/driver/history/:driverId', this.assignmentController.getDriverJobHistory
-    )
+      '/driver/history/:driverId',
+      this.assignmentController.getDriverJobHistory,
+    );
     this.router.get(
-      '/outletadmin/history/:outletAdminId', this.assignmentController.getOutletAdminJobHistory
-    )
+      '/outletadmin/history/:outletAdminId',
+      this.assignmentController.getOutletAdminJobHistory,
+    );
     this.router.get(
-      '/worker/history/:workerId', this.assignmentController.getWorkerJobHistory
-    )
+      '/worker/history/:workerId',
+      this.assignmentController.getWorkerJobHistory,
+    );
   }
 
   getRouter(): Router {

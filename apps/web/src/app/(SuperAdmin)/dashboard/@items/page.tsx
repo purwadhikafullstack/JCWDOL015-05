@@ -4,13 +4,14 @@ import {
   CreateButton,
   DeleteButton,
   UpdateButton,
-} from '@/components/ui/action-button';
+} from '@/components/ui/actionButton';
 import { useCallback, useEffect, useState } from 'react';
-import DeleteModal from '../../dashboard-component/delete-modal';
-import { createItem, UpdateItem } from '../lib/items-services';
-import ItemCreateModal from '../../dashboard-component/item-create-modal';
-import ItemUpdateModal from '../../dashboard-component/item-update-modal';
+import DeleteModal from '../../components/deleteModal';
+import { createItem, UpdateItem } from '../lib/itemsServices';
+import ItemCreateModal from '../../components/itemCreateModal';
+import ItemUpdateModal from '../../components/itemUpdateModal';
 import { Button } from '@/components/ui/button';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -34,7 +35,6 @@ export default function ItemManagement() {
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 5;
 
-  // Sorting and Filtering
   const [sortBy, setSortBy] = useState<string>('itemId');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [filterOrderId, setFilterOrderId] = useState<string>('');
@@ -52,9 +52,15 @@ export default function ItemManagement() {
           ...(filterItemName && { item: filterItemName }),
         });
 
-        const response = await fetch(`${BASEURL}/api/items?${query}`);
+        const response = await fetch(`${BASEURL}/api/items?${query}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        });
         const data = await response.json();
-        const itemsArray = data.data || data; // Adjust based on actual API structure
+        const itemsArray = data.data || data;
         setTotalItems(data.pagination.totalItems);
         setItems(itemsArray);
       } catch (error) {
@@ -94,9 +100,10 @@ export default function ItemManagement() {
       setItems((prevItems) =>
         prevItems.filter((item: Item) => item.itemId !== itemId),
       );
+      toast.success('Item deleted');
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error('Error deleting item:', error);
+      toast.error('Item deletion failed');
     }
   };
 
@@ -124,7 +131,7 @@ export default function ItemManagement() {
         values.item,
         values.quantity,
       );
-      // const updatedItem = await UpdateItem(itemId, itemName, itemQuantity);
+
       setItems((prevItems) =>
         prevItems.map((item: Item) =>
           item.itemId === itemId
@@ -137,9 +144,10 @@ export default function ItemManagement() {
         ),
       );
       fetchItems(currentPage);
+      toast.success('Item updated');
       closeUpdateModal();
     } catch (error) {
-      console.error('Error updating item:', error);
+      toast.error('update failed');
     }
   };
 
@@ -170,18 +178,17 @@ export default function ItemManagement() {
       );
       setItems((prevItems) => [...prevItems, newItem]);
       fetchItems(currentPage);
+      toast.success('Item created');
       closeCreateModal();
     } catch (error) {
-      console.error('Error creating item:', error);
+      toast.error('failed to create item');
     }
   };
 
-  // Fetch items when page or relevant filter/sort options change
   useEffect(() => {
     fetchItems(currentPage);
   }, [currentPage, fetchItems]);
 
-  // Filter and sort handlers
   const handleFilterOrderIdChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -205,10 +212,9 @@ export default function ItemManagement() {
   };
 
   return (
-    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4">
+    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 px-2 py-4 gap-4">
       <h1>LAUNDRY ITEMS</h1>
-      {/* Filters */}
-      <div className="flex gap-4 mt-4">
+      <div className="flex flex-wrap gap-4 mt-4">
         <CreateButton onClick={openCreateModal} />
         <input
           type="text"
@@ -225,47 +231,47 @@ export default function ItemManagement() {
           className="border p-2 rounded bg-white h-10"
         />
       </div>
-      {/* Items Table */}
-      <table className="w-4/5 border-slate-700">
-        <thead className="text-center border-b bg-blue-300">
-          <tr>
-            <th className="py-3 px-1 border-slate-700">Order ID</th>
-            <th className="py-3 px-1 border-slate-700">Item Name</th>
-            <th className="py-3 px-1 border-slate-700">
-              Qty{' '}
-              <Button
-                onClick={handleSortChange}
-                className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
-              >
-                {sortOrder === 'asc' ? '▲' : '▼'}
-              </Button>
-            </th>
-            <th className="py-3 px-1 border-slate-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item: Item) => (
-            <tr key={item.itemId} className="text-center border-b">
-              <td className="py-3 px-1 border-slate-700">{item.orderId}</td>
-              <td className="py-3 px-1 border-slate-700">{item.item}</td>
-              <td className="py-3 px-1 border-slate-700">{item.quantity}</td>
-              <td>
-                <div className="flex gap-1 justify-center">
-                  <UpdateButton
-                    onClick={() =>
-                      openUpdateModal(item.itemId, item.item!, item.quantity!)
-                    }
-                  />
-                  <DeleteButton
-                    onClick={() => openDeleteModal(item.itemId, item.item!)}
-                  />
-                </div>
-              </td>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full text-sm text-left text-gray-800">
+          <thead className="text-center bg-blue-300 border-b">
+            <tr>
+              <th className="py-3 px-4 border-b text-center">Order ID</th>
+              <th className="py-3 px-4 border-b text-center">Item Name</th>
+              <th className="py-3 px-4 border-b text-center">
+                Qty{' '}
+                <Button
+                  onClick={handleSortChange}
+                  className="bg-white mx-2 w-4 h-6 hover:bg-gray-200 text-black"
+                >
+                  {sortOrder === 'asc' ? '▲' : '▼'}
+                </Button>
+              </th>
+              <th className="py-3 px-4 border-b text-center">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {/* Pagination Controls */}
+          </thead>
+          <tbody>
+            {items.map((item: Item) => (
+              <tr key={item.itemId} className="text-center border-b">
+                <td className="py-3 px-4 border-b">{item.orderId}</td>
+                <td className="py-3 px-4 border-b">{item.item}</td>
+                <td className="py-3 px-4 border-b">{item.quantity}</td>
+                <td>
+                  <div className="flex gap-1 justify-center">
+                    <UpdateButton
+                      onClick={() =>
+                        openUpdateModal(item.itemId, item.item!, item.quantity!)
+                      }
+                    />
+                    <DeleteButton
+                      onClick={() => openDeleteModal(item.itemId, item.item!)}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-between gap-10 items-center my-4">
         <button
           onClick={handlePreviousPage}
@@ -274,7 +280,7 @@ export default function ItemManagement() {
         >
           Previous
         </button>
-        <span>
+        <span className="text-sm">
           Page {currentPage} of {lastPage}
         </span>
         <button
@@ -286,7 +292,6 @@ export default function ItemManagement() {
         </button>
       </div>
 
-      {/* Modals */}
       <ItemCreateModal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
@@ -296,8 +301,8 @@ export default function ItemManagement() {
         isOpen={isUpdateModalOpen}
         onClose={closeUpdateModal}
         onConfirm={handleUpdateItem}
-        initialItem={itemName!} // Current item name
-        initialQuantity={itemQuantity!} // Current quantity
+        initialItem={itemName!}
+        initialQuantity={itemQuantity!}
       />
       <DeleteModal
         isOpen={isDeleteModalOpen}

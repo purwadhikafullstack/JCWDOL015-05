@@ -39,9 +39,15 @@ export const customerSlice = createSlice({
       state.fullName = ''
       state.address = []
       state.avatar = ''
+    },
+    updateAction:(state, action: PayloadAction<ICustomerData>) =>{
+      const {customerId, avatar, fullName}  = action.payload
+      state.customerId = customerId
+      state.fullName = fullName,
+      state.avatar = avatar
     }
   }
 })
 
-export const { loginAction, logoutAction } = customerSlice.actions
+export const { loginAction, logoutAction , updateAction} = customerSlice.actions
 export default customerSlice.reducer

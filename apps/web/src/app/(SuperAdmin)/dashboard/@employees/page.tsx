@@ -4,12 +4,13 @@ import {
   CreateButton,
   DeleteButton,
   UpdateButton,
-} from '@/components/ui/action-button';
+} from '@/components/ui/actionButton';
 import { useCallback, useEffect, useState } from 'react';
-import { createEmployee, UpdateEmployee } from '../lib/employee-services';
-import EmployeeUpdateModal from '../../dashboard-component/employee-update-modal';
-import DeleteModal from '../../dashboard-component/delete-modal';
-import EmployeeCreateModal from '../../dashboard-component/employee-create-modal';
+import { createEmployee, UpdateEmployee } from '../lib/employeeServices';
+import EmployeeUpdateModal from '../../components/employeeUpdateModal';
+import DeleteModal from '../../components/deleteModal';
+import EmployeeCreateModal from '../../components/employeeCreateModal';
+import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
@@ -20,8 +21,8 @@ type Employee = {
   fullName: string;
   role: string;
   outletId: number;
-  outlet?: { name: string }; // To include outlet's name for display
-  worker?: { station: string }; // Assuming employee has a worker relation
+  outlet?: { name: string };
+  worker?: { station: string };
 };
 
 export default function EmployeeManagement() {
@@ -38,7 +39,6 @@ export default function EmployeeManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [roleFilter, setRoleFilter] = useState<string>('');
@@ -48,7 +48,13 @@ export default function EmployeeManagement() {
 
   const fetchOulets = async () => {
     try {
-      const response = await fetch(`${BASEURL}/api/outlet`);
+      const response = await fetch(`${BASEURL}/api/outlet`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true', 
+        },
+      });
       const data = await response.json();
       setOutlets(data.data);
     } catch (error) {
@@ -56,7 +62,6 @@ export default function EmployeeManagement() {
     }
   };
 
-  // Fetch employees
   const fetchEmployees = useCallback(async () => {
     try {
       const query = new URLSearchParams({
@@ -65,7 +70,13 @@ export default function EmployeeManagement() {
         role: roleFilter,
         outletId: outletFilter,
       });
-      const response = await fetch(`${BASEURL}/api/employee?${query}`);
+      const response = await fetch(`${BASEURL}/api/employee?${query}`,{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true', 
+        },
+      });
       const data = await response.json();
       setEmployees(data.data);
       setTotalPages(data.pagination.totalPages);
@@ -109,9 +120,10 @@ export default function EmployeeManagement() {
       );
       setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
       await fetchEmployees();
+      toast.success('Employee created');
       closeCreateModal();
     } catch (error) {
-      console.error('Error creating employee:', error);
+      toast.error('Failed to create employee');
     }
   };
 
@@ -137,9 +149,10 @@ export default function EmployeeManagement() {
           (employee: Employee) => employee.employeeId !== employeeId,
         ),
       );
+      toast.success('Deletion success');
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error('Error deleting employee:', error);
+      toast.error('Deletion failed');
     }
   };
 
@@ -199,9 +212,10 @@ export default function EmployeeManagement() {
         ),
       );
       await fetchEmployees();
+      toast.success('Employee updated');
       closeUpdateModal();
     } catch (error) {
-      console.error('Error updating employee:', error);
+      toast.error('update failed');
     }
   };
 
@@ -223,9 +237,9 @@ export default function EmployeeManagement() {
   }, [fetchEmployees]);
 
   return (
-    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 py-4 gap-4">
+    <div className="flex flex-col items-center h-auto bg-[#fffaf0] text-slate-700 px-2 py-4 gap-4">
       <h1>EMPLOYEE MANAGEMENT</h1>
-      <div className="flex space-x-4">
+      <div className="flex flex-wrap gap-4 mt-4">
         <CreateButton onClick={openCreateModal} />
         <select
           onChange={(e) => setRoleFilter(e.target.value)}
@@ -248,58 +262,59 @@ export default function EmployeeManagement() {
           ))}
         </select>
       </div>
-      <table className="w-4/5 border-slate-700">
-        <thead className="bg-blue-300 border-b">
-          <tr>
-            <th className="py-3 px-1 border-slate-700">ID</th>
-            <th className="py-3 px-1 border-slate-700">Name</th>
-            <th className="py-3 px-1 border-slate-700">Email</th>
-            <th className="py-3 px-1 border-slate-700">Role</th>
-            <th className="py-3 px-1 border-slate-700">Outlet</th>
-            <th className="py-3 px-1 border-slate-700">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map((employee) => (
-            <tr key={employee.employeeId} className="text-center border-b">
-              <td className="py-3 px-1 border-slate-700">
-                {employee.employeeId}
-              </td>
-              <td className="py-3 px-1 border-slate-700">
-                {employee.fullName}
-              </td>
-              <td className="py-3 px-1 border-slate-700">{employee.email}</td>
-              <td className="py-3 px-1 border-slate-700">{employee.role}</td>
-              <td className="py-3 px-1 border-slate-700">
-                {employee.outlet?.name || 'Not Assigned'}
-              </td>
-              <td>
-                <div className="flex gap-1 justify-center">
-                  <UpdateButton
-                    onClick={() =>
-                      openUpdateModal(
-                        employee.employeeId,
-                        employee.email,
-                        employee.password,
-                        employee.fullName,
-                        employee.role,
-                        employee.outletId,
-                        employee.worker?.station!,
-                      )
-                    }
-                  />
-                  <DeleteButton
-                    onClick={() =>
-                      openDeleteModal(employee.employeeId, employee.fullName)
-                    }
-                  />
-                </div>
-              </td>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full text-sm text-left text-gray-800">
+          <thead className="bg-blue-300 border-b">
+            <tr>
+              <th className="py-3 px-4 border-b text-center">ID</th>
+              <th className="py-3 px-4 border-b text-center">Name</th>
+              <th className="py-3 px-4 border-b text-center sm:table-cell">
+                Email
+              </th>
+              <th className="py-3 px-4 border-b text-center">Role</th>
+              <th className="py-3 px-4 border-b text-center md:table-cell">
+                Outlet
+              </th>
+              <th className="py-3 px-4 border-b text-center">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
+          </thead>
+          <tbody>
+            {employees.map((employee) => (
+              <tr key={employee.employeeId} className="text-center border-b">
+                <td className="py-2 px-4">{employee.employeeId}</td>
+                <td className="py-2 px-4">{employee.fullName}</td>
+                <td className="py-2 px-4 sm:table-cell">{employee.email}</td>
+                <td className="py-2 px-4">{employee.role}</td>
+                <td className="py-2 px-4 md:table-cell">
+                  {employee.outlet?.name || 'Not Assigned'}
+                </td>
+                <td className="py-2 px-4">
+                  <div className="flex gap-1 justify-center">
+                    <UpdateButton
+                      onClick={() =>
+                        openUpdateModal(
+                          employee.employeeId,
+                          employee.email,
+                          employee.password,
+                          employee.fullName,
+                          employee.role,
+                          employee.outletId,
+                          employee.worker?.station!,
+                        )
+                      }
+                    />
+                    <DeleteButton
+                      onClick={() =>
+                        openDeleteModal(employee.employeeId, employee.fullName)
+                      }
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-between items-center gap-4 mt-4">
         <button
           onClick={prevPage}
@@ -308,7 +323,7 @@ export default function EmployeeManagement() {
         >
           Previous
         </button>
-        <span>
+        <span className="text-sm">
           Page {page} of {totalPages}
         </span>
         <button

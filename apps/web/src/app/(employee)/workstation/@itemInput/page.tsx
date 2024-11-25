@@ -1,5 +1,5 @@
 'use client';
-import { DeleteButton } from '@/components/ui/action-button';
+import { DeleteButton } from '@/components/ui/actionButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppSelector } from '@/redux/hooks';
@@ -27,30 +27,40 @@ export default function ItemInputPage() {
     [orderId: number]: number;
   }>({});
   const [orders, setOrders] = useState<Order[]>([]);
-  const [outletAdminId, setOutletAdminId] = useState<number | null>(null); 
+
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
+  const [outletAdminId, setOutletAdminId] = useState<number | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const outletAdmin = useAppSelector((state) => state.outletAdmin)
+  const [loading, setLoading] = useState<boolean>(true); // Added loading state
 
   useEffect(() => {
-    if(outletAdmin) {
-      setOutletAdminId(outletAdmin.outletAdminId)
+    if (outletAdmin) {
+      setOutletAdminId(outletAdmin.outletAdminId);
     }
-  },[outletAdmin])
-
-
+  }, [outletAdmin]);
 
   const fetchOrders = useCallback(async () => {
+    if (!outletAdminId) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(
-        `${BASEURL}/api/assignment/item-input/${outletAdminId}`,
-      );
-       
-        const data = await response.json();
-        setOrders(data);
-
-        if(data.length > 0) {
-          toast.success('Message: Request Item Input')
+        `${BASEURL}/api/assignment/item-input/${outletAdminId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
         }
+      );
+
+      const data = await response.json();
+      setOrders(data);
+
+      if (data.length > 0) {
+        toast.success('Message: Request Item Input');
+      }
 
       const initialItemsByOrder = data.reduce(
         (acc: { [orderId: number]: Item[] }, order: Order) => {
@@ -65,7 +75,7 @@ export default function ItemInputPage() {
 
       const initialWeightsByOrder = data.reduce(
         (acc: { [orderId: number]: number }, order: Order) => {
-          acc[order.orderId] = 0; // Initialize with default weight of 0 or other default value
+          acc[order.orderId] = 0;
           return acc;
         },
         {},
@@ -73,6 +83,8 @@ export default function ItemInputPage() {
       setWeightsByOrder(initialWeightsByOrder);
     } catch (error) {
       console.error('Orders fetching error', error);
+    } finally {
+      setLoading(false);
     }
   }, [outletAdminId]);
 
@@ -112,11 +124,10 @@ export default function ItemInputPage() {
   };
 
   const handleWeightChange = (orderId: number, value: string) => {
-    // Convert the input string to a float number (if it's a valid number)
     const weight = parseFloat(value);
     setWeightsByOrder((prevWeights) => ({
       ...prevWeights,
-      [orderId]: isNaN(weight) ? 0 : weight, // Ensure valid number
+      [orderId]: isNaN(weight) ? 0 : weight,
     }));
   };
 
@@ -125,12 +136,10 @@ export default function ItemInputPage() {
     const items = itemsByOrder[orderId];
     const weight = weightsByOrder[orderId];
 
-    // Check if weight is greater than 0
     if (weight <= 0) {
       errors['weight'] = 'Weight must be greater than 0 kg';
     }
 
-    // Check if there is at least one item and all items have a name and quantity
     if (items.length === 0) {
       errors['items'] = 'At least one item is required';
     } else {
@@ -157,7 +166,6 @@ export default function ItemInputPage() {
     const formErrors = validateForm(orderId);
     setErrors(formErrors);
 
-    // If no errors, submit the form
     if (Object.keys(formErrors).length === 0) {
       const items = itemsByOrder[orderId];
       const weight = weightsByOrder[orderId];
@@ -174,19 +182,23 @@ export default function ItemInputPage() {
         if (response.ok) {
           const data = await response.json();
           console.log('Response:', data);
-          alert(`Items for Order #${orderId} submitted successfully`);
+          toast.success(`Items for Order #${orderId} submitted successfully`);
           fetchOrders();
         } else {
           const errorData = await response.json();
           console.error('Error:', errorData);
-          alert(`Failed to submit items for Order #${orderId}`);
+          toast.error(`Failed to submit items for Order #${orderId}`);
         }
       } catch (error) {
         console.error('Error submitting items:', error);
-        alert(`Failed to submit items for Order #${orderId}`);
+        toast.error(`Failed to submit items for Order #${orderId}`);
       }
     }
   };
+
+  if (loading) {
+    return <p>Loading orders...</p>;
+  }
 
   return (
     <div className="flex flex-col text-gray-800 items-center p-4 gap-4">
@@ -201,7 +213,6 @@ export default function ItemInputPage() {
               Add Items to Order #{order.orderId}
             </h2>
 
-            {/* Weight input field */}
             <div className="flex mb-4 items-center gap-2">
               <Input
                 type="number"
@@ -211,7 +222,7 @@ export default function ItemInputPage() {
                 }
                 placeholder="Weight"
                 className="w-28 border rounded p-2 bg-gray-100"
-                step="0.1" // Allow decimal values
+                step="0.1"
                 min={0.1}
               />
               <span>Kg</span>

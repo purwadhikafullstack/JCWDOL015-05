@@ -1,6 +1,7 @@
 'use client'
 
 import { useAppSelector } from "@/redux/hooks";
+import { BASEURL } from "@/services/api/address/address";
 import { useEffect, useState } from "react";
 
 interface WorkerHistory {
@@ -21,7 +22,7 @@ export default function WorkerHistoryPage() {
         if (workerId !== null) {
             const fetchHistory = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8000/api/assignment/worker/history/${workerId}`)
+                    const response = await fetch(`${BASEURL}/api/assignment/worker/history/${workerId}`)
                     if (response.ok) {
                         const data = await response.json()
                         setHistorys(data)

@@ -21,7 +21,7 @@ export type ICustomerAddress = {
   city: string
   subdistrict: string
   detailAddress: string
-  customerId : string
+  customerId : number
 }
 export type ICustomersResetPass = {
   email: string
@@ -40,6 +40,7 @@ export type ICustomerOrderData = {
   outlet: {
     name: string;
   };
+  items: []
   status: string;
   paymentStatus: string;
   weight: number;
@@ -47,9 +48,20 @@ export type ICustomerOrderData = {
   total: number;
   createdAt : Date
 };
+export type orderItems = {
+  item: string
+  quantity: string
+}
 export type ICustomerPayment = {
   orderId: number
   customerId: number
   weight: number
   price : number
+}
+export type ISendEmailVerification = {
+  email: string
+}
+export type ICustomerEditEmail = {
+  email: string
+  newEmail: string
 }

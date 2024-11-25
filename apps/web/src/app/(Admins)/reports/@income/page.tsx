@@ -3,10 +3,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Select, Option } from '@/components/ui/select-report';
 import { ApexOptions } from 'apexcharts';
+import { useAppSelector } from '@/redux/hooks';
+import { Label } from '@/components/ui/label';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
-// Dynamically import ApexCharts with SSR disabled
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface IncomeData {
@@ -15,12 +16,26 @@ interface IncomeData {
 }
 
 const IncomeChartPage = () => {
+  const superAdmin = useAppSelector((state) => state.superAdmin);
+  const outletAdmin = useAppSelector((state) => state.outletAdmin);
+  const loggedInOutletId = outletAdmin.employee?.outletId;
+
   const [incomeData, setIncomeData] = useState<IncomeData[]>([]);
   const [rangeType, setRangeType] = useState<string>('daily');
-  const [outletId, setOutletId] = useState<string>('');
+  const [outletId, setOutletId] = useState<string>(
+    outletAdmin.employee?.role === 'outletAdmin' && loggedInOutletId
+      ? loggedInOutletId.toString()
+      : '',
+  );
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [outlets, setOutlets] = useState<Outlets[]>([]);
+
+  useEffect(() => {
+    if (outletAdmin && loggedInOutletId) {
+      setOutletId(loggedInOutletId.toString());
+    }
+  }, [outletAdmin, loggedInOutletId]);
 
   const fetchOulets = async () => {
     try {
@@ -75,16 +90,15 @@ const IncomeChartPage = () => {
           if (incomeData.length === 0) return 'N/A';
           const date = new Date(value);
 
-          // Set formatting options based on rangeType
           let options: Intl.DateTimeFormatOptions;
           if (rangeType === 'daily') {
-            options = { year: 'numeric', month: 'short', day: '2-digit' }; // dd-MMM-yyyy
+            options = { year: 'numeric', month: 'short', day: '2-digit' };
           } else if (rangeType === 'monthly') {
-            options = { month: 'short' }; // MMM
+            options = { month: 'short' };
           } else if (rangeType === 'annual') {
-            options = { year: 'numeric' }; // yyyy
+            options = { year: 'numeric' };
           } else {
-            options = {}; // Default empty options if rangeType is not recognized
+            options = {};
           }
 
           return date.toLocaleDateString('en-GB', options);
@@ -109,7 +123,7 @@ const IncomeChartPage = () => {
     },
     tooltip: {
       y: {
-        formatter: (val: number) => `Rp ${val.toLocaleString()}`, // Customize currency display if needed
+        formatter: (val: number) => `Rp ${val.toLocaleString()}`,
       },
     },
   };
@@ -126,24 +140,25 @@ const IncomeChartPage = () => {
       <h1 className="text-center text-2xl font-bold mb-4 text-white">
         Income Report
       </h1>
-      <div className="flex space-x-4">
-        <Select
-          value={outletId}
-          onChange={(e) => setOutletId(e.target.value)}
-          className="border p-2 rounded bg-white h-11"
-        >
-          <Option value="">All Outlets</Option>
-          {outlets.map((outlet) => (
-            <option key={outlet.outletId} value={outlet.outletId}>
-              {outlet.name}
-            </option>
-          ))}
-        </Select>
-
+      <div className="flex flex-wrap gap-4 mb-4">
+        {superAdmin.role === 'superAdmin' && (
+          <Select
+            value={outletId}
+            onChange={(e) => setOutletId(e.target.value)}
+            className="border p-2 rounded bg-white"
+          >
+            <Option value="">All Outlets</Option>
+            {outlets.map((outlet) => (
+              <option key={outlet.outletId} value={outlet.outletId}>
+                {outlet.name}
+              </option>
+            ))}
+          </Select>
+        )}
         <Select
           value={rangeType}
           onChange={(e) => setRangeType(e.target.value)}
-          className="mb-4 border p-2 rounded bg-white"
+          className="border p-2 rounded bg-white"
         >
           <Option value="daily">Daily</Option>
           <Option value="monthly">Monthly</Option>
@@ -152,23 +167,28 @@ const IncomeChartPage = () => {
 
         {rangeType === 'daily' && (
           <>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="mb-4 border p-2 rounded bg-white"
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="mb-4 border p-2 rounded bg-white"
-            />
+            <div className=" flex flex-col">
+              <Label>from: </Label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="border p-2 rounded bg-white"
+              />
+            </div>
+            <div className="flex flex-col">
+              <Label>to: </Label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="border p-2 rounded bg-white"
+              />
+            </div>
           </>
         )}
       </div>
       <div className="bg-white p-4 rounded shadow">
-        {/* Render ApexCharts dynamically */}
         {ApexCharts && (
           <ApexCharts options={chartOptions} series={chartSeries} type="bar" />
         )}

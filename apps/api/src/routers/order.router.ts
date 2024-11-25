@@ -22,11 +22,12 @@ export class OrderRouter {
       this.orderController.generatePaymentLink,
     );
     this.router.post('/order', this.orderController.updatePaymentOrder);
-    this.router.get(
+    this.router.post(
       '/completed-order',
       this.orderController.updatePaymentOrder,
     );
     this.router.get('/:customerId', this.orderController.getOrderListCustomer);
+    this.router.get('/order-data/:orderId', this.orderController.getMidtransStatus)
   }
 
   getRouter(): Router {
