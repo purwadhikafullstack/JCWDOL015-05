@@ -17,7 +17,6 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
   onClose,
   onConfirm,
 }) => {
-  // Validation Schema
   const validationSchema = Yup.object({
     orderId: Yup.number()
       .required('Order ID is required')
@@ -30,7 +29,6 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
       .min(1, 'Quantity must be at least 1'),
   });
 
-  // Initialize Formik
   const formik = useFormik({
     initialValues: {
       orderId: 1,
@@ -39,10 +37,15 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
     },
     validationSchema,
     onSubmit: (values) => {
-      onConfirm(values); // Pass data to parent
-      onClose(); // Close modal after submission
+      onConfirm(values);
+      onClose();
     },
   });
+
+  const handleCancel = () => {
+    formik.resetForm();
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -52,7 +55,6 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
         <h2 className="text-xl font-semibold mb-4">Create Item</h2>
 
         <form onSubmit={formik.handleSubmit}>
-          {/* Order ID Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Order ID
           </label>
@@ -68,8 +70,6 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
           {formik.touched.orderId && formik.errors.orderId && (
             <p className="text-red-500 text-sm">{formik.errors.orderId}</p>
           )}
-
-          {/* Item Name Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Item Name
           </label>
@@ -84,8 +84,6 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
           {formik.touched.item && formik.errors.item && (
             <p className="text-red-500 text-sm">{formik.errors.item}</p>
           )}
-
-          {/* Quantity Input */}
           <label className="block text-left text-sm font-medium mb-1">
             Quantity
           </label>
@@ -111,7 +109,7 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
             </button>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleCancel}
               className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded-md"
             >
               Cancel

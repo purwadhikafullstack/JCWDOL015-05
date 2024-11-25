@@ -13,7 +13,11 @@ import {
   getCustomerData,
 } from '@/services/api/customers/customers';
 import RoleProtection from '@/services/Unauthorized';
-import { ICustomerEditEmail, ISendEmailVerification, IUserEdit } from '@/type/customers';
+import {
+  ICustomerEditEmail,
+  ISendEmailVerification,
+  IUserEdit,
+} from '@/type/customers';
 import { useMutation } from '@tanstack/react-query';
 import { useFormik } from 'formik';
 import Image from 'next/image';
@@ -34,13 +38,13 @@ const EditProfile = () => {
   const [data, setData] = useState<IUserEdit>();
   const imgRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (data: IUserEdit) => await editProfile(data),
     onSuccess: (data) => {
-      dispatch(updateAction(data.result.data))
+      dispatch(updateAction(data.result.data));
       // console.log(data.result)
       toast.success(data.result.message);
       router.push('/customers/profile');
@@ -65,7 +69,7 @@ const EditProfile = () => {
   const changeEmailFormik = useFormik({
     initialValues: {
       email: '',
-      newEmail: ''
+      newEmail: '',
     },
     onSubmit: (values, action) => {
       changeEmailMutation.mutate(values);
@@ -74,13 +78,13 @@ const EditProfile = () => {
   const changeEmailMutation = useMutation({
     mutationFn: async (data: ICustomerEditEmail) => await changeEmail(data),
     onSuccess: (data) => {
-      toast.success(data.result.message)
-      router.push('/login')
-      deleteToken()
-      dispatch(logoutAction())
+      toast.success(data.result.message);
+      router.push('/login');
+      deleteToken();
+      dispatch(logoutAction());
     },
     onError: (err) => {
-      toast.error(err?.message)
+      toast.error(err?.message);
     },
   });
   const getData = async () => {
@@ -89,7 +93,7 @@ const EditProfile = () => {
     setData(data);
     setPreviewUrl(data.avatar || null);
     formik.setFieldValue('fullName', data.fullName);
-    changeEmailFormik.setFieldValue('email', data.email)
+    changeEmailFormik.setFieldValue('email', data.email);
   };
   useEffect(() => {
     getData();
@@ -176,36 +180,37 @@ const EditProfile = () => {
             </Button>
           </form>
         </Card>
-        
+
         <Card className="w-1/2 p-3 ">
-        <div>
+          <div>
             <h1 className="text-lg">Change Email</h1>
-            <p className="text-gray-400 text-sm">Change Email Need Re Verification</p>
+            <p className="text-gray-400 text-sm">
+              Change Email Need Re Verification
+            </p>
           </div>
-        <form onSubmit={changeEmailFormik.handleSubmit}>
-          <Label>Current Email</Label>
-          <Input
-            name="email"
-            type="text"
-            value={changeEmailFormik.values.email}
-            onBlur={changeEmailFormik.handleBlur}
-          />
-          <Label>New Email</Label>
-          <Input
-            name="newEmail"
-            type="text"
-            value={changeEmailFormik.values.newEmail}
-            onChange={changeEmailFormik.handleChange}
-            onBlur={changeEmailFormik.handleBlur}
-          />
-          <Button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600"
-          >
-            {changeEmailMutation.isPending ? 'Loading...' : 'Change Email'}
-          </Button>
-        </form>
-          
+          <form onSubmit={changeEmailFormik.handleSubmit}>
+            <Label>Current Email</Label>
+            <Input
+              name="email"
+              type="text"
+              value={changeEmailFormik.values.email}
+              onBlur={changeEmailFormik.handleBlur}
+            />
+            <Label>New Email</Label>
+            <Input
+              name="newEmail"
+              type="text"
+              value={changeEmailFormik.values.newEmail}
+              onChange={changeEmailFormik.handleChange}
+              onBlur={changeEmailFormik.handleBlur}
+            />
+            <Button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600"
+            >
+              {changeEmailMutation.isPending ? 'Loading...' : 'Change Email'}
+            </Button>
+          </form>
         </Card>
       </div>
     </section>

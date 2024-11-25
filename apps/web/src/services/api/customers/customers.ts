@@ -113,7 +113,13 @@ console.log(res)
 
 export const getCustomerData = async (customerId: number) => {
   const url = `${BASEURL}/api/users/${customerId}`
-  const res = await fetch(url)
+  const res = await fetch(url,{
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true', 
+    },
+  })
   const result = await res.json()
   console.log(result)
   return {result, ok: res.ok, data: result.data}

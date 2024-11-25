@@ -1,7 +1,6 @@
 'use client'
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
-import { Role } from "@/type/role"
 import { useDispatch } from "react-redux"
 import { IAttendance } from "@/type/employee"
 import { useEffect, useState } from "react"

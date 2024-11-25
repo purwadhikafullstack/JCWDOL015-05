@@ -1,7 +1,6 @@
 'use client'
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
-import { Role} from "@/type/role"
 import { useDispatch } from "react-redux"
 import { IAttendance } from "@/type/employee"
 import { useEffect, useState } from "react"
@@ -17,7 +16,7 @@ interface Attendance {
     clockOut: string | null;
 }
 
-export default function workerPage() {
+export default function WorkerPage() {
     const router = useRouter()
     const worker = useAppSelector((state) => state.worker)
     const [employeeId, setEmployeeId] = useState(worker.employeeId)

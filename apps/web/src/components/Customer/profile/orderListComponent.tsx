@@ -1,5 +1,6 @@
 'use client';
 
+import { OrderItemsModal } from '@/components/Order/orderItemsModal';
 import { Button } from '@/components/ui/button';
 
 import {
@@ -12,13 +13,12 @@ import {
 } from '@/components/ui/table';
 import { useAppSelector } from '@/redux/hooks';
 import { snapPayment } from '@/services/api/order/order';
-import { ICustomerOrderData, ICustomerPayment } from '@/type/customers';
+import { ICustomerOrderData, ICustomerPayment, orderItems } from '@/type/customers';
 import { useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useFormik } from 'formik';
-import { ArrowUpDownIcon, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const tableHeader = [
@@ -38,6 +38,8 @@ interface OrderListProps {
 }
 
 export const OrderListComponent: FC<OrderListProps> = ({ options, currentPage }) => {
+  const [orderItems, setOrderItems] = useState([])
+  const [isOpen, setIsOpen] = useState(false)
   const customer = useAppSelector((state) => state.customer);
   const router = useRouter();
   const pageSize = 5
@@ -55,6 +57,17 @@ export const OrderListComponent: FC<OrderListProps> = ({ options, currentPage })
       toast.error(`Pembayaran Gagal Mohon Coba Lagi`);
     },
   });
+  const itemsModalOpen = async(
+    orderId: number,
+    items: []
+  )=>{
+    setOrderItems(items)
+    setIsOpen(true)
+  }
+  const itemsModalClose = ()=>{
+    setIsOpen(false)
+  }
+  console.log(orderItems)
   const handlePayment = (order: ICustomerOrderData) => {
     formik.setValues({
       orderId: +order.orderId,
@@ -76,6 +89,7 @@ export const OrderListComponent: FC<OrderListProps> = ({ options, currentPage })
       paymentMutation.mutate(values);
     },
   });
+  const availableStatusPayment = ['pencucian' , 'penyetrikaan' ,'packing' , 'menungguPembayaran']
   return (
     <div className="w-full overflow-x-auto">
       <Table>
@@ -112,8 +126,8 @@ export const OrderListComponent: FC<OrderListProps> = ({ options, currentPage })
                   currency: 'IDR',
                 })}
               </TableCell>
-              <TableCell className="text-center">
-                {order.status === 'menungguPembayaran' ? (
+              <TableCell className="flex flex-col items-center gap-1">
+                {availableStatusPayment.includes(order.status) && order.paymentStatus == 'unpaid'? (
                   <Button
                     onClick={() => handlePayment(order)}
                     className="bg-blue-500"
@@ -123,10 +137,24 @@ export const OrderListComponent: FC<OrderListProps> = ({ options, currentPage })
                 ) : (
                   ''
                 )}
+                <Button 
+                className="bg-blue-500" 
+                onClick= {()=> itemsModalOpen(
+                  parseInt(order.orderId),
+                  order.items
+                )}
+                >Items</Button>
               </TableCell>
           </TableRow>
           ))}
-          
+          {isOpen === true ?(
+          <OrderItemsModal 
+            orderItems={orderItems}
+            isOpen = {isOpen}
+            itemsModalClose={itemsModalClose}
+
+          />
+      ): ''}
         </TableBody>
       </Table>
 

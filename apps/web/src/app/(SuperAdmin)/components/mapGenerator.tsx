@@ -1,41 +1,24 @@
 'use client';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { Input } from '../ui/input';
-import { FormikHelpers, useFormik } from 'formik';
-import { ICustomerAddress } from '@/type/customers';
-import {
-  createAddress,
-  getCity,
-  getDetailLocation,
-  getLngLat,
-  getProvience,
-  getSubDistrict,
-} from '@/services/api/address/address';
-import maplibregl, { LngLat, LngLatBounds } from 'maplibre-gl';
-import { MapInitialize } from '@/services/map';
+import React, { useEffect, useRef, useState } from 'react';
+import { useFormik } from 'formik';
+import { getDetailLocation, getLngLat } from '@/services/api/address/address';
+import maplibregl from 'maplibre-gl';
 import { Button } from '@/components/ui/button';
 import { ICity, ILocation, IProvince, ISubDis } from '@/type/address';
-import { Label } from '../ui/label';
-import { useAppSelector } from '@/redux/hooks';
-import LocationSelect from './Component/SelectLocation';
-import { sub } from 'date-fns';
-import { mapSchema } from '@/schemaData/schemaData';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { Card } from '../ui/card';
-import { useRouter } from 'next/navigation';
-import { handleCancel } from './action';
-import LocationForm from './Component/formLocation';
+import { Card } from '@/components/ui/card';
+import { handleCancel } from '@/components/Map/action';
+import OutletLocationForm from './outletLocationForm';
+import {
+  createNewOutlet,
+  ICreateOutlet,
+} from '../dashboard/lib/outletServices';
+import { OutletSchema } from '@/schemaData/schemaData';
 
-export default function Map() {
+export default function MapGenerator() {
   const mapContainerRef = useRef<any | null>(null);
   const mapRef = useRef<any | null>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
@@ -62,9 +45,8 @@ export default function Map() {
   const [subdistricts, setSubdistricts] = useState<ISubDis[]>([]);
   const [selectedSubdistrict, setSelectedSubdistrict] = useState('');
   const [addresses, setAddresses] = useState<ILocation[]>([]);
+
   const MAP_API = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
-  const customers = useAppSelector((state) => state.customer);
-  const router = useRouter();
   const initMap = () => {
     mapRef.current = new maplibregl.Map({
       container: mapContainerRef.current!,
@@ -105,41 +87,38 @@ export default function Map() {
     }
   };
 
-  const formik = useFormik({
+  const formik = useFormik<ICreateOutlet>({
     initialValues: {
-      addressId: 0,
+      name: '',
+      provinsi: '',
+      kota: '',
+      kecamatan: '',
       longitude: 0,
       latitude: 0,
-      province: '',
-      city: '',
-      subdistrict: '',
-      detailAddress: '',
-      customerId: customers.customerId || 0,
     },
-    // validationSchema: mapSchema,
+    validationSchema: OutletSchema,
+    validateOnBlur: true,
+    validateOnChange: true,
     onSubmit: (values, action) => {
-      console.log(`values : ${values.customerId}`);
+      console.log('SUBMITTING VALUES:', values);
       sendDataMutation.mutate(values);
       action.resetForm();
     },
   });
   const sendDataMutation = useMutation({
-    mutationFn: async (data: ICustomerAddress) => await createAddress(data),
+    mutationFn: async (data: ICreateOutlet) => await createNewOutlet(data),
     onSuccess: (data) => {
-      const { result, ok } = data;
-      if (!ok) throw result.msg;
-      console.log('clicked');
+      const { newOutlet, ok } = data;
+      if (!ok) throw newOutlet.msg;
+      toast.success('Outlet Created');
       marker?.remove();
       setMarker(null);
       setSelectedProvince('');
       setSelectedCity('');
       setSelectedSubdistrict('');
-      toast.success(result.msg || 'Berhasil Menambah Alamat');
-      router.push('/customers/profile');
     },
     onError: (err) => {
-      toast.error(err?.message || 'Gagal Mengirim Data');
-      router.refresh()
+      toast.error('Gagal Mengirim Data');
       console.log(err);
     },
   });
@@ -167,7 +146,7 @@ export default function Map() {
 
   const handleSelectProvinsi = (value: string) => {
     setSelectedProvince(value);
-    formik.setFieldValue('province', value);
+    formik.setFieldValue('provinsi', value);
     if (value != '') {
       setSelectedCity('');
       setSelectedSubdistrict('');
@@ -178,7 +157,7 @@ export default function Map() {
     if (value != '') {
       setSelectedSubdistrict('');
     }
-    formik.setFieldValue('city', value);
+    formik.setFieldValue('kota', value);
   };
   const handleSelectSubdistric = async (value: string) => {
     setSelectedSubdistrict(value);
@@ -191,7 +170,7 @@ export default function Map() {
       lat: parseFloat(resLat),
       lng: parseFloat(resLng),
     });
-    formik.setFieldValue('subdistrict', value);
+    formik.setFieldValue('kecamatan', value);
   };
   useEffect(() => {
     locationMutation.mutate();
@@ -242,23 +221,24 @@ export default function Map() {
     }
   }, [coordinates, mapState]);
   return (
-    <section className="flex flex-col items-center mt-24 w-full h-screen">
-      <Card className="w-3/4 p-5">
+    <section className="flex flex-col items-center w-full h-auto">
+      <Card className="w-full">
         <div className="">
           {
             <div className="mt-5 ">
-              <LocationForm
-                formik={formik}
-                provinces={provinces}
-                cities={cities}
-                subdistricts={subdistricts}
-                customers={customers}
-                handleSelectProvinsi={handleSelectProvinsi}
-                handleSelectCity={handleSelectCity}
-                handleSelectSubdistric={handleSelectSubdistric}
-                marker={marker}
-                sendDataMutation={sendDataMutation}
-              />
+              <form onSubmit={formik.handleSubmit}>
+                <OutletLocationForm
+                  formik={formik}
+                  provinces={provinces}
+                  cities={cities}
+                  subdistricts={subdistricts}
+                  handleSelectProvinsi={handleSelectProvinsi}
+                  handleSelectCity={handleSelectCity}
+                  handleSelectSubdistric={handleSelectSubdistric}
+                  marker={marker}
+                  sendDataMutation={sendDataMutation}
+                />
+              </form>
             </div>
           }
           {showDialog && (

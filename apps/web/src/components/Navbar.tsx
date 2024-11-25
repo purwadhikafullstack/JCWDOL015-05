@@ -1,7 +1,4 @@
 'use client'
-
-import { useAppSelector } from "@/redux/hooks";
-import { Role } from "@/type/role";
 import { CustomerNavbar } from "./NavbarPage/customerNavbar";
 import EmployeeNavbarPage from "./NavbarPage/employeeNavbar";
 import { getToken } from "@/lib/server";
@@ -9,41 +6,49 @@ import { useEffect, useState } from "react";
 import OutletAdminNavbarPage from "./NavbarPage/outletAdminNavbar";
 import SuperAdminNavbarPage from "./NavbarPage/superAdminNavbar";
 
-
 interface TokenData {
-  customerId: number | undefined
-  role: string | undefined
+  customerId: number | undefined;
+  role: string | undefined;
 }
+
 export default function Navbar() {
-  const [roleUser, setRoleUser] = useState('')
+  const [roleUser, setRoleUser] = useState('');
   const [token, setToken] = useState('');
 
-
   const getTokenData = async () => {
-    const resToken = await getToken()
+    const resToken = await getToken();
     if (resToken) {
-      const decodeToken: TokenData = JSON.parse(atob(`${resToken}`.split('.')[1]))
-      console.log(decodeToken)
-      const role = `${decodeToken.role}`
-      setRoleUser(role)
+      const decodeToken: TokenData = JSON.parse(atob(`${resToken}`.split('.')[1]));
+      console.log(decodeToken);
+      const role = `${decodeToken.role}`;
+      setRoleUser(role);
     }
-    setToken(resToken as string)
-  }
-  console.log(roleUser)
-  useEffect(() => {
-    getTokenData()
+    setToken(resToken as string);
+  };
 
-  }, [])
-  if (roleUser == 'driver' || roleUser == 'worker') {
-    return <EmployeeNavbarPage />
+  useEffect(() => {
+    getTokenData();
+  }, []);
+
+  if (!roleUser && !token) {
+    return null; 
   }
-  if (roleUser == 'customer' || !token) {
-    return <CustomerNavbar />
+
+  if (roleUser === 'driver' || roleUser === 'worker') {
+    return <EmployeeNavbarPage />;
   }
-  if (roleUser == 'outletAdmin') {
-    return <OutletAdminNavbarPage />
+
+  if (roleUser === 'customer' || !token) {
+    return <CustomerNavbar />;
   }
-  if (roleUser == 'superAdmin') {
-    return <SuperAdminNavbarPage />
+
+  if (roleUser === 'outletAdmin') {
+    return <OutletAdminNavbarPage />;
   }
+
+  if (roleUser === 'superAdmin') {
+    return <SuperAdminNavbarPage />;
+  }
+
+  return null;
 }

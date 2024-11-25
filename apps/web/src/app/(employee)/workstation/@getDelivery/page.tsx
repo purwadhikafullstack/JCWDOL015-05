@@ -27,9 +27,16 @@ export default function GetDeliveryPage() {
 
   const fetchOrders = useCallback(async () => {
     try {
-      if (!outletId) return; // Skip if outletId is not set
+      if (!outletId) return;
       const response = await fetch(
         `${BASEURL}/api/assignment/get-delivery/${outletId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -45,9 +52,15 @@ export default function GetDeliveryPage() {
 
   const fetchDriverAvailability = useCallback(async () => {
     try {
-      if (!driverId) return; // Skip if driverId is not set
+      if (!driverId) return;
       const response = await fetch(
-        `${BASEURL}/api/assignment/driver-availability/${driverId}`,
+        `${BASEURL}/api/assignment/driver-availability/${driverId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -61,9 +74,9 @@ export default function GetDeliveryPage() {
   useEffect(() => {
     const fetchData = async () => {
       if (driverId === null || outletId === null) return;
-      setLoading(true); // Start loading
+      setLoading(true);
       await Promise.all([fetchOrders(), fetchDriverAvailability()]);
-      setLoading(false); // Stop loading
+      setLoading(false);
     };
 
     fetchData();
@@ -83,23 +96,23 @@ export default function GetDeliveryPage() {
       );
 
       if (response.ok) {
-        setIsAvailable(false); // Assume driver is now unavailable
-        fetchOrders(); // Refresh the orders
-        alert(`Order #${orderId} is now yours, let's go!`);
+        setIsAvailable(false);
+        fetchOrders();
+        toast.success(`Order #${orderId} is now yours, let's go!`);
         router.push('/employee');
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to confirm Order #${orderId}`);
+        toast.error(`Failed to confirm Order #${orderId}`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while confirming Order #${orderId}`);
+      toast.error(`An error occurred while confirming Order #${orderId}`);
     }
   };
 
   if (loading || driverId === null || outletId === null) {
-    return <p>Loading...</p>; // Display loading state until ready
+    return <p>Loading...</p>;
   }
 
   return (

@@ -40,6 +40,7 @@ export type ICustomerOrderData = {
   outlet: {
     name: string;
   };
+  items: []
   status: string;
   paymentStatus: string;
   weight: number;
@@ -47,6 +48,10 @@ export type ICustomerOrderData = {
   total: number;
   createdAt : Date
 };
+export type orderItems = {
+  item: string
+  quantity: string
+}
 export type ICustomerPayment = {
   orderId: number
   customerId: number

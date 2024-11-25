@@ -4,19 +4,15 @@ import prisma from '@/prisma';
 export class OutletController {
   async getOutlet(req: Request, res: Response) {
     try {
-      // Pagination parameters
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
 
-      // Sorting parameter
       const sortBy = req.query.sortBy === 'desc' ? 'desc' : 'asc';
 
-      // Filtering parameters
       const nameFilter = req.query.name ? String(req.query.name) : undefined;
       const kotaFilter = req.query.kota ? String(req.query.kota) : undefined;
 
-      // Prisma query
       const outletData = await prisma.outlet.findMany({
         skip,
         take: limit,
@@ -33,7 +29,6 @@ export class OutletController {
         },
       });
 
-      // Total count for pagination metadata
       const totalOutlets = await prisma.outlet.count({
         where: {
           ...(nameFilter && {
@@ -77,13 +72,28 @@ export class OutletController {
   }
 
   async createOutlet(req: Request, res: Response) {
-    const { name, provinsi, kota, kecamatan, longitude, latitude } = req.body;
-
-    const newOutletData = await prisma.outlet.create({
-      data: { name, provinsi, kota, kecamatan, longitude, latitude },
-    });
-
-    return res.status(201).send(newOutletData);
+    try {
+      const { name, provinsi, kota, kecamatan, longitude, latitude } = req.body;
+      const newOutletData = await prisma.outlet.create({
+        data: {
+          name,
+          provinsi,
+          kota,
+          kecamatan,
+          longitude: parseFloat(longitude),
+          latitude: parseFloat(latitude),
+        },
+      });
+      res.status(200).send({
+        status: 'ok',
+        data: newOutletData,
+      });
+    } catch (err) {
+      res.status(400).send({
+        status: 'failed',
+        error: err,
+      });
+    }
   }
 
   async updateOutletyId(req: Request, res: Response) {
@@ -109,8 +119,13 @@ export class OutletController {
           kecamatan:
             kecamatan !== undefined ? kecamatan : existingOutlet.kecamatan,
           longitude:
-            longitude !== undefined ? longitude : existingOutlet.longitude,
-          latitude: latitude !== undefined ? latitude : existingOutlet.latitude,
+            longitude !== undefined
+              ? parseFloat(longitude)
+              : existingOutlet.longitude,
+          latitude:
+            latitude !== undefined
+              ? parseFloat(latitude)
+              : existingOutlet.latitude,
         },
       });
 

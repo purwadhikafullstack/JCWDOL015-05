@@ -83,7 +83,7 @@ export const LoginPage = () => {
     <section className="flex flex-col items-center justify-center w-full h-screen">
      
       <Card className="p-5 space-y-4 shadow-none px-7">
-        <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={formik.handleSubmit}>
           <h1 className="text-5xl font-light">Get Started</h1>
           <h1 className="text-3xl font-light">
             Do not Have Account ? <span className="text-blue-500">

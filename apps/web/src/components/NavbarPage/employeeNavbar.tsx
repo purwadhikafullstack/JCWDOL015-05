@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { superAdminLogoutAction } from '@/redux/slice/superAdminSlice';
 import { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { deleteToken } from '@/lib/server';
 
 export default function EmployeeNavbarPage() {
   const router = useRouter();
@@ -32,6 +33,7 @@ export default function EmployeeNavbarPage() {
       if (worker) dispatch(workerLogoutAction());
       if (driver) dispatch(driverLogoutAction());
     }
+    deleteToken()
     router.push('/employeeLogin');
   };
 

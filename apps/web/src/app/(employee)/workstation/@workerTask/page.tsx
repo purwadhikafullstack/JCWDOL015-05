@@ -8,12 +8,6 @@ import { toast } from 'react-toastify';
 
 const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000';
 
-type Item = {
-  itemId: number;
-  item: string;
-  quantity: number;
-};
-
 export default function WorkerTaskPage() {
   const [workerId, setWorkerId] = useState<number | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
@@ -36,18 +30,23 @@ export default function WorkerTaskPage() {
   const fetchTask = useCallback(async () => {
     try {
       const response = await fetch(
-        `${BASEURL}/api/assignment/get-task/${station}/${outletId}`,
+        `${BASEURL}/api/assignment/get-task/${station}/${outletId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
         console.log(data);
 
-        // Only show toast if there's a new order
         if (data?.orderId) {
-          toast.success('Message: New Order'); // Toast only when orderId is present
+          toast.success('Message: New Order');
           setOrder(data);
         } else {
-          setOrder(null); // Clear order if no new order is available
+          setOrder(null);
         }
 
         if (data?.items) {
@@ -63,7 +62,6 @@ export default function WorkerTaskPage() {
     fetchTask();
   }, [fetchTask]);
 
-  // Update `allChecked` whenever `checkedItems` changes
   useEffect(() => {
     setAllChecked(checkedItems.every((isChecked) => isChecked));
   }, [checkedItems]);
@@ -92,16 +90,16 @@ export default function WorkerTaskPage() {
       );
 
       if (response.ok) {
-        alert(`Bypass message has been sent`);
+        toast.success(`Bypass message has been sent`);
         fetchTask();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to send bypass message`);
+        toast.error(`Failed to send bypass message`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while submitting bypass message`);
+      toast.error(`An error occurred while submitting bypass message`);
     }
   };
 
@@ -124,16 +122,16 @@ export default function WorkerTaskPage() {
       );
 
       if (response.ok) {
-        alert(`Task completed`);
+        toast.success(`Task completed`);
         fetchTask();
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData);
-        alert(`Failed to complete task`);
+        toast.error(`Failed to complete task`);
       }
     } catch (error) {
       console.error('Confirmation error:', error);
-      alert(`An error occurred while completing task`);
+      toast.error(`An error occurred while completing task`);
     }
   };
 

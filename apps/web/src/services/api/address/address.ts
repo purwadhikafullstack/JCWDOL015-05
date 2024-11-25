@@ -41,13 +41,27 @@ export const getDetailLocation = async (
   city = '',
   subdistrict = ''
 ) => {
-  const res = await fetch(`${BASEURL}/api/location`)
+  const url = `${BASEURL}/api/location`
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true', 
+    },
+  });
+  console.log(res)
   const result = await res.json()
   return { result, ok: res.ok, location: result.data }
 }
 export const getCustomerAddress = async (customerId: number) => {
   const url = `${BASEURL}/api/addresses/${customerId}`
-  const res = await fetch(url)
+  const res = await fetch(url,{
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true', 
+    },
+  })
   const result = await res.json()
   return { result, ok: res.ok, address: result.data }
 }

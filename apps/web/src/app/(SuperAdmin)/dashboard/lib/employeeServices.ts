@@ -32,7 +32,7 @@ export async function createEmployee(
     return newEmployee;
   } catch (error) {
     console.error('Error creating employee:', error);
-    throw error; // rethrow the error to handle it in the calling function
+    throw error;
   }
 }
 
