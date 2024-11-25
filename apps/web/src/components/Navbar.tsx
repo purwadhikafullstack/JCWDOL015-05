@@ -35,7 +35,7 @@ export default function Navbar() {
   }
 
   if (roleUser === 'driver' || roleUser === 'worker') {
-    return <EmployeeNavbarPage />;
+    return <EmployeeNavbarPage />
   }
 
   if (roleUser === 'customer' || !token) {
