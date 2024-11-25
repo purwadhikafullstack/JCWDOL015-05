@@ -1,14 +1,15 @@
 'use client';
-import DriverPage from '@/components/EmployeePage/driverPage';
-import WorkerPage from '@/components/EmployeePage/workerPage';
+import DriverPage from '@/components/EmployeeAttendancePage/driverPage';
+import WorkerPage from '@/components/EmployeeAttendancePage/workerPage';
 import { useAppSelector } from '@/redux/hooks';
 import { driverLogoutAction } from '@/redux/slice/driverSlice';
 import { workerLogoutAction } from '@/redux/slice/workerSlice';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import ListAttendance from '../list-attendance/page';
+import RoleProtection from '@/services/Unauthorized';
 
-export default function Employee() {
+const Employee = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { worker, driver, outletAdmin } = useAppSelector((state) => ({
@@ -46,3 +47,4 @@ export default function Employee() {
 
   return <div>{renderPage()}</div>;
 }
+export default RoleProtection(Employee, ['worker', 'driver', 'outletAdmin'])

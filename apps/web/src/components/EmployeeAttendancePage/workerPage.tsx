@@ -3,12 +3,12 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 import { Role} from "@/type/role"
 import { useDispatch } from "react-redux"
-import WashingPage from "./stationPage.tsx/washing"
 import { IAttendance } from "@/type/employee"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { useRouter } from "next/navigation"
 import { BASEURL } from "@/services/api/address/address"
+import { attendanceLoginAction, attendanceLogoutAction } from "@/redux/slice/attendanceSlice"
 
 interface Attendance {
     attendanceId: number;
@@ -17,16 +17,17 @@ interface Attendance {
     clockOut: string | null;
 }
 
-export default function DriverPage() {
+export default function workerPage() {
     const router = useRouter()
-    const driver = useAppSelector((state) => state.driver)
-    const [employeeId, setEmployeeId] = useState(driver.employeeId)
+    const worker = useAppSelector((state) => state.worker)
+    const [employeeId, setEmployeeId] = useState(worker.employeeId)
     const [attendanceLog, setAttendanceLog] = useState<IAttendance[]>([]);
     const [isClockedIn, setIsClockedIn] = useState<boolean>(false)
     const [completedAttendance, setCompletedAttendance] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [attendanceHistory, setAttendanceHistory] = useState<Attendance[]>([]);
+    const dispatch = useDispatch()
 
     const fetchAttendance = async () => {
         setLoading(true);
@@ -66,6 +67,14 @@ export default function DriverPage() {
             const data = await response.json();
             if (response.ok) {
                 toast.success(data.msg);
+                dispatch(
+                    attendanceLoginAction({
+                        attendanceId: data.attendanceId,
+                        employeeId: data.employeeId,
+                        clockIn: data.clockIn,
+                        clockOut: '', 
+                    })
+                );
                 router.push('/workstation')
                 fetchAttendance(); 
             } else {
@@ -86,6 +95,7 @@ export default function DriverPage() {
             const data = await response.json();
             if (response.ok) {
                 toast.success(data.msg);
+                dispatch(attendanceLogoutAction())
                 fetchAttendance();
                 router.push('/employeeLogin')
             } else {
@@ -98,19 +108,19 @@ export default function DriverPage() {
 
     const fetchAttendanceHistory = async () => {
         setLoading(true);
-        setError(null); // Reset error before fetch
+        setError(null); 
         try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance/${driver.employeeId}`);
-            console.log('Response:', response); // Log response
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${worker.employeeId}`);
+            console.log('Response:', response); 
             if (!response.ok) {
-                throw new Error('Failed to fetch attendance history');
+                throw new Error('');
             }
             const data = await response.json();
-            console.log('Data:', data); // Log data received
+            console.log('Data:', data); 
             setAttendanceHistory(data);
         } catch (error) {
-            console.error('Failed to fetch attendance history:', error);
-            setError(error instanceof Error ? error.message : 'Unknown error'); // Set error message
+            console.error(':', error);
+            setError(error instanceof Error ? error.message : 'Unknown error'); 
         } finally {
             setLoading(false);
         }
@@ -138,8 +148,8 @@ export default function DriverPage() {
     <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg mb-10">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Attendance</h1>
         <div className="space-y-4 text-black font-medium">
-            <p className="text-lg"><strong>Name:</strong> {driver.employee.fullName}</p>
-            <p className="text-lg"><strong>Outlet ID:</strong> {driver.employee.outletId}</p>
+            <p className="text-lg"><strong>Name:</strong> {worker.employee.fullName}</p>
+            <p className="text-lg"><strong>Outlet ID:</strong> {worker.employee.outletId}</p>
             <p className="text-lg"><strong>Employee ID:</strong> {employeeId}</p>
         </div>
         {loading && <p className="text-blue-500 mt-4">Loading...</p>}
@@ -162,7 +172,7 @@ export default function DriverPage() {
                     </button>
                 )
             ) : (
-                <p className="text-green-500 font-medium">Attendance completed for today.</p>
+                <p className="text-green-500 font-medium">Attendance completed for today. See u Next Day</p>
             )}
         </div>
     </div>

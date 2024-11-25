@@ -25,19 +25,27 @@ export class AttendanceController {
             let attendance: Attendance;
 
             if (existingAttendance) {
-                // Update the clock-in time
                 attendance = await prisma.attendance.update({
                     where: { attendanceId: existingAttendance.attendanceId },
                     data: { clockIn: new Date() },
                 });
             } else {
-                // Create a new clock-in record if it doesn’t exist
                 attendance = await prisma.attendance.create({
                     data: {
                         employeeId,
                         clockIn: new Date(),
                         clockOut: null,
                     },
+                });
+            }
+            const driver = await prisma.driver.findUnique({
+                where: { employeeId },
+            });
+    
+            if (driver) {
+                await prisma.driver.update({
+                    where: { driverId: driver.driverId },
+                    data: { isAvailable: true },
                 });
             }
             res.status(200).json(attendance);
@@ -65,6 +73,7 @@ export class AttendanceController {
                 },
             });
 
+
             if (!existingAttendance) {
                 res.status(404).json({ error: 'Clock-in record not found for today' });
                 return;
@@ -75,6 +84,17 @@ export class AttendanceController {
                 where: { attendanceId: existingAttendance.attendanceId },
                 data: { clockOut: new Date() },
             });
+
+            const driver = await prisma.driver.findUnique({
+                where: { employeeId },
+            });
+    
+            if (driver) {
+                await prisma.driver.update({
+                    where: { driverId: driver.driverId },
+                    data: { isAvailable: false },
+                });
+            }
 
             res.status(200).json(attendance);
         } catch (err) {

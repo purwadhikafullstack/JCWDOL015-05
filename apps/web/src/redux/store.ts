@@ -7,6 +7,7 @@ import workerReducer from "./slice/workerSlice"
 import driverReducer from "./slice/driverSlice"
 import outletAdminReducer from "./slice/outletAdminSlice"
 import superAdminReducer from "./slice/superAdminSlice"
+import attendanceReducer from "./slice/attendanceSlice"
 
 
 export const createNoopStorage = () => {
@@ -35,7 +36,8 @@ const rootReducer = combineReducers({
   worker : workerReducer,
   driver : driverReducer,
   outletAdmin : outletAdminReducer,
-  superAdmin: superAdminReducer
+  superAdmin: superAdminReducer,
+  attendance: attendanceReducer
 })
 const makeConfiguredStore = () => configureStore({
   reducer: rootReducer,

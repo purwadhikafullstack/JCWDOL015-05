@@ -42,7 +42,6 @@ export default function EmployeeLoginPage() {
       const { result, ok, worker, driver, outletAdmin, superAdmin } = data;
       if (!ok) throw result.msg;
       createToken(result.user.token);
-      console.log(data.employee);
 
       toast.success(result.msg);
 

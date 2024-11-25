@@ -61,19 +61,12 @@ export default function Hero() {
         </Carousel>
         <div className="absolute inset-0 opacity-50 bg-steel-blue"></div>
         {/* Text content */}
-        <div className="relative flex flex-col items-center justify-center h-full text-center text-white">
-          <h1
-            className="absolute font-bold opacity-0 text-4xl top-12 lg: top-40 lg:text-7xl"
-            id="hero"
-          >
-            WASH NOW or Naked Later?
-          </h1>
-          <h2
-            className="absolute text-2xl lg:text-5xl font-bold top-60 opacity-0 right-12 lg:right-72 lg:top-60"
-            id="hero"
-          >
-            Your Choice
-          </h2>
+        <div className="relative flex flex-col items-center h-full text-center text-white">
+          <div className='flex flex-col gap-14 md:gap-20 lg:gap-24 mt-36 md:mt-48 lg:mt-60'>
+            <h1 className='text-3xl md:text-6xl lg:text-7xl font-semibold' id='hero'>WASH NOW or Naked Later?</h1>
+            <h1 className='flex justify-end text-2xl md:text-4xl lg:text-5xl font-medium' id='hero'>Your Choice</h1>
+          </div>
+          
         </div>
       </div>
       <div

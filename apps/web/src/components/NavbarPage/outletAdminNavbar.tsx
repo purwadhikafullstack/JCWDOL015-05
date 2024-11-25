@@ -3,34 +3,23 @@ import Link from 'next/link';
 import logo from '../../assets/logo.png';
 import Image from 'next/image';
 import { useDispatch } from 'react-redux';
-import { workerLogoutAction } from '@/redux/slice/workerSlice';
 import { useAppSelector } from '@/redux/hooks';
-import { driverLogoutAction } from '@/redux/slice/driverSlice';
 import { outletAdminLogoutAction } from '@/redux/slice/outletAdminSlice';
 import { useRouter } from 'next/navigation';
-import { superAdminLogoutAction } from '@/redux/slice/superAdminSlice';
 import { useState } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 
-export default function EmployeeNavbarPage() {
+export default function OutletAdminNavbarPage() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { worker, driver } = useAppSelector(
-    (state) => ({
-      worker: state.worker,
-      driver: state.driver,
-      outletAdmin: state.outletAdmin,
-      superAdmin: state.superAdmin,
-    }),
-  );
+  const outletAdmin = useAppSelector((state) => state.outletAdmin)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const handleLogout = () => {
-    if (worker || driver ) {
-      if (worker) dispatch(workerLogoutAction());
-      if (driver) dispatch(driverLogoutAction());
+    if ( outletAdmin ) {
+        dispatch(outletAdminLogoutAction());
     }
     router.push('/employeeLogin');
   };
@@ -50,6 +39,12 @@ export default function EmployeeNavbarPage() {
         <Link href={'/workstation'}>
           <h1>WorkStation</h1>
         </Link>
+        <Link href={'/tracker'}>
+          <h1>Tracker</h1>
+        </Link>
+        <Link href={'/reports'}>
+          <h1>Reports</h1>
+        </Link>
       </div>
 
       <div className="md:hidden absolute right-4">
@@ -66,6 +61,12 @@ export default function EmployeeNavbarPage() {
           <Link href={'/workstation'} onClick={toggleMenu}>
             <h1>WorkStation</h1>
           </Link>
+          <Link href={'/tracker'} onClick={toggleMenu}>
+          <h1>Tracker</h1>
+        </Link>
+        <Link href={'/reports'} onClick={toggleMenu}>
+          <h1>Reports</h1>
+        </Link>
           <button
             onClick={handleLogout}
             className='bg-[#1678F3] rounded-md py-1 px-3 md:px-4 text-white'

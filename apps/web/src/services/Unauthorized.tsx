@@ -8,15 +8,7 @@ import { useEffect, useState } from "react";
 const RoleProtection = (WrappedComponent: React.ComponentType<any>, allowedRoles: string[]) => {
   const ProtectedComponent = (props: any) => {
     const [token, setToken] = useState('')
-    // const customer = useAppSelector((state) => state.customer);
-    // const worker = useAppSelector((state)=> state.worker)
-    // const driver = useAppSelector((state)=> state.driver)
-    // const outletAdmin = useAppSelector((state)=> state.outletAdmin)
-    // const superAdmin = useAppSelector((state) => state.superAdmin);
-    // const currentRole = customer?.role || superAdmin?.role || worker?.employee.role || driver?.employee.role || outletAdmin?.employee.role
-    
     const router = useRouter();
-
     useEffect(() => {
       const checkUser = async () => {
         const token = await getToken();

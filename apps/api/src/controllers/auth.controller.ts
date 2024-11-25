@@ -13,7 +13,7 @@ export const authUser = () => {
 export class AuthController {
   async registerUser(req: Request, res: Response) {
     const {
-      email, fullName,  role,
+      email, fullName, role,
     } = req.body
     // check email 
     try {
@@ -21,7 +21,7 @@ export class AuthController {
         const checkEmail = await prisma.customer.findUnique({
           where: { email: email }
         })
-        if (checkEmail) throw Error ('Email already exists')
+        if (checkEmail) throw Error('Email already exists')
       }
       const payload = { email: email, fullName: fullName, role: role }
       const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1h' })
@@ -31,7 +31,7 @@ export class AuthController {
       const urlVerifikasi = `${process.env.BASE_URL}/verify/${token}`
       console.log(urlVerifikasi)
       const html = compiledTemplate({
-        url : urlVerifikasi
+        url: urlVerifikasi
       })
       await transporter.sendMail({
         from: process.env.MAIL_USER,
@@ -99,9 +99,9 @@ export class AuthController {
       let superAdmin
       if (!role) {
         const checkEmail = await prisma.customer.findUnique({
-          where: { email: email}
+          where: { email: email }
         })
-        if (!checkEmail) throw Error ('Wrong Email')
+        if (!checkEmail) throw Error('Wrong Email')
         // if(checkEmail.isVerified == false) throw Error ('Email not Verified')
 
         const isValidPass = await compare(password, checkEmail?.password!)
@@ -119,7 +119,7 @@ export class AuthController {
 
         let employeeRole = checkEmployee.role
 
-        if(employeeRole === "outletAdmin") {
+        if (employeeRole === "outletAdmin") {
           outletAdmin = await prisma.outletAdmin.findUnique({
             where: { employeeId: checkEmployee?.employeeId! },
             include: {
@@ -142,10 +142,10 @@ export class AuthController {
           })
         } else if (employeeRole === 'superAdmin') {
           superAdmin = await prisma.employee.findUnique({
-            where : {employeeId: checkEmployee?.employeeId! },
+            where: { employeeId: checkEmployee?.employeeId! },
           })
         }
-
+   
         const isValidPassEmp = await compare(password, checkEmployee?.password!)
         console.log("worker", worker)
         console.log("driver", driver)
@@ -161,7 +161,7 @@ export class AuthController {
           token: token,
           data: data
         },
-        worker : worker,
+        worker: worker,
         driver: driver,
         outletAdmin: outletAdmin,
         superAdmin: superAdmin,
@@ -174,16 +174,16 @@ export class AuthController {
       })
     }
   }
-  async changeEmail(req: Request, res: Response){
+  async changeEmail(req: Request, res: Response) {
     try {
-      const {email, newEmail} = req.body
+      const { email, newEmail } = req.body
       const checkEmail = await prisma.customer.findUnique({
-        where: {email: email}
+        where: { email: email }
       })
-      if(!checkEmail) throw Error ('Wrong Email')
+      if (!checkEmail) throw Error('Wrong Email')
       await prisma.customer.update({
-        where: {email: email},
-        data: {email: newEmail, isVerified: false}
+        where: { email: email },
+        data: { email: newEmail, isVerified: false }
       })
       const payload = { email: newEmail, fullName: checkEmail.fullName, role: checkEmail.role }
       const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1h' })
@@ -193,7 +193,7 @@ export class AuthController {
       const urlVerifikasi = `${process.env.BASE_URL}/verify-email/${token}`
       console.log(urlVerifikasi)
       const html = compiledTemplate({
-        url : urlVerifikasi
+        url: urlVerifikasi
       })
       await transporter.sendMail({
         from: process.env.MAIL_USER,
@@ -202,7 +202,7 @@ export class AuthController {
         html: html
       })
       res.status(200).send({
-        status : 'ok',
+        status: 'ok',
         message: 'Success Change Email'
       })
     } catch (err) {
@@ -212,13 +212,13 @@ export class AuthController {
       })
     }
   }
-  async sendEmailVerification (req: Request, res: Response){
+  async sendEmailVerification(req: Request, res: Response) {
     try {
-      const {email} = req.body
+      const { email } = req.body
       const checkEmail = await prisma.customer.findUnique({
-        where: {email: email}
+        where: { email: email }
       })
-      if(!checkEmail) throw Error ('Wrong Email')
+      if (!checkEmail) throw Error('Wrong Email')
 
       const payload = { email: email, fullName: checkEmail.fullName, role: checkEmail.role }
       const token = jwtSign(payload, process.env.SECRET_JWT!, { expiresIn: '1h' })
@@ -230,7 +230,7 @@ export class AuthController {
 
       console.log(urlVerifikasi)
       const html = compiledTemplate({
-        url : urlVerifikasi
+        url: urlVerifikasi
       })
       await transporter.sendMail({
         from: process.env.MAIL_USER,
@@ -260,9 +260,9 @@ export class AuthController {
       })
       if (!checkCustomers) throw 'email already verified'
       await prisma.customer.update({
-        where: {email : customers.email, isVerified: false},
+        where: { email: customers.email, isVerified: false },
         data: {
-          isVerified : true
+          isVerified: true
         }
       })
       res.status(200).send({
@@ -344,23 +344,23 @@ export class AuthController {
       console.log(err)
     }
   }
-  async editProfile (req: Request, res: Response){
+  async editProfile(req: Request, res: Response) {
     try {
-      const {customerId, fullName, email } = req.body
+      const { customerId, fullName, email } = req.body
       console.log(customerId)
       let link
-      if(req.file){
+      if (req.file) {
         link = `${process.env.API_BASE_URL}/api/public/avatar/${req.file?.filename}`
       }
       const checkUsers = await prisma.customer.findUnique({
-        where: {customerId: +customerId}
+        where: { customerId: +customerId }
       })
-      if(!checkUsers) throw 'User Not Found'
+      if (!checkUsers) throw 'User Not Found'
       const newData = await prisma.customer.update({
-        where: {customerId: +customerId},
+        where: { customerId: +customerId },
         data: {
           fullName: fullName,
-          email : email,
+          email: email,
           avatar: link || checkUsers.avatar,
         }
       })
@@ -376,20 +376,20 @@ export class AuthController {
       })
     }
   }
-  async getUserById (req: Request, res: Response) {
+  async getUserById(req: Request, res: Response) {
     try {
-      const {customerId} = req.params
+      const { customerId } = req.params
       const customer = await prisma.customer.findUnique({
-        where: {customerId : +customerId}
+        where: { customerId: +customerId }
       })
       res.status(200).send({
-        status : 'ok',
-        data : customer
+        status: 'ok',
+        data: customer
       })
     } catch (err) {
       res.status(400).send({
         status: 'failed',
-        err : err
+        err: err
       })
     }
   }

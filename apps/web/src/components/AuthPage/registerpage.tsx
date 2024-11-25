@@ -24,22 +24,10 @@ export const RegisterPage = () => {
     initialValues: initialValues,
     validationSchema: registerSchema,
     onSubmit: (values, action) => {
-      // handleRegister(values, action)
       registerMutation.mutate(values)
     }
   })
-  // const handleRegister = async (data: ICustomerReg, action: FormikHelpers<ICustomerReg>) => {
-  //   try {
-  //     const { result, ok } = await customerReg(data)
-  //     console.log(result)
-  //     if (!ok) throw result.msg
-  //     router.push('/register/success')
-  //     action.resetForm()
-  //     toast.success(result.msg)
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // }
+  
   const registerMutation = useMutation({
     mutationFn: async(data: ICustomerReg) => await customerReg(data),
     onSuccess: (result)=>{
