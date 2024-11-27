@@ -13,18 +13,20 @@ interface EmployeeCreateModalProps {
     outletId: number;
     station: string;
   }) => void;
+  outlets: Outlets[];
 }
 
 const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
+  outlets,
 }) => {
   const validationSchema = Yup.object({
     email: Yup.string()
       .email('Invalid email format')
       .required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.string().required('Password is required').min(8),
     fullName: Yup.string().required('Full Name is required'),
     role: Yup.string().required('Role is required'),
     outletId: Yup.number()
@@ -62,12 +64,12 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
         <h2 className="text-xl font-semibold mb-4">Create Data</h2>
-
         <form onSubmit={formik.handleSubmit}>
           <label className="block text-left text-sm font-medium mb-1">
             Email
           </label>
           <input
+            placeholder="example@mail.com"
             type="text"
             name="email"
             defaultValue={''}
@@ -79,12 +81,12 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
           {formik.touched.email && formik.errors.email && (
             <p className="text-red-500 text-sm">{formik.errors.email}</p>
           )}
-
           <label className="block text-left text-sm font-medium mb-1">
             Password
           </label>
           <input
-            type="text"
+            placeholder="mininum of 8 characters"
+            type="password"
             name="password"
             defaultValue={''}
             value={formik.values.password}
@@ -99,6 +101,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
             Full Name
           </label>
           <input
+            placeholder="enter full name"
             type="text"
             name="fullName"
             defaultValue={''}
@@ -149,21 +152,29 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
             </>
           )}
           <label className="block text-left text-sm font-medium mb-1">
-            Outlet ID
+            Outlet
           </label>
-          <input
-            type="number"
+          <select
             name="outletId"
-            min={1}
-            value={formik.values.outletId || ''}
-            onChange={formik.handleChange}
+            value={formik.values.outletId}
+            onChange={(e) => {
+              formik.setFieldValue(
+                'outletId',
+                e.target.value ? Number(e.target.value) : null,
+              );
+            }}
             onBlur={formik.handleBlur}
             className="w-full border rounded p-2 mb-2 bg-gray-200"
-          />
+          >
+            {outlets.map((outlet) => (
+              <option key={outlet.outletId} value={outlet.outletId}>
+                {outlet.name}
+              </option>
+            ))}
+          </select>
           {formik.touched.outletId && formik.errors.outletId && (
             <p className="text-red-500 text-sm">{formik.errors.outletId}</p>
           )}
-
           <div className="flex justify-between mt-6">
             <button
               type="submit"

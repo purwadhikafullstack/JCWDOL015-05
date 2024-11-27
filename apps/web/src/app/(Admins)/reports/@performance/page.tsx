@@ -169,28 +169,32 @@ const EmployeePerformanceReport = () => {
             <option value="annual">Annual</option>
           </select>
         </div>
-        <div className="flex gap-4">
-          <div className=" flex flex-col">
-            <Label>from: </Label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="border p-2 rounded bg-white"
-              placeholder="Start Date"
-            />
-          </div>
-          <div className=" flex flex-col">
-            <Label>to: </Label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="border p-2 rounded bg-white"
-              placeholder="End Date"
-            />
-          </div>
-        </div>
+        {rangeType === 'daily' && (
+          <>
+            <div className="flex gap-4">
+              <div className=" flex flex-col">
+                <Label>from: </Label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="border p-2 rounded bg-white"
+                  placeholder="Start Date"
+                />
+              </div>
+              <div className=" flex flex-col">
+                <Label>to: </Label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="border p-2 rounded bg-white"
+                  placeholder="End Date"
+                />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="bg-white p-4 rounded shadow">

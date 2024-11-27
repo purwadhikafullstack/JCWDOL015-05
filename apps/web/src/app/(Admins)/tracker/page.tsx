@@ -281,7 +281,7 @@ const OrdersPage = () => {
           >
             Previous
           </button>
-          <span>
+          <span className="text-sm">
             Page {page} of {totalPages}
           </span>
           <button

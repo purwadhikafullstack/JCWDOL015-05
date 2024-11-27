@@ -38,9 +38,6 @@ export async function createEmployee(
 
 export async function UpdateEmployee(
   employeeId: number,
-  email: string | null,
-  password: string | null,
-  fullName: string | null,
   role: string | null,
   outletId: number | null,
   station: string | null,
@@ -54,9 +51,6 @@ export async function UpdateEmployee(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email,
-        password,
-        fullName,
         role,
         outletId,
         station,

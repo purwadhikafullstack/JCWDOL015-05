@@ -74,6 +74,7 @@ const ItemCreateModal: React.FC<ItemCreateModalProps> = ({
             Item Name
           </label>
           <input
+            placeholder="nama item"
             type="text"
             name="item"
             value={formik.values.item}

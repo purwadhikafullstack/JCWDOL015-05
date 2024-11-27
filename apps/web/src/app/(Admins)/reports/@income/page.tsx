@@ -164,7 +164,6 @@ const IncomeChartPage = () => {
           <Option value="monthly">Monthly</Option>
           <Option value="annual">Annual</Option>
         </Select>
-
         {rangeType === 'daily' && (
           <>
             <div className=" flex flex-col">
