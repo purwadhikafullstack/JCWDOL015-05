@@ -29,15 +29,15 @@ const WorkstationLayout = ({
   const outletAdmin = useAppSelector((state) => state.outletAdmin);
   const isClockedIn = useAppSelector((state) => state.attendance.clockIn);
 
-  if (!isClockedIn && (driver.employee?.role === 'driver' || worker.employee?.role === 'worker')) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-white">
-        <h1 className="text-center text-2xl font-semibold text-red-500">
-          You must clock in before accessing the workstation.
-        </h1>
-      </div>
-    );
-  }
+  // if (!isClockedIn && (driver.employee?.role === 'driver' || worker.employee?.role === 'worker')) {
+  //   return (
+  //     <div className="h-screen flex items-center justify-center bg-white">
+  //       <h1 className="text-center text-2xl font-semibold text-red-500">
+  //         You must clock in before accessing the workstation.
+  //       </h1>
+  //     </div>
+  //   );
+  // }
 
   if (outletAdmin.employee?.role === 'outletAdmin') {
     return (

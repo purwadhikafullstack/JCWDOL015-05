@@ -20,7 +20,7 @@ export const customerOrderData = async (
     qSearch?: string | ''
 ) => {
     console.log(qSearch)
-    const url = `${BASEURL}/api/orders/:${customerId}?page=${page}&q=${qSearch ? qSearch : ''}`
+    const url = `${BASEURL}/api/orders/${customerId}?page=${page}&q=${qSearch ? qSearch : ''}`
     const res = await fetch (url,{
         method: 'GET',
         headers: {

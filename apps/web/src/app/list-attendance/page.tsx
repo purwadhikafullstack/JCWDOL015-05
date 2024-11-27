@@ -20,7 +20,13 @@ export default function ListAttendance() {
     useEffect(() => {
         async function fetchAttendanceLogs() {
             try {
-                const response = await fetch(`${BASEURL}/api/submit/attendance`); // Update with your actual API route
+                const response = await fetch(`${BASEURL}/api/submit/attendance`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true',
+                    }
+                }); 
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.error || 'Failed to fetch attendance logs');

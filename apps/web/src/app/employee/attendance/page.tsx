@@ -36,7 +36,13 @@ export default function Attendance() {
             return;
         }
         try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                }
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance log');
             }

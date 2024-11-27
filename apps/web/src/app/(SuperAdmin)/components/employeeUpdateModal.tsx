@@ -6,19 +6,16 @@ interface UpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (values: {
-    email: string;
-    password: string;
-    fullName: string;
     role: string;
     outletId: number | null;
     station: string | null;
   }) => void;
   initialEmail: string;
-  initialPassword: string;
   initialFullName: string;
   initialRole: string;
   initialOutletId: number | null;
   InitialStation: string | 'washing';
+  outlets: Outlets[];
 }
 
 const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
@@ -26,20 +23,13 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
   onClose,
   onConfirm,
   initialEmail,
-  initialPassword,
   initialFullName,
   initialRole,
   initialOutletId,
   InitialStation,
+  outlets,
 }) => {
   const validationSchema = Yup.object({
-    email: Yup.string()
-      .email('Invalid email address')
-      .required('Email is required'),
-    password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .required('Password is required'),
-    fullName: Yup.string().required('Full name is required'),
     role: Yup.string().required('Role is required'),
     outletId: Yup.number()
       .nullable()
@@ -51,11 +41,8 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
 
   const formik = useFormik({
     initialValues: {
-      email: initialEmail || '',
-      password: initialPassword || '',
-      fullName: initialFullName || '',
       role: initialRole || '',
-      outletId: initialOutletId || null,
+      outletId: initialOutletId || 1,
       station: InitialStation || 'washing',
     },
     enableReinitialize: true,
@@ -72,50 +59,15 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
         <h2 className="text-xl font-semibold mb-4">Update Employee</h2>
-
         <form onSubmit={formik.handleSubmit}>
-          <label className="block text-left text-sm font-medium mb-1">
-            Email
-          </label>
-          <input
-            type="text"
-            name="email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="w-full border rounded p-2 mb-2 bg-gray-200"
-          />
-          {formik.touched.email && formik.errors.email && (
-            <p className="text-red-500 text-sm">{formik.errors.email}</p>
-          )}
-          <label className="block text-left text-sm font-medium mb-1">
-            Password
-          </label>
-          <input
-            type="text"
-            name="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="w-full border rounded p-2 mb-2 bg-gray-200"
-          />
-          {formik.touched.password && formik.errors.password && (
-            <p className="text-red-500 text-sm">{formik.errors.password}</p>
-          )}
           <label className="block text-left text-sm font-medium mb-1">
             Full Name
           </label>
-          <input
-            type="text"
-            name="fullName"
-            value={formik.values.fullName}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="w-full border rounded p-2 mb-2 bg-gray-200"
-          />
-          {formik.touched.fullName && formik.errors.fullName && (
-            <p className="text-red-500 text-sm">{formik.errors.fullName}</p>
-          )}
+          <p>{initialFullName}</p>
+          <label className="block text-left text-sm font-medium mb-1">
+            Email
+          </label>
+          <p>{initialEmail}</p>
           <label className="block text-left text-sm font-medium mb-1">
             Role
           </label>
@@ -155,16 +107,26 @@ const EmployeeUpdateModal: React.FC<UpdateModalProps> = ({
             </>
           )}
           <label className="block text-left text-sm font-medium mb-1">
-            Outlet ID
+            Outlet
           </label>
-          <input
-            type="number"
+          <select
             name="outletId"
-            value={formik.values.outletId || ''}
-            onChange={formik.handleChange}
+            value={formik.values.outletId}
+            onChange={(e) => {
+              formik.setFieldValue(
+                'outletId',
+                e.target.value ? Number(e.target.value) : null,
+              );
+            }}
             onBlur={formik.handleBlur}
             className="w-full border rounded p-2 mb-2 bg-gray-200"
-          />
+          >
+            {outlets.map((outlet) => (
+              <option key={outlet.outletId} value={outlet.outletId}>
+                {outlet.name}
+              </option>
+            ))}
+          </select>
           {formik.touched.outletId && formik.errors.outletId && (
             <p className="text-red-500 text-sm">{formik.errors.outletId}</p>
           )}

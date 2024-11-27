@@ -126,11 +126,9 @@ export class EmployeeController {
 
   updateEmployeeById = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { email, password, fullName, role, outletId, station } = req.body;
+    const { role, outletId, station } = req.body;
 
     try {
-      const salt = await genSalt(10);
-      const hashedPassword = await hash(password, salt);
       const existingEmployee = await prisma.employee.findUnique({
         where: { employeeId: Number(id) },
         include: { worker: true, driver: true, outletAdmin: true },
@@ -200,9 +198,6 @@ export class EmployeeController {
       const updatedEmployee = await prisma.employee.update({
         where: { employeeId: Number(id) },
         data: {
-          email,
-          password: hashedPassword,
-          fullName,
           role,
           outletId,
         },

@@ -40,7 +40,13 @@ const OrdersPage = () => {
 
   const fetchOulets = async () => {
     try {
-      const response = await fetch(`${BASEURL}/api/outlet`);
+      const response = await fetch(`${BASEURL}/api/outlet`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        }
+      });
       const data = await response.json();
       setOutlets(data.data);
     } catch (error) {
@@ -62,7 +68,13 @@ const OrdersPage = () => {
         customerId: customerIdFilter,
         sortBy: sortOrder,
       });
-      const response = await fetch(`${BASEURL}/api/order?${query}`);
+      const response = await fetch(`${BASEURL}/api/order?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        }
+      });
       const data = await response.json();
       setOrders(data.data);
       console.log(data.data);
@@ -281,7 +293,7 @@ const OrdersPage = () => {
           >
             Previous
           </button>
-          <span>
+          <span className='text-sm'>
             Page {page} of {totalPages}
           </span>
           <button

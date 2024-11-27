@@ -11,7 +11,6 @@ export class AttendanceController {
             const startOfDay = new Date(today.setHours(0, 0, 0, 0));
             const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
-            // Check if an attendance entry for today already exists
             const existingAttendance = await prisma.attendance.findFirst({
                 where: {
                     employeeId,

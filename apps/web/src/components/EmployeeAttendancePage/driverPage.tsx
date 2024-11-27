@@ -37,7 +37,13 @@ export default function DriverPage() {
             return;
         }
         try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                }
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance log');
             }
@@ -71,11 +77,11 @@ export default function DriverPage() {
                         attendanceId: data.attendanceId,
                         employeeId: data.employeeId,
                         clockIn: data.clockIn,
-                        clockOut: '', 
+                        clockOut: '',
                     })
                 );
                 router.push('/workstation')
-                fetchAttendance(); 
+                fetchAttendance();
             } else {
                 toast.error(data.error);
             }
@@ -107,9 +113,15 @@ export default function DriverPage() {
 
     const fetchAttendanceHistory = async () => {
         setLoading(true);
-        setError(null); 
+        setError(null);
         try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance/${driver.employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${driver.employeeId}`, {
+                 method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        }
+            });
             if (!response.ok) {
                 throw new Error('');
             }
@@ -117,7 +129,7 @@ export default function DriverPage() {
             setAttendanceHistory(data);
         } catch (error) {
             console.error('Failed to fetch attendance history:', error);
-            setError(error instanceof Error ? error.message : 'Unknown error'); 
+            setError(error instanceof Error ? error.message : 'Unknown error');
         } finally {
             setLoading(false);
         }
@@ -126,9 +138,9 @@ export default function DriverPage() {
     const formatTime = (isoString: string | null) => {
         if (!isoString) return 'N/A';
         const date = new Date(isoString);
-        return date.toLocaleString('en-US', { 
-            dateStyle: 'short', 
-            timeStyle: 'short' 
+        return date.toLocaleString('en-US', {
+            dateStyle: 'short',
+            timeStyle: 'short'
         });
     };
 

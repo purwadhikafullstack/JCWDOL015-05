@@ -28,7 +28,13 @@ export default function BypassRequestPage() {
     }
     try {
       const response = await fetch(
-        `${BASEURL}/api/assignment/bypass-request/${outletId}`,
+        `${BASEURL}/api/assignment/bypass-request/${outletId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        }
+      },
       );
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();

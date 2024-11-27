@@ -108,7 +108,7 @@ export const OrderListComponent: FC<OrderListProps> = ({ options, currentPage })
             <TableCell>{(currentPage - 1) * pageSize + index + 1}</TableCell>
             <TableCell className="px-4 py-2 whitespace-normal">{order.orderId}</TableCell>
               <TableCell className="px-4 py-2 whitespace-normal">
-                {order.outlet.name}
+                {order.outlet?.name || 'N/A'}
               </TableCell>
               <TableCell className="px-2 py-2 whitespace-normal">
                 {format(order.createdAt, 'yyyy-MM-dd')}

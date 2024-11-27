@@ -37,7 +37,13 @@ export default function WorkerPage() {
             return;
         }
         try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`);
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                }
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch attendance log');
             }
@@ -71,11 +77,11 @@ export default function WorkerPage() {
                         attendanceId: data.attendanceId,
                         employeeId: data.employeeId,
                         clockIn: data.clockIn,
-                        clockOut: '', 
+                        clockOut: '',
                     })
                 );
                 router.push('/workstation')
-                fetchAttendance(); 
+                fetchAttendance();
             } else {
                 toast.error(data.error);
             }
@@ -107,19 +113,25 @@ export default function WorkerPage() {
 
     const fetchAttendanceHistory = async () => {
         setLoading(true);
-        setError(null); 
+        setError(null);
         try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance/${worker.employeeId}`);
-            console.log('Response:', response); 
+            const response = await fetch(`${BASEURL}/api/submit/attendance/${worker.employeeId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                }
+            });
+            console.log('Response:', response);
             if (!response.ok) {
                 throw new Error('');
             }
             const data = await response.json();
-            console.log('Data:', data); 
+            console.log('Data:', data);
             setAttendanceHistory(data);
         } catch (error) {
             console.error(':', error);
-            setError(error instanceof Error ? error.message : 'Unknown error'); 
+            setError(error instanceof Error ? error.message : 'Unknown error');
         } finally {
             setLoading(false);
         }
@@ -128,9 +140,9 @@ export default function WorkerPage() {
     const formatTime = (isoString: string | null) => {
         if (!isoString) return 'N/A';
         const date = new Date(isoString);
-        return date.toLocaleString('en-US', { 
-            dateStyle: 'short', 
-            timeStyle: 'short' 
+        return date.toLocaleString('en-US', {
+            dateStyle: 'short',
+            timeStyle: 'short'
         });
     };
 
@@ -144,66 +156,66 @@ export default function WorkerPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-    <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg mb-10">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Attendance</h1>
-        <div className="space-y-4 text-black font-medium">
-            <p className="text-lg"><strong>Name:</strong> {worker.employee.fullName}</p>
-            <p className="text-lg"><strong>Outlet ID:</strong> {worker.employee.outletId}</p>
-            <p className="text-lg"><strong>Employee ID:</strong> {employeeId}</p>
-        </div>
-        {loading && <p className="text-blue-500 mt-4">Loading...</p>}
-        {error && <p className="text-red-500 mt-4">{error}</p>}
-        <div className="flex justify-center gap-4 mt-6">
-            {!completedAttendance ? (
-                isClockedIn ? (
-                    <button
-                        onClick={handleClockOut}
-                        className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition"
-                    >
-                        Clock Out
-                    </button>
-                ) : (
-                    <button
-                        onClick={handleClockIn}
-                        className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition"
-                    >
-                        Clock In
-                    </button>
-                )
-            ) : (
-                <p className="text-green-500 font-medium">Attendance completed for today. See u Next Day</p>
-            )}
-        </div>
-    </div>
+            <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg mb-10">
+                <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Attendance</h1>
+                <div className="space-y-4 text-black font-medium">
+                    <p className="text-lg"><strong>Name:</strong> {worker.employee.fullName}</p>
+                    <p className="text-lg"><strong>Outlet ID:</strong> {worker.employee.outletId}</p>
+                    <p className="text-lg"><strong>Employee ID:</strong> {employeeId}</p>
+                </div>
+                {loading && <p className="text-blue-500 mt-4">Loading...</p>}
+                {error && <p className="text-red-500 mt-4">{error}</p>}
+                <div className="flex justify-center gap-4 mt-6">
+                    {!completedAttendance ? (
+                        isClockedIn ? (
+                            <button
+                                onClick={handleClockOut}
+                                className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition"
+                            >
+                                Clock Out
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleClockIn}
+                                className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition"
+                            >
+                                Clock In
+                            </button>
+                        )
+                    ) : (
+                        <p className="text-green-500 font-medium">Attendance completed for today. See u Next Day</p>
+                    )}
+                </div>
+            </div>
 
-    <div className="max-w-4xl w-full p-6 bg-white shadow-lg rounded-lg">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Attendance History</h1>
-        {loading ? (
-            <p className="text-blue-500">Loading...</p>
-        ) : error ? (
-            <p className="text-red-500">{error}</p>
-        ) : (
-            <ul className="divide-y divide-gray-200">
-                {attendanceHistory.length === 0 ? (
-                    <li className="py-4 text-center text-gray-500">No attendance records found.</li>
+            <div className="max-w-4xl w-full p-6 bg-white shadow-lg rounded-lg">
+                <h1 className="text-2xl font-bold text-gray-800 mb-6">Attendance History</h1>
+                {loading ? (
+                    <p className="text-blue-500">Loading...</p>
+                ) : error ? (
+                    <p className="text-red-500">{error}</p>
                 ) : (
-                    attendanceHistory.map((record) => (
-                        <li key={record.attendanceId} className="py-4">
-                            <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center">
-                                <div>
-                                    <p className="font-medium"><strong>Employee ID:</strong> {record.employeeId}</p>
-                                    <p className="text-gray-600"><strong>Clock In:</strong> {formatTime(record.clockIn)}</p>
-                                    <p className="text-gray-600"><strong>Clock Out:</strong> {formatTime(record.clockOut)}</p>
-                                </div>
-                               
-                            </div>
-                        </li>
-                    ))
+                    <ul className="divide-y divide-gray-200">
+                        {attendanceHistory.length === 0 ? (
+                            <li className="py-4 text-center text-gray-500">No attendance records found.</li>
+                        ) : (
+                            attendanceHistory.map((record) => (
+                                <li key={record.attendanceId} className="py-4">
+                                    <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center">
+                                        <div>
+                                            <p className="font-medium"><strong>Employee ID:</strong> {record.employeeId}</p>
+                                            <p className="text-gray-600"><strong>Clock In:</strong> {formatTime(record.clockIn)}</p>
+                                            <p className="text-gray-600"><strong>Clock Out:</strong> {formatTime(record.clockOut)}</p>
+                                        </div>
+
+                                    </div>
+                                </li>
+                            ))
+                        )}
+                    </ul>
                 )}
-            </ul>
-        )}
-    </div>
-</div>
+            </div>
+        </div>
 
     )
 }

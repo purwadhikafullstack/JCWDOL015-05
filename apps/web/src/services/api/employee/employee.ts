@@ -5,7 +5,7 @@ export type IEmployeeLogin = {
 }
 
 export const employeeLogin = async (data: IEmployeeLogin) => {
-  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL;
+  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000' 
   console.log(BASEURL)
   
   try {
@@ -16,7 +16,7 @@ export const employeeLogin = async (data: IEmployeeLogin) => {
       },
       body: JSON.stringify(data),
     });
-
+    console.log(res)
     if (!res.ok) {
       throw new Error(`Error: ${res.status} - ${res.statusText}`);
     }
