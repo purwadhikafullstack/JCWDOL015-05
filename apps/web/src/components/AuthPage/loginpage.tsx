@@ -64,10 +64,10 @@ export const LoginPage = () => {
   })
   const socialLogin = useMutation({
     mutationFn: async() => await googleLogin(),
-    onSuccess: (result)=>{
-      console.log(result?.result.data)
-      createToken(result?.result.tokenData)
-      dispatch(loginAction(result?.result.data))
+    onSuccess: (data)=>{
+      // console.log(data?.data)
+      createToken(data?.result.tokenData)
+      dispatch(loginAction(data?.data))
       router.push('/')
       toast.success('Login Google Success')
     },

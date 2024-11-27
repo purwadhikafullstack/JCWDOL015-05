@@ -30,9 +30,6 @@ export default function Navbar() {
     getTokenData();
   }, []);
 
-  if (!roleUser && !token) {
-    return null; 
-  }
 
   if (roleUser === 'driver' || roleUser === 'worker') {
     return <EmployeeNavbarPage />

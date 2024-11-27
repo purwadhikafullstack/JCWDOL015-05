@@ -1,7 +1,7 @@
 import { ICustomerEditEmail, ICustomerLogin, ICustomerNewPass, ICustomerReg, ICustomersResetPass, ICustomerVerify, ISendEmailVerification, IUserEdit } from "@/type/customers";
 import  {auth, provider, signInWithPopup} from '@/firebase/firebaseConfig'
 import { GoogleAuthProvider } from "firebase/auth";
-const BASEURL = process.env.NEXT_PUBLIC_BASE_API_URL || 'http://localhost:8000'
+const BASEURL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000'
 export const customerReg = async (data: ICustomerReg) => {
   const res = await fetch(`${BASEURL}/api/users/register`, {
     method: 'POST',

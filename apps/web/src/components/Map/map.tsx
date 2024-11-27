@@ -242,7 +242,7 @@ export default function Map() {
     }
   }, [coordinates, mapState]);
   return (
-    <section className="flex flex-col items-center mt-24 w-full h-screen">
+    <section className="flex flex-col items-center  w-full">
       <Card className="w-3/4 p-5">
         <div className="">
           {

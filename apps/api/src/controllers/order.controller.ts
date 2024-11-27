@@ -368,7 +368,7 @@ export class OrderController {
   }
   async getOrderListCustomer(req: Request, res: Response) {
     try {
-      const { customerId } = req.body;
+      const { customerId } = req.params;
       const { q } = req.query;
       let filter: Prisma.OrderWhereInput = {};
       if (q) {
@@ -388,7 +388,7 @@ export class OrderController {
       const skip = (page - 1) * limit;
       const listOrder = await prisma.order.findMany({
         where: { 
-          customerId: customerId,
+          customerId: +customerId,
            ...filter },
         skip: skip,
         take: limit,
@@ -404,7 +404,7 @@ export class OrderController {
       });
       
       const totalOrder = await prisma.order.count({
-        where: { customerId: customerId, ...filter },
+        where: { customerId: +customerId, ...filter },
       });
 
       res.status(200).send({

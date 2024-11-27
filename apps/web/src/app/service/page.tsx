@@ -2,7 +2,7 @@ import Map from "@/components/Map/map";
 
 export default function Service() {
   return (
-    <div>
+    <div className="h-screen mt-24">
       <Map />
     </div>
   );
