@@ -1,197 +1,162 @@
-'use client'
+'use client';
 
-import { useAppDispatch, useAppSelector } from "@/redux/hooks"
-import { useDispatch } from "react-redux"
-import { IAttendance } from "@/type/employee"
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import { useRouter } from "next/navigation"
-import { BASEURL } from "@/services/api/address/address"
-import { attendanceLoginAction, attendanceLogoutAction } from "@/redux/slice/attendanceSlice"
+import { useEffect, useState, useMemo } from "react";
+import { useAppSelector } from "@/redux/hooks";
+import { toast } from "react-toastify";
+import { BASEURL } from "@/services/api/address/address";
+import { IAttendance } from "@/type/employee";
+import { useDispatch } from "react-redux";
+import { attendanceLoginAction, attendanceLogoutAction } from "@/redux/slice/attendanceSlice";
 
-interface Attendance {
-    attendanceId: number;
-    employeeId: number;
-    clockIn: string | null;
-    clockOut: string | null;
-}
-
-export default function WorkerPage() {
-    const router = useRouter()
-    const worker = useAppSelector((state) => state.worker)
-    const [employeeId, setEmployeeId] = useState(worker.employeeId)
-    const [attendanceLog, setAttendanceLog] = useState<IAttendance[]>([]);
-    const [isClockedIn, setIsClockedIn] = useState<boolean>(false)
-    const [completedAttendance, setCompletedAttendance] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [attendanceHistory, setAttendanceHistory] = useState<Attendance[]>([]);
+const WorkerPage = () => {
     const dispatch = useDispatch()
-
-    const fetchAttendance = async () => {
-        setLoading(true);
-        setError(null);
-        if (!employeeId) {
-            toast.error("Employee ID is not available.");
-            setLoading(false);
-            return;
-        }
-        try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance/${employeeId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true',
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch attendance log');
-            }
-            const data = await response.json();
-            setAttendanceLog(data);
-            const lastEntry = data[data.length - 1];
-            if (lastEntry) {
-                setIsClockedIn(!lastEntry.clockOut);
-                setCompletedAttendance(lastEntry.clockIn && lastEntry.clockOut);
-            }
-        } catch (error) {
-            console.error('Failed to fetch attendance log:', error);
-            setError(error instanceof Error ? error.message : 'Unknown error');
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleClockIn = async () => {
-        try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ employeeId })
-            });
-            const data = await response.json();
-            if (response.ok) {
-                toast.success(data.msg);
-                dispatch(
-                    attendanceLoginAction({
-                        attendanceId: data.attendanceId,
-                        employeeId: data.employeeId,
-                        clockIn: data.clockIn,
-                        clockOut: '',
-                    })
-                );
-                router.push('/workstation')
-                fetchAttendance();
-            } else {
-                toast.error(data.error);
-            }
-        } catch (error) {
-            console.error('Clock-in Failed:', error);
-        }
-    }
-
-    const handleClockOut = async () => {
-        try {
-            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ employeeId })
-            });
-            const data = await response.json();
-            if (response.ok) {
-                toast.success(data.msg);
-                dispatch(attendanceLogoutAction())
-                fetchAttendance();
-                router.push('/employeeLogin')
-            } else {
-                toast.error(data.error);
-            }
-        } catch (error) {
-            console.error('Clock-out Failed:', error);
-        }
-    }
+    const worker = useAppSelector((state) => state.worker);
+    const [attendanceHistory, setAttendanceHistory] = useState<IAttendance[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchAttendanceHistory = async () => {
         setLoading(true);
         setError(null);
+
         try {
+            if (!worker?.employeeId) {
+                throw new Error("worker ID is not available.");
+            }
+
             const response = await fetch(`${BASEURL}/api/submit/attendance/${worker.employeeId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
-                }
+                },
             });
-            console.log('Response:', response);
+
             if (!response.ok) {
-                throw new Error('');
+                throw new Error('Failed to fetch attendance history.');
             }
+
             const data = await response.json();
-            console.log('Data:', data);
             setAttendanceHistory(data);
-        } catch (error) {
-            console.error(':', error);
-            setError(error instanceof Error ? error.message : 'Unknown error');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
-    const formatTime = (isoString: string | null) => {
-        if (!isoString) return 'N/A';
-        const date = new Date(isoString);
-        return date.toLocaleString('en-US', {
-            dateStyle: 'short',
-            timeStyle: 'short'
-        });
+    const handleClockIn = async () => {
+        try {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ employeeId: worker.employeeId }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to record Clock In");
+            }
+            const data = await response.json()
+            if (response.ok) {
+
+                dispatch(attendanceLoginAction({
+                    attendanceId: data.attendanceId,
+                    employeeId: data.employeeId,
+                    clockIn: data.clockIn,
+                    clockOut: '',
+                }))
+                toast.success("Clock In recorded successfully");
+            }
+            fetchAttendanceHistory(); 
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Unknown error occurred");
+        }
+    };
+
+    const handleClockOut = async () => {
+        try {
+            const response = await fetch(`${BASEURL}/api/submit/attendance`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ employeeId: worker.employeeId }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to record Clock Out");
+            }
+            dispatch(attendanceLogoutAction())
+            toast.success("Clock Out recorded successfully");
+            fetchAttendanceHistory();
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Unknown error occurred");
+        }
     };
 
     useEffect(() => {
-        fetchAttendance();
-    }, [employeeId]);
+        if (worker?.employeeId) {
+            fetchAttendanceHistory();
+        }
+    }, [worker?.employeeId]);
 
-    useEffect(() => {
-        fetchAttendanceHistory();
-    }, [])
+    const formatTime = useMemo(() => (isoString: string | null) => {
+        if (!isoString) return 'N/A';
+        const date = new Date(isoString);
+        return date.toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' });
+    }, []);
+
+   
+    const canClockIn = useMemo(() => {
+        if (attendanceHistory.length === 0) return true; 
+
+        const latestAttendance = attendanceHistory[0]; 
+        const clockInDate = latestAttendance.clockIn ? new Date(latestAttendance.clockIn) : null;
+        const clockOutDate = latestAttendance.clockOut ? new Date(latestAttendance.clockOut) : null;
+        const today = new Date();
+
+     
+        if (!clockOutDate) return false;
+
+      
+        const isNextDay =
+            clockInDate &&
+            today.toDateString() !== clockInDate.toDateString() &&
+            today > clockInDate;
+
+        return isNextDay;
+    }, [attendanceHistory]);
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
-            <div className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg mb-10">
-                <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Attendance</h1>
-                <div className="space-y-4 text-black font-medium">
-                    <p className="text-lg"><strong>Name:</strong> {worker.employee.fullName}</p>
-                    <p className="text-lg"><strong>Outlet ID:</strong> {worker.employee.outletId}</p>
-                    <p className="text-lg"><strong>Employee ID:</strong> {employeeId}</p>
-                </div>
-                {loading && <p className="text-blue-500 mt-4">Loading...</p>}
-                {error && <p className="text-red-500 mt-4">{error}</p>}
-                <div className="flex justify-center gap-4 mt-6">
-                    {!completedAttendance ? (
-                        isClockedIn ? (
-                            <button
-                                onClick={handleClockOut}
-                                className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg shadow hover:bg-red-600 transition"
-                            >
-                                Clock Out
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleClockIn}
-                                className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition"
-                            >
-                                Clock In
-                            </button>
-                        )
-                    ) : (
-                        <p className="text-green-500 font-medium">Attendance completed for today. See u Next Day</p>
-                    )}
-                </div>
-            </div>
-
             <div className="max-w-4xl w-full p-6 bg-white shadow-lg rounded-lg">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">Attendance History</h1>
+                <h1 className="text-2xl font-bold text-gray-800 mb-6">worker Attendance History</h1>
+                <div className="flex gap-4 mb-6">
+                    <button
+                        onClick={handleClockIn}
+                        disabled={!canClockIn} 
+                        className={`px-4 py-2 rounded text-white ${
+                            !canClockIn ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                        }`}
+                    >
+                        Clock In
+                    </button>
+                    <button
+                        onClick={handleClockOut}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                        Clock Out
+                    </button>
+                </div>
                 {loading ? (
-                    <p className="text-blue-500">Loading...</p>
+                    <div className="flex justify-center items-center">
+                        <div className="loader"></div>
+                        <p className="text-blue-500 ml-2">Loading...</p>
+                    </div>
                 ) : error ? (
                     <p className="text-red-500">{error}</p>
                 ) : (
@@ -207,7 +172,6 @@ export default function WorkerPage() {
                                             <p className="text-gray-600"><strong>Clock In:</strong> {formatTime(record.clockIn)}</p>
                                             <p className="text-gray-600"><strong>Clock Out:</strong> {formatTime(record.clockOut)}</p>
                                         </div>
-
                                     </div>
                                 </li>
                             ))
@@ -216,6 +180,7 @@ export default function WorkerPage() {
                 )}
             </div>
         </div>
+    );
+};
 
-    )
-}
+export default WorkerPage;
