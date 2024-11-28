@@ -61,7 +61,6 @@ export default function OnPickupPage() {
       console.error('Driver availability fetching error:', error);
     }
   }, [driverId, BASEURL]);
-
   useEffect(() => {
     fetchOrders();
     fetchDriverAvailability();
