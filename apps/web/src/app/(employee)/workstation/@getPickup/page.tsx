@@ -53,17 +53,25 @@ export default function GetPickupPage() {
     try {
       if (!driverId) return;
       const response = await fetch(
-        `${BASEURL}/api/assignment/driver-availability/${driverId}`,
+        `${BASEURL}/api/assignment/driver-availability/${driverId}`,{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true', 
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
         setIsAvailable(data.isAvailable);
+        console.log(isAvailable)
+        console.log(`api data : ${data.isAvailable}`)
       }
     } catch (error) {
       console.error('Driver availability fetching error:', error);
     }
   }, [driverId, BASEURL]);
-
+  // console.log(isAvailable)
   useEffect(() => {
     const fetchData = async () => {
       if (driverId === null || outletId === null) return;
