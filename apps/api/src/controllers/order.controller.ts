@@ -315,7 +315,6 @@ export class OrderController {
           Accept: 'application/json',
         }
       })
-      // console.log(midtransRes)
       const resultMidtrans = await midtransRes.json()
       console.log(resultMidtrans)
       res.status(200).send({
@@ -346,13 +345,24 @@ export class OrderController {
         transaction_status === 'settlement' &&
         status_code === '200'
       ) {
-        await prisma.order.update({
+        if(checkOrder.status === "menungguPembayaran") {
+          await prisma.order.update({
+            where: { orderId: +order_id },
+            data: { 
+              status : 'siapDiantar',
+              paymentStatus: 'paid',
+              deliverDate : new Date()
+             },
+          });
+        } else {
+          await prisma.order.update({
           where: { orderId: +order_id },
           data: { 
             paymentStatus: 'paid',
             deliverDate : new Date()
            },
-        });
+          });
+        }
       }
 
       res.status(200).send({
@@ -368,13 +378,13 @@ export class OrderController {
   }
   async getOrderListCustomer(req: Request, res: Response) {
     try {
-      const { customerId } = req.body;
+      const { customerId } = req.params;
       const { q } = req.query;
       let filter: Prisma.OrderWhereInput = {};
       if (q) {
-        const orderId = Number(q); // Convert `q` to a number
+        const orderId = Number(q);
         if (!isNaN(orderId)) {
-          filter.orderId = { equals: orderId }; // Assign only if `q` is a valid number
+          filter.orderId = { equals: orderId }; 
         } else {
           throw new Error("Invalid query parameter: `q` must be a number.");
         }
@@ -388,7 +398,7 @@ export class OrderController {
       const skip = (page - 1) * limit;
       const listOrder = await prisma.order.findMany({
         where: { 
-          customerId: customerId,
+          customerId: +customerId,
            ...filter },
         skip: skip,
         take: limit,
@@ -404,7 +414,7 @@ export class OrderController {
       });
       
       const totalOrder = await prisma.order.count({
-        where: { customerId: customerId, ...filter },
+        where: { customerId: +customerId, ...filter },
       });
 
       res.status(200).send({

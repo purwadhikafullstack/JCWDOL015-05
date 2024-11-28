@@ -18,7 +18,13 @@ export default function DriverHistoryPage() {
     if (driverId !== null) {
       const fetchHistory = async () => {
         try {
-          const response = await fetch(`http://localhost:8000/api/assignment/driver/history/${driverId}`);
+          const response = await fetch(`http://localhost:8000/api/assignment/driver/history/${driverId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            }
+          });
           if (response.ok) {
             const data = await response.json();
             setHistorys(data);
@@ -34,7 +40,7 @@ export default function DriverHistoryPage() {
     }
   }, [driverId]);
 
-  
+
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

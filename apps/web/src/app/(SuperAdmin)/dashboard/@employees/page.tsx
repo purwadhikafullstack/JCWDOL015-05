@@ -48,12 +48,12 @@ export default function EmployeeManagement() {
 
   const fetchOulets = async () => {
     try {
-      const response = await fetch(`${BASEURL}/api/outlet`,{
+      const response = await fetch(`${BASEURL}/api/outlet`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true', 
-        },
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+        }
       });
       const data = await response.json();
       setOutlets(data.data);
@@ -70,12 +70,12 @@ export default function EmployeeManagement() {
         role: roleFilter,
         outletId: outletFilter,
       });
-      const response = await fetch(`${BASEURL}/api/employee?${query}`,{
+      const response = await fetch(`${BASEURL}/api/employee?${query}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true', 
-        },
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+        }
       });
       const data = await response.json();
       setEmployees(data.data);
@@ -159,7 +159,6 @@ export default function EmployeeManagement() {
   const openUpdateModal = (
     employeeId: number,
     email: string,
-    password: string,
     fullName: string,
     role: string,
     outletId: number,
@@ -187,9 +186,6 @@ export default function EmployeeManagement() {
   };
 
   const handleUpdateEmployee = async (values: {
-    email: string;
-    password: string;
-    fullName: string;
     role: string;
     outletId: number | null;
     station: string | null;
@@ -197,9 +193,6 @@ export default function EmployeeManagement() {
     try {
       const updatedEmployee = await UpdateEmployee(
         employeeId!,
-        values.email,
-        values.password,
-        values.fullName,
         values.role,
         values.outletId,
         values.station,
@@ -295,7 +288,6 @@ export default function EmployeeManagement() {
                         openUpdateModal(
                           employee.employeeId,
                           employee.email,
-                          employee.password,
                           employee.fullName,
                           employee.role,
                           employee.outletId,
@@ -339,6 +331,7 @@ export default function EmployeeManagement() {
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
         onConfirm={handleCreateEmployee}
+        outlets={outlets}
       />
 
       <EmployeeUpdateModal
@@ -346,11 +339,11 @@ export default function EmployeeManagement() {
         onClose={closeUpdateModal}
         onConfirm={handleUpdateEmployee}
         initialEmail={email!}
-        initialPassword={password!}
         initialFullName={fullName!}
         initialRole={role!}
         initialOutletId={outletId!}
         InitialStation={station}
+        outlets={outlets}
       />
 
       <DeleteModal

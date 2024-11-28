@@ -15,7 +15,6 @@ export class AuthController {
     const {
       email, fullName, role,
     } = req.body
-    // check email 
     try {
       if (email) {
         const checkEmail = await prisma.customer.findUnique({
@@ -102,7 +101,6 @@ export class AuthController {
           where: { email: email }
         })
         if (!checkEmail) throw Error('Wrong Email')
-        // if(checkEmail.isVerified == false) throw Error ('Email not Verified')
 
         const isValidPass = await compare(password, checkEmail?.password!)
         if (!isValidPass) throw 'Wrong Password'
@@ -126,6 +124,7 @@ export class AuthController {
               employee: true
             }
           })
+          if(outletAdmin?.employee.role !== 'outletAdmin') throw Error ("Wrong Role")
         } else if (employeeRole === "worker") {
           worker = await prisma.worker.findUnique({
             where: { employeeId: checkEmployee?.employeeId! },

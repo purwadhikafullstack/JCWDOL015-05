@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 interface WorkerHistory {
     workerId: number,
     orderId: number,
-    createdAt : string,
+    createdAt: string,
     worker: {
         station: string
     }
@@ -22,7 +22,13 @@ export default function WorkerHistoryPage() {
         if (workerId !== null) {
             const fetchHistory = async () => {
                 try {
-                    const response = await fetch(`${BASEURL}/api/assignment/worker/history/${workerId}`)
+                    const response = await fetch(`${BASEURL}/api/assignment/worker/history/${workerId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        }
+                    })
                     if (response.ok) {
                         const data = await response.json()
                         setHistorys(data)
@@ -40,14 +46,14 @@ export default function WorkerHistoryPage() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {historys.length > 0 ? (
                 historys.map((history) => (
-                    <div 
-                    key={history.workerId} 
-                    className="border p-4 mb-2 rounded-lg bg-gray-100 shadow-md m-w-[300px]"
+                    <div
+                        key={history.workerId}
+                        className="border p-4 mb-2 rounded-lg bg-gray-100 shadow-md m-w-[300px]"
                     >
                         <p className="font-semibold text-xl">Order ID :{history.orderId}</p>
                         <p className="font-medium text-lg">{new Date(history.createdAt).toLocaleString()}</p>
                         <p className="font-medium text-lg">Station : {history.worker.station}</p>
-                        
+
                     </div>
                 ))
             ) : (

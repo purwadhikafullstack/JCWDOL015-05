@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { updateOrderStatus } from '@/services/api/customers/customers';
 import { toast } from 'react-toastify';
+import { error } from 'console';
 const PaymentSuccess = () => {
   const [status, setStatus] = useState('')
   const router = useRouter()
@@ -14,7 +15,6 @@ const PaymentSuccess = () => {
   const order_id = searchParams.get('order_id')
   const transaction_status = searchParams.get('transaction_status')
   const status_code = searchParams.get('status_code')
-  // cek signature already paid atau tidak 
 
   const updateOrder = useMutation({
     mutationFn: async () => await updateOrderStatus(order_id!, transaction_status!, status_code!),
@@ -25,6 +25,7 @@ const PaymentSuccess = () => {
      
     },
     onError: (err)=>{
+      console.log(err)
       toast.error(err?.message)
       setStatus('Pembayaran Gagal, Mohon Hubungi Admin')
     }

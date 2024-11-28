@@ -39,7 +39,13 @@ const IncomeChartPage = () => {
 
   const fetchOulets = async () => {
     try {
-      const response = await fetch(`${BASEURL}/api/outlet`);
+      const response = await fetch(`${BASEURL}/api/outlet`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        }
+      });
       const data = await response.json();
       setOutlets(data.data);
     } catch (error) {
@@ -56,7 +62,13 @@ const IncomeChartPage = () => {
         endDate,
       });
 
-      const response = await fetch(`${BASEURL}/api/report?${query}`);
+      const response = await fetch(`${BASEURL}/api/report?${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        }
+      });
       const data = await response.json();
       console.log('Fetched Orders:', data.data);
       setIncomeData(data.data);
