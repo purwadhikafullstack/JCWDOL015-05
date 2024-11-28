@@ -11,11 +11,12 @@ import { deleteToken, getToken } from '@/lib/server';
 import { logoutAction } from '@/redux/slice/customerSlice';
 import defaultProfile from '@/assets/images.webp';
 import { toast } from 'react-toastify';
-import { MenuIcon } from 'lucide-react';
+import { HomeIcon, LogsIcon, MenuIcon, User2Icon } from 'lucide-react';
 
 export const CustomerNavbar = () => {
   const [token, setToken] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [navbarOpen, setNavbarOpen] = useState(false)
   const router = useRouter()
   const dispatch = useDispatch();
   const pathname = usePathname(); 
@@ -28,6 +29,7 @@ export const CustomerNavbar = () => {
   const handleIsOpen = () => {
     setIsOpen(!isOpen);
   };
+  const handleNavbarMenu = () => setNavbarOpen(!navbarOpen)
   const handleLogout = () => {
     dispatch(logoutAction())
     deleteToken()
@@ -41,7 +43,7 @@ export const CustomerNavbar = () => {
   return (
     <div className="relative flex items-center h-[55px] px-[45px] bg-[#fffaf0]">
       {/* Logo */}
-      <div className="hidden absolute left-[45px] md:block lg:block">
+      <div className="absolute left-4 md:left-[45px]">
         <Link href={'/'}>
           <Image src={logo} alt="logo" width={45} />
         </Link>
@@ -76,7 +78,11 @@ export const CustomerNavbar = () => {
           ''
         )}
       </div>
-      <div className='cursor-pointer'><MenuIcon /></div>
+      <div className='cursor-pointer md:hidden absolute right-4'>
+        <button onClick={handleNavbarMenu}>
+        <MenuIcon />
+        </button>
+      </div>
       {/* Login / Signup buttons */}
       <div className="hidden absolute right-[45px]  font-bold text-[16px] text-white gap-[24px] md:flex lg:flex">
         {token ? (
@@ -139,6 +145,47 @@ export const CustomerNavbar = () => {
               </button>
             </Link>
           </>
+        )}
+      </div>
+      {/* Navbar menu Mobile */}
+      <div className={`fixed flex flex-col h-screen top-14 right-0 z-10 w-3/5 bg-steel-blue text-white transition-transform duration-300 transform ${navbarOpen ? '-translate-x-0' : 'translate-x-full'}`}>
+      {token ? (
+          <div className='w-full flex flex-col items-center text-white'>
+            <Link className='w-3/4 flex flex-row gap-3 text-center my-2 px-[15px] py-2 rounded-[8px] ' href={'/service'}>
+              <HomeIcon className=''></HomeIcon>
+              <h1 className={`relative font-semibold cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/service' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`}>
+                Add Address
+              </h1>
+            </Link>
+            <Link className='w-3/4 flex flex-row gap-3 text-center my-2 px-[15px] py-2 rounded-[8px] ' href={'/customers/pickup'}>
+            <LogsIcon></LogsIcon>
+              <h1 className={`relative text-white cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/service' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`} >
+                Order Pickup
+              </h1>
+            </Link>
+            <Link className='w-3/4 flex flex-row gap-3 text-center my-2 px-[15px] py-2 rounded-[8px] ' href={'/customers/profile'}>
+              <User2Icon></User2Icon>
+              <h1 className={`relative text-white  cursor-pointer transition-all duration-300 ease-in-out ${pathname === '/my-order' ? 'border-b-2 border-black' : 'hover:translate-y-[-3px] hover:border-b-2 hover:border-black'}`} >
+                Profile
+              </h1>
+            </Link>
+            <button onClick={handleLogout} className="w-3/4 border-b-2 bg-red-500 text-center my-2 px-[15px] py-2 rounded-[8px]  text-white ">
+              Logout
+            </button>
+        </div>
+        ) : (
+          <div className='w-full flex flex-col items-center'>
+            <Link className='w-3/4 border-b-2 bg-steel-blue text-center my-2 px-[15px] py-2 rounded-[8px] ' href={'/login'}>
+              <button className=" text-white ">
+                LOGIN
+              </button>
+            </Link>
+            <Link className='w-3/4 border-b-2 bg-steel-blue text-center my-2 px-[15px] py-2 rounded-[8px] ' href={'/register'}>
+              <button className="  text-white ">
+                Register
+              </button>
+            </Link>
+          </div>
         )}
       </div>
     </div>

@@ -33,7 +33,7 @@ const DriverPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error('');
+                throw new Error('hello');
             }
 
             const data = await response.json();
