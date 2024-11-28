@@ -49,6 +49,7 @@ const EmployeeCreateModal: React.FC<EmployeeCreateModalProps> = ({
     validationSchema,
     onSubmit: (values) => {
       onConfirm(values);
+      formik.resetForm();
       onClose();
     },
   });

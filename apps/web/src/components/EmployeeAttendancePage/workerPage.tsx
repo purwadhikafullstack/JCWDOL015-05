@@ -33,7 +33,7 @@ const WorkerPage = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch attendance history.');
+                throw new Error('Anda belum absensi');
             }
 
             const data = await response.json();
