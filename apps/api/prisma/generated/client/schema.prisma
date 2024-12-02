@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Enums
+enum Role {
+  superAdmin
+  outletAdmin
+  worker
+  driver
+  customer
+}
+
+enum Station {
+  washing
+  ironing
+  packing
+}
+
+enum OrderStatus {
+  menungguKonfirmasi
+  menungguPenjemputanDriver
+  laundryMenujuOutlet
+  laundrySampaiOutlet
+  pencucian
+  penyetrikaan
+  packing
+  menungguPembayaran
+  siapDiantar
+  sedangDikirim
+  terkirim
+  selesai
+}
+
+enum PaymentStatus {
+  unpaid
+  pending
+  paid
+}
+
+enum Activity {
+  pickUp
+  delivery
+}
+
+model Customer {
+  customerId Int       @id @default(autoincrement())
+  email      String    @unique
+  password   String?
+  isVerified Boolean   @default(false)
+  fullName   String
+  address    Address[]
+  avatar     String?
+  role       Role      @default(customer)
+  order      Order[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
+}
+
+model Address {
+  addressId     Int     @id @default(autoincrement())
+  customerId    Int
+  provinsi      String?
+  kota          String?
+  kecamatan     String?
+  longitude     Float?
+  latitude      Float?
+  detailAddress String?
+  isPrimary     Boolean @default(false)
+
+  // relations
+  customer Customer @relation(fields: [customerId], references: [customerId])
+  orders   Order[]
+}
+
+model Employee {
+  employeeId  Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  isVerified  Boolean      @default(false)
+  fullName    String
+  role        Role
+  outletId    Int?
+  attendance  Attendance[]
+  outletAdmin OutletAdmin?
+  worker      Worker?
+  driver      Driver?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?
+  //relations
+  outlet      Outlet?      @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
+}
+
+model OutletAdmin {
+  outletAdminId Int      @id @default(autoincrement())
+  isAvailable   Boolean  @default(false)
+  employee      Employee @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
+  employeeId    Int      @unique
+  notification  String?
+  orders        Order[]
+}
+
+model Worker {
+  workerId     Int               @id @default(autoincrement())
+  station      Station
+  employee     Employee          @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
+  employeeId   Int               @unique
+  notification String?
+  orders       WorkersOnOrders[]
+}
+
+model Driver {
+  driverId     Int               @id @default(autoincrement())
+  isAvailable  Boolean           @default(true)
+  employee     Employee          @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
+  employeeId   Int               @unique
+  notification String?
+  orders       DriversOnOrders[]
+}
+
+model Outlet {
+  outletId  Int        @id @default(autoincrement())
+  name      String
+  provinsi  String?
+  kota      String?
+  kecamatan String?
+  longitude Float?
+  latitude  Float?
+  employee  Employee[]
+  orders    Order[]
+  createdAt DateTime   @default(now())
+}
+
+model Order {
+  orderId           Int               @id @default(autoincrement())
+  outletId          Int?
+  outletAdminId     Int?
+  workers           WorkersOnOrders[]
+  drivers           DriversOnOrders[]
+  customerId        Int
+  customerAddressId Int?
+  items             Items[]
+  pricePerKg        Int               @default(12000)
+  weight            Float             @default(0)
+  totalPrice        Int               @default(0)
+  bypassMessage     String?
+  paymentStatus     PaymentStatus     @default(unpaid)
+  pickupDate        DateTime
+  pickupTime        String?
+  complain          String?
+  status            OrderStatus
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deliverDate       DateTime?
+  // relations
+  outlet            Outlet?           @relation(fields: [outletId], references: [outletId], onDelete: SetNull)
+  outletAdmin       OutletAdmin?      @relation(fields: [outletAdminId], references: [outletAdminId], onDelete: SetNull)
+  customer          Customer?         @relation(fields: [customerId], references: [customerId])
+  customerAddress   Address?          @relation(fields: [customerAddressId], references: [addressId], onDelete: SetNull)
+}
+
+model Items {
+  itemId   Int    @id @default(autoincrement())
+  orderId  Int
+  item     String
+  quantity Int
+
+  // relations
+  order Order @relation(fields: [orderId], references: [orderId])
+}
+
+model Attendance {
+  attendanceId Int       @id @default(autoincrement())
+  employeeId   Int
+  clockIn      DateTime?
+  clockOut     DateTime?
+
+  // relations
+  employee Employee @relation(fields: [employeeId], references: [employeeId], onDelete: Cascade)
+}
+
+model WorkersOnOrders {
+  order     Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  orderId   Int
+  worker    Worker   @relation(fields: [workerId], references: [workerId], onDelete: Cascade)
+  workerId  Int
+  createdAt DateTime @default(now())
+
+  @@id([orderId, workerId])
+}
+
+model DriversOnOrders {
+  id        Int      @id @default(autoincrement())
+  order     Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  orderId   Int
+  driver    Driver   @relation(fields: [driverId], references: [driverId], onDelete: Cascade)
+  driverId  Int
+  activity  Activity
+  createdAt DateTime @default(now())
+}
+
+model baseAddress {
+  id         Int    @id @default(autoincrement())
+  provinceId Int
+  province   String
+  city       String
+}
+
+model ListAddress {
+  id            Int    @id @default(autoincrement())
+  provinceId    Int
+  province      String
+  cityId        Int
+  city          String
+  subdistrictId Int
+  subdistrict   String
+}
