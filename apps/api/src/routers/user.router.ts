@@ -28,21 +28,8 @@ export class UserRouter {
     // this.router.get('/auth', passport.authenticate('google', { scope: ["profile", "email"] }))
     this.router.post('/auth/google', this.fireBaseAuth.googleAuthHandler );
     this.router.patch('/edit',
-      uploader('avatar-', '/avatar').single('avatar')
+      uploader('memoryStorage', 'avatar-', '/avatar').single('avatar')
       ,this.authController.editProfile)
-      // this.router.get('/auth/google', (req, res, next) => {
-      //   console.log('Google login route hit');
-      //   next();
-      // }, passport.authenticate('google', { scope: ['profile', 'email'] }));
- 
-    // this.router.get('/auth/google/callback', (req, res, next) => {
-    //   console.log('Callback route hit');
-    //   next();
-    // }, passport.authenticate('google', { session: false }), (req, res) => {
-    //   res.send('Authentication successful');
-    // });
-    
-    
     
   }
 

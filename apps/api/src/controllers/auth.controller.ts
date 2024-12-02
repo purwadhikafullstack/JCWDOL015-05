@@ -7,6 +7,7 @@ import Handlebars from 'handlebars'
 import { transporter } from "@/services/nodemailer";
 import { ICustomerChangeEmail, ICustomerReg, ICustomerResetPassword } from "@/interfaces/customers";
 import { compare, genSalt, hash } from 'bcrypt'
+import { cloudinaryUpload } from "@/middleware/cloudinary";
 export const authUser = () => {
 
 }
@@ -348,8 +349,12 @@ export class AuthController {
       const { customerId, fullName, email } = req.body
       console.log(customerId)
       let link
-      if (req.file) {
-        link = `${process.env.API_BASE_URL}/api/public/avatar/${req.file?.filename}`
+      // if (req.file) {
+      //   link = `${process.env.API_BASE_URL}/api/public/avatar/${req.file?.filename}`
+      // }
+      if(req.file) {
+        const {secure_url} = await cloudinaryUpload(req.file, "avatar")
+        link = secure_url
       }
       const checkUsers = await prisma.customer.findUnique({
         where: { customerId: +customerId }
